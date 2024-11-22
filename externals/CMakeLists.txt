@@ -6,7 +6,7 @@ add_subdirectory(glfw)
 add_subdirectory(glm)
 
 # ===== glad =====
-# add_subdirectory(glad)
+add_subdirectory(glad)
 
 # ===== imgui =====
 add_subdirectory(imgui)

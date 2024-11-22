@@ -31,7 +31,7 @@ int main()
     ImGui::StyleColorsLight();
 
     {
-        spinningTop_Window app;
+        jelly_Window app;
         if (!app.InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE))
         {
             glfwTerminate();

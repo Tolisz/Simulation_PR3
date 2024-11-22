@@ -10,6 +10,6 @@ private:
     /* virtual */ void RunRenderTick() override;
     /* virtual */ void RunClear() override;
 
-	
+
 
 };
