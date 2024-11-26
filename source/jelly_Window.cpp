@@ -6,6 +6,8 @@
 
 /* virtual */ void jelly_Window::RunInit() /* override */
 {
+	GLFW_SetUpCallbacks();
+
 	m_app = std::make_unique<jelly_App>();
 }
 
@@ -21,6 +23,27 @@
 {
 	m_app.reset();
 }
+
+void jelly_Window::GLFW_SetUpCallbacks()
+{
+	glfwSetFramebufferSizeCallback(m_window, &jelly_Window::GLFW_Callback_FramebufferSize);
+}
+
+/* static */ jelly_Window* jelly_Window::GLFW_GetWindow(GLFWwindow* window)
+{
+	return reinterpret_cast<jelly_Window*>(glfwGetWindowUserPointer(window));
+}
+
+/* static */  void jelly_Window::GLFW_Callback_FramebufferSize(GLFWwindow* window, int width, int height)
+{
+	jelly_Window* w = GLFW_GetWindow(window);
+	w->m_width = width;
+	w->m_height = height;
+	w->b_dockingInitialized = false; 
+	
+	glViewport(0, 0, width, height);
+}
+
 
 void jelly_Window::GUI_Start()
 {
@@ -100,7 +123,19 @@ void jelly_Window::GUI_WindowSettings()
 
 void jelly_Window::GUI_WindowRender()
 {
+	GUI_UpdateRenderRegion();
 
+	m_app->RenderScene();
+
+	GLuint tex = m_app->GetRenderTexture();
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImGui::GetWindowDrawList()->AddImage(
+			tex, 
+			pos, 
+			ImVec2(pos.x + m_lastRenderRegion.x, pos.y + m_lastRenderRegion.y), 
+			ImVec2(0, 1), 
+			ImVec2(1, 0)
+		);
 }
 
 void jelly_Window::GUI_UpdateDockingLayout()
@@ -120,3 +155,16 @@ void jelly_Window::GUI_UpdateDockingLayout()
 	ImGui::DockBuilderFinish(m_mainDockingSpace);
 }
 
+void jelly_Window::GUI_UpdateRenderRegion()
+{
+	ImVec2 currentRenderRegion = ImGui::GetContentRegionAvail();
+	if (currentRenderRegion.x != m_lastRenderRegion.x || 
+		currentRenderRegion.y != m_lastRenderRegion.y)
+	{
+		m_lastRenderRegion = currentRenderRegion;
+		int width = static_cast<int>(currentRenderRegion.x);
+		int height = static_cast<int>(currentRenderRegion.y);
+
+		m_app->SetRenderArea(width, height);
+	}
+}

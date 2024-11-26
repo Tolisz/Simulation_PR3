@@ -16,6 +16,10 @@ private:
 
 private:
 
+    void GLFW_SetUpCallbacks();
+    static jelly_Window* GLFW_GetWindow(GLFWwindow* window);
+    static void GLFW_Callback_FramebufferSize(GLFWwindow* window, int width, int height);
+
     void GUI_Start();
     void GUI_Main();
     void GUI_WindowLayout();
@@ -23,6 +27,10 @@ private:
     // Respective function for windows;
     void GUI_WindowSettings();
     void GUI_WindowRender();
+
+    // GUI miscellaneous
+    void GUI_UpdateDockingLayout();
+    void GUI_UpdateRenderRegion();
 
 private:
 
@@ -37,11 +45,8 @@ private:
     const float c_dockRatio = 0.3f;
     bool b_dockingInitialized = false;
 
-    // GUI miscellaneous
-    void GUI_UpdateDockingLayout();
-
-
 private:
 
     std::unique_ptr<jelly_App> m_app;
+    ImVec2 m_lastRenderRegion  = {0, 0};
 };
