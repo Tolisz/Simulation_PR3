@@ -8,6 +8,16 @@
 
 class jelly_Window: public glfwWindowWrap
 {
+
+    enum class viewportState
+    {
+        IDLE,
+        CAMERA_ROTATE,
+        CAMERA_MOVE,
+        CAMERA_ZOOM,
+    };
+
+
 private:
 
     /* virtual */ void RunInit() override;
@@ -19,6 +29,8 @@ private:
     void GLFW_SetUpCallbacks();
     static jelly_Window* GLFW_GetWindow(GLFWwindow* window);
     static void GLFW_Callback_FramebufferSize(GLFWwindow* window, int width, int height);
+    static void GLFW_Callback_MouseButton(GLFWwindow* window, int button, int action, int mods);
+    static void GLFW_Callback_CursorPos(GLFWwindow* window, double xpos, double ypos);
 
     void GUI_Start();
     void GUI_Main();
@@ -45,8 +57,14 @@ private:
     const float c_dockRatio = 0.3f;
     bool b_dockingInitialized = false;
 
+    // Viewport 
+    viewportState m_viewportState;
+    bool b_viewportHovered = false;
+    
+    ImVec2 m_lastRenderRegion = {0, 0};
+    glm::vec2 m_lastMousePos = {0, 0};
+
 private:
 
     std::unique_ptr<jelly_App> m_app;
-    ImVec2 m_lastRenderRegion  = {0, 0};
 };

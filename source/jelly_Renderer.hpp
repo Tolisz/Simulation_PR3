@@ -24,6 +24,10 @@ public:
 
 	GLuint GetRenderTexture();
 
+	// Camera
+	void UpdateCameraRotation(float rotX, float rotY);
+	
+
 private:
 
 	void RenderScene();

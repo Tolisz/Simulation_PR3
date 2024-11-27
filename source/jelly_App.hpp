@@ -19,6 +19,8 @@ public:
 	GLuint GetRenderTexture();
 	void SetRenderArea(int width, int height);
 	void RenderScene();
+
+	void UpdateCameraRotation(float rotX, float rotY);
 private:
 
 	std::unique_ptr<jelly_Renderer> m_renderer;

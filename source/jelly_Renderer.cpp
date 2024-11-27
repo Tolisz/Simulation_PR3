@@ -47,11 +47,17 @@ GLuint jelly_Renderer::GetRenderTexture()
 	return m_colorTexture;
 }
 
+void jelly_Renderer::UpdateCameraRotation(float rotX, float rotY)
+{
+	m_camera.UpdateRotation(rotX, rotY);
+}
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glEnable(GL_DEPTH_TEST);
+	
 	// SCENE BEGIN
 	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
     glm::mat4 viewProj[2] = {m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(aspect)};

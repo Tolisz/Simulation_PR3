@@ -19,3 +19,8 @@ void jelly_App::RenderScene()
 {
 	m_renderer->Render();
 }
+
+void jelly_App::UpdateCameraRotation(float rotX, float rotY)
+{
+	m_renderer->UpdateCameraRotation(rotX, rotY);
+}

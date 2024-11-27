@@ -4,6 +4,8 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_internal.h>
 
+#include <iostream>
+
 /* virtual */ void jelly_Window::RunInit() /* override */
 {
 	GLFW_SetUpCallbacks();
@@ -27,6 +29,8 @@
 void jelly_Window::GLFW_SetUpCallbacks()
 {
 	glfwSetFramebufferSizeCallback(m_window, &jelly_Window::GLFW_Callback_FramebufferSize);
+	glfwSetMouseButtonCallback(m_window, &jelly_Window::GLFW_Callback_MouseButton);
+	glfwSetCursorPosCallback(m_window, &jelly_Window::GLFW_Callback_CursorPos);
 }
 
 /* static */ jelly_Window* jelly_Window::GLFW_GetWindow(GLFWwindow* window)
@@ -44,6 +48,68 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	glViewport(0, 0, width, height);
 }
 
+/* static */ void jelly_Window::GLFW_Callback_MouseButton(GLFWwindow* window, int button, int action, int mods)
+{
+	ImGuiIO& io = ImGui::GetIO();
+    io.AddMouseButtonEvent(button, action == GLFW_PRESS);
+
+	jelly_Window* w = GLFW_GetWindow(window);
+	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
+		return;
+
+	switch (button)
+	{
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		switch (action)
+		{
+		case GLFW_PRESS:
+			w->m_viewportState = viewportState::CAMERA_ROTATE;
+
+			double xpos, ypos;
+			glfwGetCursorPos(w->m_window, &xpos, &ypos);
+			w->m_lastMousePos = {xpos, ypos};
+			break;
+		
+		case GLFW_RELEASE:
+			w->m_viewportState = viewportState::IDLE;
+			break;
+		}
+		break;
+	}
+}
+
+/* static */ void jelly_Window::GLFW_Callback_CursorPos(GLFWwindow* window, double xpos, double ypos)
+{
+	jelly_Window* w = GLFW_GetWindow(window);
+	
+	float fxpos = static_cast<float>(xpos);
+	float fypos = static_cast<float>(ypos);
+
+	if (w->m_viewportState == viewportState::IDLE)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+    	io.AddMousePosEvent(fxpos, fypos);
+		return;
+	}
+
+	float deltaX = fxpos - w->m_lastMousePos.x;
+	float deltaY = fypos - w->m_lastMousePos.y;
+	w->m_lastMousePos.x = fxpos;
+	w->m_lastMousePos.y = fypos;
+
+	float rotationSpeed = 0.01f;
+	switch (w->m_viewportState)
+	{
+	case viewportState::CAMERA_ROTATE:
+		w->m_app->UpdateCameraRotation(-rotationSpeed * deltaX, -rotationSpeed * deltaY);
+		break;
+	
+	default:
+		break;
+	}
+
+
+}
 
 void jelly_Window::GUI_Start()
 {
@@ -123,8 +189,9 @@ void jelly_Window::GUI_WindowSettings()
 
 void jelly_Window::GUI_WindowRender()
 {
+	b_viewportHovered = ImGui::IsWindowHovered();
+	
 	GUI_UpdateRenderRegion();
-
 	m_app->RenderScene();
 
 	GLuint tex = m_app->GetRenderTexture();
