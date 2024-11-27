@@ -1,10 +1,11 @@
 #include "jelly_Renderer.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
 
 jelly_Renderer::jelly_Renderer()
 {
 	SetUpFramebuffer();
-
+	PrepareScene();
 }
 
 jelly_Renderer::~jelly_Renderer()
@@ -50,6 +51,20 @@ void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// SCENE BEGIN
+	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
+    glm::mat4 viewProj[2] = {m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(aspect)};
+	
+	m_b_matrices.BindUBO();
+	m_b_matrices.SetBufferData(0, viewProj, 2 * sizeof(glm::mat4));
+	
+	m_s_test.Use();
+	m_s_test.setM4fv("model", GL_FALSE, glm::identity<glm::mat4>());
+
+	m_o_cube.Draw();
+
+	// SCENE END
 }
 
 void jelly_Renderer::SetUpFramebuffer()
@@ -68,4 +83,27 @@ void jelly_Renderer::SetUpFramebuffer()
 	assert(("Framebuffer is not complete", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void jelly_Renderer::PrepareScene()
+{
+	PrepareShaders();
+	PrepareSceneObjects();
+}
+
+void jelly_Renderer::PrepareShaders()
+{
+	// PrepareShaders
+	m_s_test.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
+	m_s_test.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
+	m_s_test.Link();
+
+	// Prepare UBO
+	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));
+    m_b_matrices.BindBufferBaseToBindingPoint(0);
+}
+
+void jelly_Renderer::PrepareSceneObjects()
+{
+
 }
