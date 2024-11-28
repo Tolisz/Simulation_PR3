@@ -31,7 +31,8 @@ private:
     static void GLFW_Callback_FramebufferSize(GLFWwindow* window, int width, int height);
     static void GLFW_Callback_MouseButton(GLFWwindow* window, int button, int action, int mods);
     static void GLFW_Callback_CursorPos(GLFWwindow* window, double xpos, double ypos);
-
+    static void GLFW_Callback_Scroll(GLFWwindow* window, double xoffset, double yoffset);
+    
     void GUI_Start();
     void GUI_Main();
     void GUI_WindowLayout();

@@ -25,8 +25,9 @@ public:
 	GLuint GetRenderTexture();
 
 	// Camera
-	void UpdateCameraRotation(float rotX, float rotY);
-	
+	void CameraRotate(float deltaX, float deltaY);
+	void CameraMove(float deltaX, float deltaY);
+	void CameraZoom(float factor);
 
 private:
 

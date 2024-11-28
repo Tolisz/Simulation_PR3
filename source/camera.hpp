@@ -5,8 +5,26 @@
 class camera
 {
 
-    
 public:
+
+    camera();
+    ~camera() = default;
+
+    camera(const camera&) = delete;
+    camera(camera&&) = delete;
+    camera& operator=(const camera&) = delete;
+    camera& operator=(camera&&) = delete;
+
+    glm::mat4 GetViewMatrix();
+    glm::mat4 GetProjectionMatrix(float aspect);
+
+    void Rotate(float deltaX, float deltaY);
+    void Zoom(float factor);
+    void Move(float deltaX, float deltaY);
+
+private:
+
+    glm::vec3 m_focusPos;
     glm::vec3 m_worldPos;
     glm::vec3 m_front;
     glm::vec3 m_right;
@@ -14,33 +32,13 @@ public:
     glm::vec3 m_target;
     glm::vec3 m_worldUp;
 
-public:
+private: 
+    float m_rotationSpeed = 0.01f;
+    float m_moveSpeed = 0.001f;
+    float m_zoomSpeed = 0.25f;
+
+private:
     float m_nearPlane;
     float m_farPlane;
     float m_fov;
-    float m_cameraSpeed = 0.01f; 
-
-public:
-
-    // *=*=*=*=*=*=*=*=*=*=
-    //   Object Creation
-    // *=*=*=*=*=*=*=*=*=*=
-
-    camera();
-    ~camera();
-
-    camera(const camera&) = delete;
-    camera(camera&&) = delete;
-    camera& operator=(const camera&) = delete;
-    camera& operator=(camera&&) = delete;
-
-    // *=*=*=*=*=*=*=*=*=*=
-    //      Methods
-    // *=*=*=*=*=*=*=*=*=*=
-
-    glm::mat4 GetViewMatrix();
-    glm::mat4 GetProjectionMatrix(float aspect);
-
-    void UpdatePosition(float posDelta);  
-    void UpdateRotation(float rotX, float rotY);
 };

@@ -20,7 +20,9 @@ public:
 	void SetRenderArea(int width, int height);
 	void RenderScene();
 
-	void UpdateCameraRotation(float rotX, float rotY);
+	void CameraRotate(float deltaX, float deltaY);
+	void CameraMove(float deltaX, float deltaY);
+	void CameraZoom(float factor);
 private:
 
 	std::unique_ptr<jelly_Renderer> m_renderer;

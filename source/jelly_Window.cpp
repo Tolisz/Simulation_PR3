@@ -31,6 +31,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	glfwSetFramebufferSizeCallback(m_window, &jelly_Window::GLFW_Callback_FramebufferSize);
 	glfwSetMouseButtonCallback(m_window, &jelly_Window::GLFW_Callback_MouseButton);
 	glfwSetCursorPosCallback(m_window, &jelly_Window::GLFW_Callback_CursorPos);
+	glfwSetScrollCallback(m_window, &jelly_Window::GLFW_Callback_Scroll);
 }
 
 /* static */ jelly_Window* jelly_Window::GLFW_GetWindow(GLFWwindow* window)
@@ -52,7 +53,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 {
 	ImGuiIO& io = ImGui::GetIO();
     io.AddMouseButtonEvent(button, action == GLFW_PRESS);
-
+	
 	jelly_Window* w = GLFW_GetWindow(window);
 	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
 		return;
@@ -63,11 +64,19 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		switch (action)
 		{
 		case GLFW_PRESS:
-			w->m_viewportState = viewportState::CAMERA_ROTATE;
 
 			double xpos, ypos;
 			glfwGetCursorPos(w->m_window, &xpos, &ypos);
 			w->m_lastMousePos = {xpos, ypos};
+
+			if (mods & GLFW_MOD_SHIFT)
+			{
+				w->m_viewportState = viewportState::CAMERA_MOVE;
+			}
+			else 
+			{
+				w->m_viewportState = viewportState::CAMERA_ROTATE;
+			}
 			break;
 		
 		case GLFW_RELEASE:
@@ -97,18 +106,27 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	w->m_lastMousePos.x = fxpos;
 	w->m_lastMousePos.y = fypos;
 
-	float rotationSpeed = 0.01f;
 	switch (w->m_viewportState)
 	{
 	case viewportState::CAMERA_ROTATE:
-		w->m_app->UpdateCameraRotation(-rotationSpeed * deltaX, -rotationSpeed * deltaY);
+		w->m_app->CameraRotate(-deltaX, -deltaY);
 		break;
 	
-	default:
+	case viewportState::CAMERA_MOVE:
+		w->m_app->CameraMove(-deltaX, deltaY);
 		break;
 	}
+}
 
+/* static */ void jelly_Window::GLFW_Callback_Scroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 
+	jelly_Window* w = GLFW_GetWindow(window);
+	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
+		return;
+
+	w->m_app->CameraZoom( static_cast<float>(yoffset));
 }
 
 void jelly_Window::GUI_Start()
@@ -184,7 +202,7 @@ void jelly_Window::GUI_WindowLayout()
 
 void jelly_Window::GUI_WindowSettings()
 {
-
+	
 }
 
 void jelly_Window::GUI_WindowRender()

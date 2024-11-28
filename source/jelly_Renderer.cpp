@@ -47,9 +47,19 @@ GLuint jelly_Renderer::GetRenderTexture()
 	return m_colorTexture;
 }
 
-void jelly_Renderer::UpdateCameraRotation(float rotX, float rotY)
+void jelly_Renderer::CameraRotate(float deltaX, float deltaY)
 {
-	m_camera.UpdateRotation(rotX, rotY);
+	m_camera.Rotate(deltaX, deltaY);
+}
+
+void jelly_Renderer::CameraMove(float deltaX, float deltaY)
+{
+	m_camera.Move(deltaX, deltaY);
+}
+
+void jelly_Renderer::CameraZoom(float factor)
+{
+	m_camera.Zoom(factor);
 }
 
 void jelly_Renderer::RenderScene()
