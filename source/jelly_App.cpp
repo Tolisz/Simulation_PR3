@@ -25,9 +25,9 @@ void jelly_App::CameraRotate(float deltaX, float deltaY)
 	m_renderer->CameraRotate(deltaX, deltaY);
 }
 
-void jelly_App::CameraMove(float deltaX, float deltaY)
+void jelly_App::CameraMove(float deltaX, float deltaY, float width, float height)
 {
-	m_renderer->CameraMove(deltaX, deltaY);
+	m_renderer->CameraMove(deltaX, deltaY, width, height);
 }
 
 void jelly_App::CameraZoom(float factor)

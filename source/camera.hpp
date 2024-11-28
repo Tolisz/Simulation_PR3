@@ -4,6 +4,13 @@
 
 class camera
 {
+public:
+
+    enum class mode 
+    {
+        PERSPECTIVE,
+        ORTHOGRAPHIC,
+    };
 
 public:
 
@@ -18,9 +25,16 @@ public:
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix(float aspect);
 
+    void SetCameraMode(mode newMode);
+
     void Rotate(float deltaX, float deltaY);
     void Zoom(float factor);
-    void Move(float deltaX, float deltaY);
+    void Move(float deltaX, float deltaY, float width, float height);
+
+private:
+
+    glm::mat4 GetPerspectiveMatrix(float aspect);
+    glm::mat4 GetOrthographicMatrix(float aspect);
 
 private:
 
@@ -41,4 +55,8 @@ private:
     float m_nearPlane;
     float m_farPlane;
     float m_fov;
+
+private:
+
+    mode m_mode;
 };

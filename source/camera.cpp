@@ -20,7 +20,9 @@ camera::camera()
 
       m_nearPlane(0.01f),
       m_farPlane(1000.0f),
-      m_fov(45.0f)
+      m_fov(45.0f),
+
+      m_mode(mode::PERSPECTIVE)
 {}
 
 glm::mat4 camera::GetViewMatrix()
@@ -30,7 +32,40 @@ glm::mat4 camera::GetViewMatrix()
 
 glm::mat4 camera::GetProjectionMatrix(float aspect)
 {
-    return glm::perspectiveRH(glm::radians(m_fov), aspect, m_nearPlane, m_farPlane);
+    switch (m_mode)
+    {
+    case mode::PERSPECTIVE:
+        return GetPerspectiveMatrix(aspect);
+    
+    case mode::ORTHOGRAPHIC:
+        return GetOrthographicMatrix(aspect);
+    }
+}
+
+void camera::SetCameraMode(mode newMode)
+{
+    m_mode = newMode;
+}
+
+glm::mat4 camera::GetPerspectiveMatrix(float aspect)
+{
+    return glm::perspectiveRH<float>(glm::radians(m_fov), aspect, m_nearPlane, m_farPlane);
+}
+
+glm::mat4 camera::GetOrthographicMatrix(float aspect)
+{
+    float l = glm::length(m_focusPos - m_worldPos);
+    
+    if (aspect > 1.0f)
+    {
+        float x = l * (aspect - 1.0f);
+        return glm::orthoRH<float>(-(l + x), l + x, -l, l, m_nearPlane, m_farPlane);
+    }
+    else 
+    {
+        float x = l * (1.0f / aspect - 1.0f);
+        return glm::orthoRH<float>(-l, l, -(l + x), l + x, m_nearPlane, m_farPlane);
+    }
 }
 
 void camera::Rotate(float deltaX, float deltaY)
@@ -71,14 +106,49 @@ void camera::Zoom(float factor)
     m_worldPos += m_front * l * factor * m_zoomSpeed; 
 }
 
-void camera::Move(float deltaX, float deltaY)
+void camera::Move(float deltaX, float deltaY, float width, float height)
 {
-    deltaX *= m_moveSpeed;
-    deltaY *= m_moveSpeed; 
+    switch (m_mode)
+    {
+    case mode::PERSPECTIVE:
+        {
+        deltaX *= m_moveSpeed;
+        deltaY *= m_moveSpeed; 
 
-    glm::vec3 move = m_right * deltaX + m_up * deltaY;
-    move *= glm::length(m_focusPos - m_worldPos); 
+        glm::vec3 move = m_right * deltaX + m_up * deltaY;
+        move *= glm::length(m_focusPos - m_worldPos); 
 
-    m_focusPos += move;
-    m_worldPos += move;
+        m_focusPos += move;
+        m_worldPos += move;
+        }
+        break;
+    
+    case mode::ORTHOGRAPHIC:
+        {
+        float l = glm::length(m_focusPos - m_worldPos);
+
+        float aspect = width / height;
+        float x, W, H;
+        if (aspect > 1.0f)
+        {
+            x = l * (aspect - 1.0f);
+            W = 2.0f * (l + x);
+            H = 2.0f * l;
+        }
+        else 
+        {
+            x = l * (1.0f / aspect - 1.0f);
+            H = 2.0f * (l + x);
+            W = 2.0f * l;
+        }
+
+        float OneW = W / width;
+        float OneH = H / height;
+
+        glm::vec3 move = m_right * deltaX * OneW + m_up * deltaY * OneH;
+        m_focusPos += move;
+        m_worldPos += move;
+        }
+        break;
+    }
 }

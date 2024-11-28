@@ -26,7 +26,7 @@ public:
 
 	// Camera
 	void CameraRotate(float deltaX, float deltaY);
-	void CameraMove(float deltaX, float deltaY);
+	void CameraMove(float deltaX, float deltaY, float width, float height);
 	void CameraZoom(float factor);
 
 private:

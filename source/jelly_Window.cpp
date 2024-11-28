@@ -113,7 +113,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		break;
 	
 	case viewportState::CAMERA_MOVE:
-		w->m_app->CameraMove(-deltaX, deltaY);
+		w->m_app->CameraMove(-deltaX, deltaY, w->m_lastRenderRegion.x, w->m_lastRenderRegion.y);
 		break;
 	}
 }
@@ -202,7 +202,7 @@ void jelly_Window::GUI_WindowLayout()
 
 void jelly_Window::GUI_WindowSettings()
 {
-	
+
 }
 
 void jelly_Window::GUI_WindowRender()

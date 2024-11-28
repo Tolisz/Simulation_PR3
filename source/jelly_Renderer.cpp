@@ -52,9 +52,9 @@ void jelly_Renderer::CameraRotate(float deltaX, float deltaY)
 	m_camera.Rotate(deltaX, deltaY);
 }
 
-void jelly_Renderer::CameraMove(float deltaX, float deltaY)
+void jelly_Renderer::CameraMove(float deltaX, float deltaY, float width, float height)
 {
-	m_camera.Move(deltaX, deltaY);
+	m_camera.Move(deltaX, deltaY, width, height);
 }
 
 void jelly_Renderer::CameraZoom(float factor)
