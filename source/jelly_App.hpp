@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "jelly_Renderer.hpp"
+#include "simulationParameters.hpp"
 
 class jelly_App
 {
@@ -23,8 +24,13 @@ public:
 	void CameraRotate(float deltaX, float deltaY);
 	void CameraMove(float deltaX, float deltaY, float width, float height);
 	void CameraZoom(float factor);
+
+	// Parameters
+	std::shared_ptr<simulationParameters> GetSimulationParameters();
+	 
 private:
 
 	std::unique_ptr<jelly_Renderer> m_renderer;
 
+	std::shared_ptr<simulationParameters> m_simulationParams;
 };

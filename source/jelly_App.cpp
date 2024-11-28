@@ -3,6 +3,7 @@
 jelly_App::jelly_App()
 {
 	m_renderer = std::make_unique<jelly_Renderer>();
+	m_simulationParams = std::make_shared<simulationParameters>();
 }
 
 GLuint jelly_App::GetRenderTexture()
@@ -33,4 +34,9 @@ void jelly_App::CameraMove(float deltaX, float deltaY, float width, float height
 void jelly_App::CameraZoom(float factor)
 {
 	m_renderer->CameraZoom(factor);
+}
+
+std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()
+{
+	return m_simulationParams;
 }

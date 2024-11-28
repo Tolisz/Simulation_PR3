@@ -146,7 +146,7 @@ void jelly_Window::GUI_Main()
 	GUI_WindowLayout();
 
 	// DEBUG ONLY !!!!!!!!!!!!
-	static bool show_demo_window = false;
+	static bool show_demo_window = true;
 	if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 }
@@ -202,7 +202,24 @@ void jelly_Window::GUI_WindowLayout()
 
 void jelly_Window::GUI_WindowSettings()
 {
+	GUI_SEC_SimulationParameters();
+}
 
+void jelly_Window::GUI_SEC_SimulationParameters()
+{
+	ImGui::SeparatorText("Simulation Parameters");
+
+	if(ImGui::Button("Points' Masses"))
+	{
+		ImGui::OpenPopup("Change_Points_Masses_Popup");
+	}
+	
+	ImGui::SetNextItemWidth(200.0f);
+	if (ImGui::BeginPopup("Change_Points_Masses_Popup"))
+	{
+		ImGui::Text("TEST");
+		ImGui::EndPopup();
+	}
 }
 
 void jelly_Window::GUI_WindowRender()

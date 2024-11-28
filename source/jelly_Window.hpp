@@ -39,6 +39,7 @@ private:
 
     // Respective function for windows;
     void GUI_WindowSettings();
+    void GUI_SEC_SimulationParameters();
     void GUI_WindowRender();
 
     // GUI miscellaneous
@@ -59,7 +60,7 @@ private:
     bool b_dockingInitialized = false;
 
     // Viewport 
-    viewportState m_viewportState;
+    viewportState m_viewportState = viewportState::IDLE;
     bool b_viewportHovered = false;
     
     ImVec2 m_lastRenderRegion = {0, 0};
