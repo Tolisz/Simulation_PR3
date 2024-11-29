@@ -219,7 +219,7 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 
 	float wWidth = ImGui::GetWindowWidth();
 	// float wPadding = ImGui::GetStyle().WindowPadding.x;
-	// float iSpacing = ImGui::GetStyle().ItemSpacing.x;
+	float iSpacing = ImGui::GetStyle().ItemSpacing.x;
 	 
 	ImVec4 activeButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
 	bool wasWindowOpen = b_openPointsMassesWindow;
@@ -254,10 +254,11 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	ImGui::BeginDisabled(!b_massesUniformChange);
 
 	ImGui::SetNextItemWidth(wWidth * 0.25f);
-	float TEMP = 0.0f;
-	if (ImGui::DragFloat("## Uniform Mass", &TEMP))
+	
+	float minVal = *std::min_element(simParam->m, simParam->m + 64);
+	if (ImGui::DragFloat("## Uniform Mass", &minVal, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
 	{
-
+		std::fill_n(simParam->m, 64, minVal);
 	}
 
 	ImGui::EndDisabled();
@@ -266,11 +267,8 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	{
 		if (b_massesUniformChange)
 		{
-			
-		}
-		else 
-		{
-
+			// float min = *std::min_element(simParam->m, simParam->m + 64);
+			std::fill_n(simParam->m, 64, minVal);
 		}
 	}
 
@@ -328,6 +326,13 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		ImGui::PopStyleVar();
 	}
 
+	
+	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+	ImGui::DragFloat("c1", &simParam->c1, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+	ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+	ImGui::DragFloat("k", &simParam->k, 0.0f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 }
 
 void jelly_Window::GUI_SEC_DrawOptions()
