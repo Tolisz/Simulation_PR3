@@ -203,23 +203,63 @@ void jelly_Window::GUI_WindowLayout()
 void jelly_Window::GUI_WindowSettings()
 {
 	GUI_SEC_SimulationParameters();
+	GUI_SEC_DrawOptions();
 }
 
 void jelly_Window::GUI_SEC_SimulationParameters()
 {
 	ImGui::SeparatorText("Simulation Parameters");
+	// = - = - = - = - = - = - = - = - = - = - = - = -
 
-	if(ImGui::Button("Points' Masses"))
+	auto simParam = m_app->GetSimulationParameters();
+
+	ImVec4 activeButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
+	bool wasWindowOpen = b_openPointsMassesWindow;
+
+	if (wasWindowOpen) 
 	{
-		ImGui::OpenPopup("Change_Points_Masses_Popup");
-	}
-	
-	ImGui::SetNextItemWidth(200.0f);
-	if (ImGui::BeginPopup("Change_Points_Masses_Popup"))
+		ImGui::PushStyleColor(ImGuiCol_Button, activeButtonColor);
+	} 
+	if (ImGui::Button("Points' Masses")) 
 	{
-		ImGui::Text("TEST");
-		ImGui::EndPopup();
+		b_openPointsMassesWindow = !b_openPointsMassesWindow;
 	}
+	if (wasWindowOpen) 
+	{
+		ImGui::PopStyleColor(1);
+	} 
+
+	if (ImGui::BeginItemTooltip())
+	{
+		if (!b_openPointsMassesWindow)
+		{
+			ImGui::Text("Open window for points' masses modification");
+		}
+		else 
+		{
+			ImGui::Text("Close window for points' masses modification");
+		}
+		ImGui::EndTooltip();
+	}
+
+	if (b_openPointsMassesWindow)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+		ImGui::BeginChild("Points Mass Configuration", ImVec2(0, 50), ImGuiChildFlags_Borders);
+		// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+		// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		ImGui::EndChild();
+		ImGui::PopStyleVar();
+	}
+
+}
+
+void jelly_Window::GUI_SEC_DrawOptions()
+{
+	ImGui::SeparatorText("Draw Options");
+	// = - = - = - = - = - = - = - = - = - = - = - = -
+
 }
 
 void jelly_Window::GUI_WindowRender()

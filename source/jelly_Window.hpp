@@ -40,6 +40,7 @@ private:
     // Respective function for windows;
     void GUI_WindowSettings();
     void GUI_SEC_SimulationParameters();
+    void GUI_SEC_DrawOptions();
     void GUI_WindowRender();
 
     // GUI miscellaneous
@@ -65,6 +66,9 @@ private:
     
     ImVec2 m_lastRenderRegion = {0, 0};
     glm::vec2 m_lastMousePos = {0, 0};
+
+    // UI specific values
+    bool b_openPointsMassesWindow = false;
 
 private:
 
