@@ -69,6 +69,7 @@ private:
 
     // UI specific values
     bool b_openPointsMassesWindow = false;
+    bool b_massesUniformChange = true;
 
 private:
 

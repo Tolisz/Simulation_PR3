@@ -202,8 +202,12 @@ void jelly_Window::GUI_WindowLayout()
 
 void jelly_Window::GUI_WindowSettings()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+
 	GUI_SEC_SimulationParameters();
 	GUI_SEC_DrawOptions();
+
+	ImGui::PopStyleVar(1);
 }
 
 void jelly_Window::GUI_SEC_SimulationParameters()
@@ -213,6 +217,10 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 
 	auto simParam = m_app->GetSimulationParameters();
 
+	float wWidth = ImGui::GetWindowWidth();
+	// float wPadding = ImGui::GetStyle().WindowPadding.x;
+	// float iSpacing = ImGui::GetStyle().ItemSpacing.x;
+	 
 	ImVec4 activeButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
 	bool wasWindowOpen = b_openPointsMassesWindow;
 
@@ -220,14 +228,14 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, activeButtonColor);
 	} 
-	if (ImGui::Button("Points' Masses")) 
+	if (ImGui::Button("Points' Masses", ImVec2(wWidth * 0.25f, 0.0f))) 
 	{
 		b_openPointsMassesWindow = !b_openPointsMassesWindow;
 	}
 	if (wasWindowOpen) 
 	{
 		ImGui::PopStyleColor(1);
-	} 
+	}
 
 	if (ImGui::BeginItemTooltip())
 	{
@@ -242,11 +250,78 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		ImGui::EndTooltip();
 	}
 
+	ImGui::SameLine();
+	ImGui::BeginDisabled(!b_massesUniformChange);
+
+	ImGui::SetNextItemWidth(wWidth * 0.25f);
+	float TEMP = 0.0f;
+	if (ImGui::DragFloat("## Uniform Mass", &TEMP))
+	{
+
+	}
+
+	ImGui::EndDisabled();
+	ImGui::SameLine();
+	if (ImGui::Checkbox("Change masses uniformely", &b_massesUniformChange))
+	{
+		if (b_massesUniformChange)
+		{
+			
+		}
+		else 
+		{
+
+		}
+	}
+
 	if (b_openPointsMassesWindow)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-		ImGui::BeginChild("Points Mass Configuration", ImVec2(0, 50), ImGuiChildFlags_Borders);
+		ImGui::Spacing();
+		ImGui::BeginChild("Points Mass Configuration", ImVec2(0, 320), ImGuiChildFlags_Borders);
 		// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+		ImGui::BeginDisabled(b_massesUniformChange);
+
+		float wWidth = ImGui::GetWindowWidth();
+		float wPadding = ImGui::GetStyle().WindowPadding.x;
+		float iSpacing = ImGui::GetStyle().ItemSpacing.x;
+
+		float iWidth = (wWidth - 2 * wPadding - 8 * iSpacing) / 8.0f; 
+
+		int n = 0;
+		for (int k = 0; k < 4; ++k)
+		{
+			ImGui::BeginGroup();
+			
+			std::string groupName = "Face ";
+			groupName += std::to_string(k);
+
+			ImGui::Dummy(ImVec2(0.0f, 0.0f));
+			ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), groupName.c_str());
+			
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 8));
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					ImGui::PushID(n);
+					ImGui::SetNextItemWidth(iWidth);
+					ImGui::DragFloat("## Mass Element", &simParam->m[j + 4 * i + 16 * k], 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+					ImGui::PopID();
+					ImGui::SameLine();
+
+					++n;
+				}
+				if (i < 3) ImGui::NewLine();
+			}
+			ImGui::PopStyleVar(1);
+
+			ImGui::EndGroup();
+			if (k % 2 == 0) ImGui::SameLine();
+		}
+
+		ImGui::EndDisabled();
 
 		// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		ImGui::EndChild();
