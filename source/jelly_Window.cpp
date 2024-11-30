@@ -123,7 +123,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 
 	jelly_Window* w = GLFW_GetWindow(window);
-	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
+	if (!w->b_viewportHovered || w->m_viewportState != viewportState::IDLE)
 		return;
 
 	w->m_app->CameraZoom( static_cast<float>(yoffset));
@@ -326,13 +326,26 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		ImGui::PopStyleVar();
 	}
 
-	
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
 	ImGui::DragFloat("c1", &simParam->c1, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SameLine();
+	GUI_ELEM_HelpMarker("Spring constant of springs inside the Bezier cube");
+	
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
 	ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SameLine();
+	GUI_ELEM_HelpMarker("Spring constant of springs from the Bezier cube to the control frame");
+
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-	ImGui::DragFloat("k", &simParam->k, 0.0f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::DragFloat("k", &simParam->k, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SameLine();
+	GUI_ELEM_HelpMarker("Damping constant");
+
+	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+	ImGui::DragFloat("dt", &simParam->dt, 0.001f, 0.0001f, 1.0f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SameLine();
+	GUI_ELEM_HelpMarker("Integration step");
+
 }
 
 void jelly_Window::GUI_SEC_DrawOptions()
@@ -389,4 +402,16 @@ void jelly_Window::GUI_UpdateRenderRegion()
 
 		m_app->SetRenderArea(width, height);
 	}
+}
+
+void jelly_Window::GUI_ELEM_HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::BeginItemTooltip())
+    {
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
 }

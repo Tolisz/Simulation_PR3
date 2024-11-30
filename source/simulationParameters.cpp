@@ -9,4 +9,6 @@ simulationParameters::simulationParameters()
 	c1 = 1.0f;
 	k = 1.0f;
 	c2 = 1.0f;
+
+	dt = 0.01f;
 }

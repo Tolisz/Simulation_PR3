@@ -14,7 +14,6 @@ class jelly_Window: public glfwWindowWrap
         IDLE,
         CAMERA_ROTATE,
         CAMERA_MOVE,
-        CAMERA_ZOOM,
     };
 
 
@@ -46,6 +45,8 @@ private:
     // GUI miscellaneous
     void GUI_UpdateDockingLayout();
     void GUI_UpdateRenderRegion();
+
+    void GUI_ELEM_HelpMarker(const char* desc);
 
 private:
 

@@ -27,7 +27,7 @@ public:
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
-	 
+	
 private:
 
 	std::unique_ptr<jelly_Renderer> m_renderer;
