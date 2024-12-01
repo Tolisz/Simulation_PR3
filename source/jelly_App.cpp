@@ -2,9 +2,11 @@
 
 jelly_App::jelly_App()
 {
-	m_renderer = std::make_unique<jelly_Renderer>();
 	m_simulationParams = std::make_shared<simulationParameters>();
-	m_bCube = std::make_shared<bezierCube>();
+	m_bCube = std::make_shared<bezierCube>(m_simulationParams->a);
+	
+	auto m_bCubeDrawer = std::make_unique<bezierCubeDrawer>(m_bCube);
+	m_renderer = std::make_unique<jelly_Renderer>(std::move(m_bCubeDrawer));
 }
 
 GLuint jelly_App::GetRenderTexture()

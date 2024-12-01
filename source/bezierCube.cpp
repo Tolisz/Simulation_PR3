@@ -9,6 +9,24 @@ bezierCube::bezierCube(float a)
 	ResetCube(a);
 }
 
+std::vector<glm::vec3> bezierCube::GetPoints()
+{
+	std::vector<glm::vec3> pointsCopy;
+	
+	{
+		std::lock_guard<std::mutex> lock(m_accessPoints);
+		pointsCopy = m_points;
+	}
+	
+	return std::move(pointsCopy);
+}
+
+void bezierCube::SimulationStep(float dt)
+{
+	// TUTAJ BEDZIE SYMULACJA, WYLOWYWANE Z WATKU
+	
+}
+
 void bezierCube::ResetCube(float a)
 {
 	// Points positions
@@ -45,17 +63,17 @@ void bezierCube::ResetCube(float a)
 
 			if (i % 4 != 0) {
 				// left 
-				m_cubeSprings[I][I - 1] = a_3;
+				m_springsRestLengths[I][I - 1] = a_3;
 
 				// left -> up
 				if (i - 5 >= 0) {
-					m_cubeSprings[I][I - 5] = da;
+					m_springsRestLengths[I][I - 5] = da;
 				}
 			}
 
 			// up
 			if (i - 4 >= 0) {
-				m_cubeSprings[I][I - 4] = a_3;
+				m_springsRestLengths[I][I - 4] = a_3;
 			}
 
 
@@ -65,29 +83,31 @@ void bezierCube::ResetCube(float a)
 			if (I - 16 >= 0)
 			{
 				// front 
-				m_cubeSprings[I][I - 16] = da;
+				m_springsRestLengths[I][I - 16] = da;
 
 				// front -> left
 				if (i % 4 != 0) {
-					m_cubeSprings[I][I - 16 - 1] = da;
+					m_springsRestLengths[I][I - 16 - 1] = da;
 				}
 
 				// front -> right
 				if (i % 4 != 3) {
-					m_cubeSprings[I][I - 16 + 1] = da;
+					m_springsRestLengths[I][I - 16 + 1] = da;
 				}
 
 				// front -> up
 				if (i - 4 >= 0) {
-					m_cubeSprings[I][I - 16 - 4] = da;
+					m_springsRestLengths[I][I - 16 - 4] = da;
 				}
 
 				// front -> down
 				if (i + 4 < 16) {
-					m_cubeSprings[I][I - 16 + 4] = da;
+					m_springsRestLengths[I][I - 16 + 4] = da;
 				}
 			}
 
 		}	
 	}
+
+	m_springsCurrentLengths = m_springsRestLengths;
 }

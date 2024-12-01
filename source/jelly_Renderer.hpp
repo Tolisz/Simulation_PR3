@@ -6,12 +6,13 @@
 #include "GL_UBO.hpp"
 #include "camera.hpp"
 #include "obj_cube.hpp"
+#include "bezierCubeDrawer.hpp"
 
 class jelly_Renderer
 {
 public:
 
-	jelly_Renderer();
+	jelly_Renderer(std::unique_ptr<bezierCubeDrawer> cubeDrawer);
 	~jelly_Renderer();
 
 	jelly_Renderer(const jelly_Renderer&) = delete;
@@ -51,10 +52,12 @@ private:
 
 	// Shaders
 	GL_shader m_s_test;
-
+	GL_shader m_s_bCubePoints;
 	// Buffers
 	GL_UBO m_b_matrices;
 
 	// Scene objects
 	obj_cube m_o_cube;
+
+	std::unique_ptr<bezierCubeDrawer> m_bCube;
 }; 

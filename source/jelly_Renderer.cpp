@@ -2,7 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-jelly_Renderer::jelly_Renderer()
+jelly_Renderer::jelly_Renderer(std::unique_ptr<bezierCubeDrawer> cubeDrawer):
+	m_bCube{std::move(cubeDrawer)}
 {
 	SetUpFramebuffer();
 	PrepareScene();
@@ -69,17 +70,26 @@ void jelly_Renderer::RenderScene()
 	glEnable(GL_DEPTH_TEST);
 	
 	// SCENE BEGIN
+	// ===========
 	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
     glm::mat4 viewProj[2] = {m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(aspect)};
 	
 	m_b_matrices.BindUBO();
 	m_b_matrices.SetBufferData(0, viewProj, 2 * sizeof(glm::mat4));
-	
-	m_s_test.Use();
-	m_s_test.setM4fv("model", GL_FALSE, glm::identity<glm::mat4>());
 
-	m_o_cube.Draw();
+	// test cube
+	// ---------	
+	// m_s_test.Use();
+	// m_s_test.setM4fv("model", GL_FALSE, glm::identity<glm::mat4>());
 
+	// m_o_cube.Draw();
+
+	// Bezier Cube
+
+	m_s_bCubePoints.Use();
+	m_bCube->DrawPoints();
+
+	// =========
 	// SCENE END
 }
 
@@ -113,6 +123,10 @@ void jelly_Renderer::PrepareShaders()
 	m_s_test.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
 	m_s_test.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
 	m_s_test.Link();
+
+	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.vert", GL_VERTEX_SHADER);
+	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.frag", GL_FRAGMENT_SHADER);
+	m_s_bCubePoints.Link();
 
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));

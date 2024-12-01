@@ -255,10 +255,10 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 
 	ImGui::SetNextItemWidth(wWidth * 0.25f);
 	
-	float minVal = *std::min_element(simParam->m, simParam->m + 64);
+	float minVal = *std::min_element(simParam->m.begin(), simParam->m.end());
 	if (ImGui::DragFloat("## Uniform Mass", &minVal, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
 	{
-		std::fill_n(simParam->m, 64, minVal);
+		simParam->m.fill(minVal);
 	}
 
 	ImGui::EndDisabled();
@@ -268,7 +268,7 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		if (b_massesUniformChange)
 		{
 			// float min = *std::min_element(simParam->m, simParam->m + 64);
-			std::fill_n(simParam->m, 64, minVal);
+			simParam->m.fill(minVal);
 		}
 	}
 
