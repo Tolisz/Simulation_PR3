@@ -7,6 +7,7 @@ jelly_App::jelly_App()
 	
 	auto m_bCubeDrawer = std::make_unique<bezierCubeDrawer>(m_bCube);
 	m_renderer = std::make_unique<jelly_Renderer>(std::move(m_bCubeDrawer));
+	m_simThread = std::make_unique<jelly_simThread>();
 }
 
 GLuint jelly_App::GetRenderTexture()
@@ -37,6 +38,54 @@ void jelly_App::CameraMove(float deltaX, float deltaY, float width, float height
 void jelly_App::CameraZoom(float factor)
 {
 	m_renderer->CameraZoom(factor);
+}
+
+void jelly_App::StartSimulation()
+{
+	switch (m_simState)
+	{
+	case simulationState::Initial:
+		m_simState = simulationState::Running;
+		m_simThread->StartSimulation();
+		break;
+	
+	case simulationState::Stopped:
+		m_simState = simulationState::Running;
+		m_simThread->ContinueSimulation();
+		break;
+	}
+}
+
+void jelly_App::StopSimulation()
+{
+	switch (m_simState)
+	{
+	case simulationState::Running:
+		m_simState = simulationState::Stopped;
+		m_simThread->StopSimulation();
+		break;
+	}
+}
+
+void jelly_App::ResetSimulation()
+{
+	switch (m_simState)
+	{
+	case simulationState::Stopped:
+		m_simState = simulationState::Initial;
+		m_simThread->EndSimulation();
+		break;
+	}
+}
+
+bool jelly_App::IsRunning()
+{
+	return m_simState == simulationState::Running;
+}
+
+bool jelly_App::IsStopped()
+{
+	return m_simState == simulationState::Stopped;
 }
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()

@@ -86,11 +86,14 @@ void jelly_Renderer::RenderScene()
 
 	// Bezier Cube
 
+	m_bCube->UpdatePointsBuffer();
+	
 	m_s_bCubePoints.Use();
 	m_bCube->DrawPoints();
 
 	m_s_cubeSprings.Use();
-	m_bCube->DrawShortSprings();
+
+	// m_bCube->DrawShortSprings();
 	// m_bCube->DrawLongSprings();
 
 	// =========

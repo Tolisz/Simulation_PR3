@@ -14,6 +14,8 @@ class jelly_Window: public glfwWindowWrap
         IDLE,
         CAMERA_ROTATE,
         CAMERA_MOVE,
+        OBJECT_CHOOSE,
+        OBJECT_MOVE
     };
 
 
@@ -31,13 +33,15 @@ private:
     static void GLFW_Callback_MouseButton(GLFWwindow* window, int button, int action, int mods);
     static void GLFW_Callback_CursorPos(GLFWwindow* window, double xpos, double ypos);
     static void GLFW_Callback_Scroll(GLFWwindow* window, double xoffset, double yoffset);
-    
+    static void GLFW_Callback_Key(GLFWwindow* window, int key, int scancode, int action, int mods);
+
     void GUI_Start();
     void GUI_Main();
     void GUI_WindowLayout();
 
     // Respective function for windows;
     void GUI_WindowSettings();
+    void GUI_SEC_SimulationActions();
     void GUI_SEC_SimulationParameters();
     void GUI_SEC_DrawOptions();
     void GUI_WindowRender();

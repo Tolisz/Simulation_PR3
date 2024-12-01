@@ -32,6 +32,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	glfwSetMouseButtonCallback(m_window, &jelly_Window::GLFW_Callback_MouseButton);
 	glfwSetCursorPosCallback(m_window, &jelly_Window::GLFW_Callback_CursorPos);
 	glfwSetScrollCallback(m_window, &jelly_Window::GLFW_Callback_Scroll);
+	glfwSetKeyCallback(m_window, &jelly_Window::GLFW_Callback_Key);
 }
 
 /* static */ jelly_Window* jelly_Window::GLFW_GetWindow(GLFWwindow* window)
@@ -64,26 +65,53 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		switch (action)
 		{
 		case GLFW_PRESS:
+			if (w->m_viewportState != viewportState::IDLE)
+				return;
 
 			double xpos, ypos;
 			glfwGetCursorPos(w->m_window, &xpos, &ypos);
 			w->m_lastMousePos = {xpos, ypos};
 
-			if (mods & GLFW_MOD_SHIFT)
-			{
+			if (mods & GLFW_MOD_SHIFT) {
 				w->m_viewportState = viewportState::CAMERA_MOVE;
 			}
-			else 
-			{
+			else {
 				w->m_viewportState = viewportState::CAMERA_ROTATE;
 			}
 			break;
 		
 		case GLFW_RELEASE:
+			if (w->m_viewportState != viewportState::CAMERA_MOVE && 
+				w->m_viewportState != viewportState::CAMERA_ROTATE )
+				return;
+			
 			w->m_viewportState = viewportState::IDLE;
 			break;
 		}
 		break;
+
+	case GLFW_MOUSE_BUTTON_LEFT:
+		switch (action)
+		{
+		case GLFW_PRESS:
+			if (w->m_viewportState != viewportState::OBJECT_CHOOSE)
+				return;
+			
+			w->m_viewportState = viewportState::OBJECT_MOVE;
+			break;
+		
+		case GLFW_RELEASE:
+			if (w->m_viewportState != viewportState::OBJECT_MOVE)
+				return;
+
+			if (mods & GLFW_MOD_CONTROL) {
+				w->m_viewportState = viewportState::OBJECT_CHOOSE;
+			}
+			else {
+				w->m_viewportState = viewportState::IDLE;
+			}
+			break;
+		}
 	}
 }
 
@@ -115,6 +143,14 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	case viewportState::CAMERA_MOVE:
 		w->m_app->CameraMove(-deltaX, deltaY, w->m_lastRenderRegion.x, w->m_lastRenderRegion.y);
 		break;
+
+	case viewportState::OBJECT_CHOOSE:
+		// std::cout << "WYBIERAM" << std::endl;
+		break;
+
+	case viewportState::OBJECT_MOVE:
+		// std::cout << "PRZESUWAM" << std::endl;
+		break;
 	}
 }
 
@@ -127,6 +163,37 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		return;
 
 	w->m_app->CameraZoom( static_cast<float>(yoffset));
+}
+
+/* static */ void jelly_Window::GLFW_Callback_Key(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+	jelly_Window* w = GLFW_GetWindow(window);
+	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
+		return;
+
+	switch (key)
+	{
+	case GLFW_KEY_LEFT_CONTROL:
+		switch (action)
+		{
+		case GLFW_PRESS:
+			if (w->m_viewportState != viewportState::IDLE)
+				return;
+
+			w->m_viewportState = viewportState::OBJECT_CHOOSE;
+			break;
+		
+		case GLFW_RELEASE:
+			if (w->m_viewportState != viewportState::OBJECT_CHOOSE)
+				return;
+
+			w->m_viewportState = viewportState::IDLE;
+			break;
+		}
+	}
+
 }
 
 void jelly_Window::GUI_Start()
@@ -204,10 +271,48 @@ void jelly_Window::GUI_WindowSettings()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
 
+	GUI_SEC_SimulationActions();
 	GUI_SEC_SimulationParameters();
 	GUI_SEC_DrawOptions();
 
 	ImGui::PopStyleVar(1);
+}
+
+void jelly_Window::GUI_SEC_SimulationActions()
+{
+	ImGui::SeparatorText("Actions");
+
+	float win_width = ImGui::GetWindowWidth();
+	float padding = ImGui::GetStyle().WindowPadding.x;
+	float spacing = ImGui::GetStyle().ItemSpacing.x;
+	float buttonWidth = (win_width - 2 * padding - 2 * spacing) / 3.0f;
+	ImVec2 buttonSize{buttonWidth, 40.0f};	
+
+	bool isSimulationRun = m_app->IsRunning();
+	bool isSimulationPaused = m_app->IsStopped();
+
+	ImGui::BeginDisabled(isSimulationRun);
+	if (ImGui::Button(isSimulationPaused ? "CONTINUE" : "START", buttonSize))
+	{
+		m_app->StartSimulation();
+	}
+	ImGui::EndDisabled();
+
+	ImGui::BeginDisabled(!isSimulationRun);
+	ImGui::SameLine();
+	if (ImGui::Button("STOP", buttonSize))
+	{
+		m_app->StopSimulation();
+	}
+	ImGui::EndDisabled();
+
+	ImGui::BeginDisabled(!isSimulationPaused);
+	ImGui::SameLine();
+	if(ImGui::Button("RESET", buttonSize))
+	{
+		m_app->ResetSimulation();
+	}
+	ImGui::EndDisabled();	
 }
 
 void jelly_Window::GUI_SEC_SimulationParameters()

@@ -16,16 +16,16 @@ public:
 	bezierCubeDrawer& operator=(const bezierCubeDrawer&) = delete;
 	bezierCubeDrawer& operator=(bezierCubeDrawer&&) = delete;
 
+	void UpdatePointsBuffer();
 	void DrawPoints();
 	void DrawShortSprings();
 	void DrawLongSprings();
 
 private:
 
-	void UpdatePointsBuffer();
-
 	void InitGL();
 	void DeInitGL();
+
 	void GetSpringIndices(
 		std::vector<std::pair<unsigned int, unsigned int>>& shortSprings, 
 		std::vector<std::pair<unsigned int, unsigned int>>& longSprings);
@@ -37,8 +37,6 @@ private:
 	// Indices buffers
 	int m_shortSpringsNum;
 	int m_longSpringsNum;
-	// std::vector<std::pair<int, int>> m_shortSpringsIndices;
-	// std::vector<std::pair<int, int>> m_longSpringsIndices;
 
 	// OpenGL
 	GLuint m_VAO_points;
