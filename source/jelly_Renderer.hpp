@@ -24,10 +24,11 @@ public:
 	void UpdateRenderArea(int width, int height);
 
 	GLuint GetRenderTexture();
+	glm::uvec2 GetRenderAreaSize();
 
 	// Camera
 	void CameraRotate(float deltaX, float deltaY);
-	void CameraMove(float deltaX, float deltaY, float width, float height);
+	void CameraMove(float deltaX, float deltaY);
 	void CameraZoom(float factor);
 
 private:

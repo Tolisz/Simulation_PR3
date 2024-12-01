@@ -141,7 +141,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		break;
 	
 	case viewportState::CAMERA_MOVE:
-		w->m_app->CameraMove(-deltaX, deltaY, w->m_lastRenderRegion.x, w->m_lastRenderRegion.y);
+		w->m_app->CameraMove(-deltaX, deltaY);
 		break;
 
 	case viewportState::OBJECT_CHOOSE:

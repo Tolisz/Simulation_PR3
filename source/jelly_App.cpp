@@ -30,9 +30,9 @@ void jelly_App::CameraRotate(float deltaX, float deltaY)
 	m_renderer->CameraRotate(deltaX, deltaY);
 }
 
-void jelly_App::CameraMove(float deltaX, float deltaY, float width, float height)
+void jelly_App::CameraMove(float deltaX, float deltaY)
 {
-	m_renderer->CameraMove(deltaX, deltaY, width, height);
+	m_renderer->CameraMove(deltaX, deltaY);
 }
 
 void jelly_App::CameraZoom(float factor)
@@ -86,6 +86,11 @@ bool jelly_App::IsRunning()
 bool jelly_App::IsStopped()
 {
 	return m_simState == simulationState::Stopped;
+}
+
+void jelly_App::ChooseObject(float xpos, float ypos)
+{
+	// SKONCZYLEM TUTAJ
 }
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()

@@ -48,14 +48,19 @@ GLuint jelly_Renderer::GetRenderTexture()
 	return m_colorTexture;
 }
 
+glm::uvec2 jelly_Renderer::GetRenderAreaSize()
+{
+	return m_sceneSize;
+}
+
 void jelly_Renderer::CameraRotate(float deltaX, float deltaY)
 {
 	m_camera.Rotate(deltaX, deltaY);
 }
 
-void jelly_Renderer::CameraMove(float deltaX, float deltaY, float width, float height)
+void jelly_Renderer::CameraMove(float deltaX, float deltaY)
 {
-	m_camera.Move(deltaX, deltaY, width, height);
+	m_camera.Move(deltaX, deltaY, static_cast<float>(m_sceneSize.x), static_cast<float>(m_sceneSize.y));
 }
 
 void jelly_Renderer::CameraZoom(float factor)

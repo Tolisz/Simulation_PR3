@@ -31,7 +31,7 @@ public:
 	void RenderScene();
 
 	void CameraRotate(float deltaX, float deltaY);
-	void CameraMove(float deltaX, float deltaY, float width, float height);
+	void CameraMove(float deltaX, float deltaY);
 	void CameraZoom(float factor);
 
 	// Simulation Action
@@ -41,6 +41,9 @@ public:
 
 	bool IsRunning();
 	bool IsStopped();
+
+	// Scene manipulation
+	void ChooseObject(float xpos, float ypos);
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
