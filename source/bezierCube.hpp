@@ -33,4 +33,6 @@ private:
 	// i -> j -> spring rest length, where j < i
 	std::unordered_map<int, std::unordered_map<int, float>> m_springsRestLengths;
 	std::unordered_map<int, std::unordered_map<int, float>> m_springsCurrentLengths;
+
+
 };

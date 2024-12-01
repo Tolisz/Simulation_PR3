@@ -24,7 +24,7 @@ std::vector<glm::vec3> bezierCube::GetPoints()
 void bezierCube::SimulationStep(float dt)
 {
 	// TUTAJ BEDZIE SYMULACJA, WYLOWYWANE Z WATKU
-	
+
 }
 
 void bezierCube::ResetCube(float a)
@@ -50,8 +50,8 @@ void bezierCube::ResetCube(float a)
 		}
 	}
 
-	// Spring length
-	// ================
+	// Springs rest length
+	// ====================
 	float da = glm::sqrt(2.0f) * a_3;
 	
 	for (int j = 0; j < 4; ++j) {
@@ -64,6 +64,11 @@ void bezierCube::ResetCube(float a)
 			if (i % 4 != 0) {
 				// left 
 				m_springsRestLengths[I][I - 1] = a_3;
+
+				// diagonal
+				if (i - 4 >= 0) {
+					m_springsRestLengths[I - 1][I - 4] = da;
+				}
 
 				// left -> up
 				if (i - 5 >= 0) {
@@ -83,7 +88,7 @@ void bezierCube::ResetCube(float a)
 			if (I - 16 >= 0)
 			{
 				// front 
-				m_springsRestLengths[I][I - 16] = da;
+				m_springsRestLengths[I][I - 16] = a_3;
 
 				// front -> left
 				if (i % 4 != 0) {

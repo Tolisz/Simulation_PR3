@@ -53,6 +53,8 @@ private:
 	// Shaders
 	GL_shader m_s_test;
 	GL_shader m_s_bCubePoints;
+	GL_shader m_s_cubeSprings;
+	
 	// Buffers
 	GL_UBO m_b_matrices;
 

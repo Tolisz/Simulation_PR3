@@ -89,6 +89,10 @@ void jelly_Renderer::RenderScene()
 	m_s_bCubePoints.Use();
 	m_bCube->DrawPoints();
 
+	m_s_cubeSprings.Use();
+	m_bCube->DrawShortSprings();
+	// m_bCube->DrawLongSprings();
+
 	// =========
 	// SCENE END
 }
@@ -127,6 +131,10 @@ void jelly_Renderer::PrepareShaders()
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.vert", GL_VERTEX_SHADER);
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.frag", GL_FRAGMENT_SHADER);
 	m_s_bCubePoints.Link();
+
+	m_s_cubeSprings.AttachShaderFromFile("shaders/springs.vert", GL_VERTEX_SHADER);
+	m_s_cubeSprings.AttachShaderFromFile("shaders/springs.frag", GL_FRAGMENT_SHADER);
+	m_s_cubeSprings.Link();
 
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));
