@@ -3,6 +3,7 @@
 #include <memory>
 #include "jelly_Renderer.hpp"
 #include "simulationParameters.hpp"
+#include "bezierCube.hpp"
 
 class jelly_App
 {
@@ -33,4 +34,5 @@ private:
 	std::unique_ptr<jelly_Renderer> m_renderer;
 
 	std::shared_ptr<simulationParameters> m_simulationParams;
+	std::shared_ptr<bezierCube> m_bCube;
 };

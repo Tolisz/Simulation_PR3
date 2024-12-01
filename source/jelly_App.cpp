@@ -4,6 +4,7 @@ jelly_App::jelly_App()
 {
 	m_renderer = std::make_unique<jelly_Renderer>();
 	m_simulationParams = std::make_shared<simulationParameters>();
+	m_bCube = std::make_shared<bezierCube>();
 }
 
 GLuint jelly_App::GetRenderTexture()

@@ -6,6 +6,7 @@
 
 class bezierCube
 {
+public:
 
 	bezierCube(float a);
 	~bezierCube() = default;
@@ -17,6 +18,11 @@ class bezierCube
 
 private:
 
-	std::array<glm::vec3, 64> m_points;
+	void ResetCube(float a);
+
+private:
+	std::vector<glm::vec3> m_points;
+
+	// i -> j -> spring rest length, where j < i
 	std::unordered_map<int, std::unordered_map<int, float>> m_cubeSprings;
 };
