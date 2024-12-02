@@ -69,6 +69,8 @@ private:
     viewportState m_viewportState = viewportState::IDLE;
     bool b_viewportHovered = false;
     
+    float m_viewportWinTitleSize = 0;
+    ImVec2 m_viewportWinPos = {0, 0};
     ImVec2 m_lastRenderRegion = {0, 0};
     glm::vec2 m_lastMousePos = {0, 0};
 

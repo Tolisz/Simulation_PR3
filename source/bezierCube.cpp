@@ -27,6 +27,16 @@ void bezierCube::SimulationStep(float dt)
 
 }
 
+int bezierCube::GetChosenPoint()
+{
+	return m_chosenPoint;
+}
+
+void bezierCube::SetChosenPoint(int i)
+{
+	m_chosenPoint = i;
+}
+
 void bezierCube::ResetCube(float a)
 {
 	// Points positions

@@ -42,6 +42,11 @@ glm::mat4 camera::GetProjectionMatrix(float aspect)
     }
 }
 
+glm::vec3 camera::GetPosition()
+{
+    return m_worldPos;
+}
+
 void camera::SetCameraMode(mode newMode)
 {
     m_mode = newMode;

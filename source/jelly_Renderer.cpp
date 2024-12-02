@@ -68,6 +68,22 @@ void jelly_Renderer::CameraZoom(float factor)
 	m_camera.Zoom(factor);
 }
 
+glm::mat4 jelly_Renderer::GetProjectionMatrix()
+{
+	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
+	return m_camera.GetProjectionMatrix(aspect);
+}
+
+glm::mat4 jelly_Renderer::GetViewMatrix()
+{
+	return m_camera.GetViewMatrix();
+}
+
+glm::vec3 jelly_Renderer::GetCameraPos()
+{
+	return m_camera.GetPosition();
+}
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -92,8 +108,10 @@ void jelly_Renderer::RenderScene()
 	// Bezier Cube
 
 	m_bCube->UpdatePointsBuffer();
-	
+	int chosenPoint = m_bCube->GetChosenPoint();
+
 	m_s_bCubePoints.Use();
+	m_s_bCubePoints.set1i("chosenPoint", chosenPoint);
 	m_bCube->DrawPoints();
 
 	m_s_cubeSprings.Use();

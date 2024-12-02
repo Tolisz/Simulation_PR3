@@ -21,6 +21,8 @@ public:
 	void DrawShortSprings();
 	void DrawLongSprings();
 
+	int GetChosenPoint();
+
 private:
 
 	void InitGL();

@@ -50,6 +50,10 @@ public:
 	
 private:
 
+	float distanceFromPointToLine(const glm::vec3& P, const glm::vec3& P1, const glm::vec3& P2);
+
+private:
+
 	std::unique_ptr<jelly_Renderer> m_renderer;
 	std::unique_ptr<jelly_simThread> m_simThread;
 

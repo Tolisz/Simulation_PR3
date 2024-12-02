@@ -15,7 +15,7 @@ bezierCubeDrawer::~bezierCubeDrawer()
 
 void bezierCubeDrawer::DrawPoints()
 {
-	glPointSize(2.0f);
+	glPointSize(4.0f);
 	glBindVertexArray(m_VAO_points);
 	glDrawArrays(GL_POINTS, 0, 64);
 	glBindVertexArray(0);
@@ -34,6 +34,11 @@ void bezierCubeDrawer::DrawLongSprings()
 	glBindVertexArray(m_VAO_longSprings);
 	glDrawElements(GL_LINES, m_longSpringsNum * 2, GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
+}
+
+int bezierCubeDrawer::GetChosenPoint()
+{
+	return m_cube->GetChosenPoint();
 }
 
 void bezierCubeDrawer::UpdatePointsBuffer()

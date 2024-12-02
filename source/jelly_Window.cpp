@@ -145,6 +145,12 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		break;
 
 	case viewportState::OBJECT_CHOOSE:
+	{
+		float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
+		float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
+
+		w->m_app->ChooseObject(viewXpos, viewYpos);
+	}
 		// std::cout << "WYBIERAM" << std::endl;
 		break;
 
@@ -498,6 +504,9 @@ void jelly_Window::GUI_UpdateDockingLayout()
 void jelly_Window::GUI_UpdateRenderRegion()
 {
 	ImVec2 currentRenderRegion = ImGui::GetContentRegionAvail();
+	m_viewportWinPos = ImGui::GetWindowPos();
+	m_viewportWinTitleSize = ImGui::GetCursorPos().y;
+
 	if (currentRenderRegion.x != m_lastRenderRegion.x || 
 		currentRenderRegion.y != m_lastRenderRegion.y)
 	{

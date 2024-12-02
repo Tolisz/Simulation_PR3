@@ -31,6 +31,10 @@ public:
 	void CameraMove(float deltaX, float deltaY);
 	void CameraZoom(float factor);
 
+	glm::mat4 GetProjectionMatrix();
+	glm::mat4 GetViewMatrix();
+	glm::vec3 GetCameraPos();
+
 private:
 
 	void RenderScene();

@@ -24,6 +24,7 @@ public:
 
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix(float aspect);
+    glm::vec3 GetPosition();
 
     void SetCameraMode(mode newMode);
 

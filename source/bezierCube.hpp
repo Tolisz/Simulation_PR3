@@ -21,6 +21,9 @@ public:
 	std::vector<glm::vec3> GetPoints();
 	void SimulationStep(float dt);
 
+	int GetChosenPoint();
+	void SetChosenPoint(int i);
+
 private:
 
 	void ResetCube(float a);
@@ -29,6 +32,7 @@ private:
 
 	std::mutex m_accessPoints;
 	std::vector<glm::vec3> m_points;
+	int m_chosenPoint = -1;
 
 	// i -> j -> spring rest length, where j < i
 	std::unordered_map<int, std::unordered_map<int, float>> m_springsRestLengths;

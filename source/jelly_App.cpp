@@ -1,5 +1,7 @@
 #include "jelly_App.hpp"
 
+#include <iostream>
+
 jelly_App::jelly_App()
 {
 	m_simulationParams = std::make_shared<simulationParameters>();
@@ -90,7 +92,66 @@ bool jelly_App::IsStopped()
 
 void jelly_App::ChooseObject(float xpos, float ypos)
 {
-	// SKONCZYLEM TUTAJ
+	glm::vec2 renderSize = m_renderer->GetRenderAreaSize();
+	glm::vec4 NDC_far = glm::vec4(	 
+		(glm::vec2(xpos, ypos) / renderSize * 2.0f) - 1.0f,
+		1.0f,
+		1.0f
+	);
+	// glm::vec4 NDC_near = glm::vec4(NDC_far.x, NDC_far.y, -1.0f, 1.0f);
+	
+	NDC_far.y = -NDC_far.y;
+	// NDC_near.y = -NDC_near.y;
+
+	glm::mat4 invProj = glm::inverse(m_renderer->GetProjectionMatrix());
+	glm::mat4 invView = glm::inverse(m_renderer->GetViewMatrix());
+
+	glm::vec4 view_far = invProj * NDC_far;
+	// glm::vec4 view_near = invProj * NDC_near;
+
+	view_far /= view_far.w;
+	// view_near /= view_near.w;
+
+	glm::vec3 world_far = glm::vec3(invView * view_far); 
+	glm::vec3 cameraPos = m_renderer->GetCameraPos();
+	// glm::vec3 world_near = glm::vec3(invView * view_near); 
+	
+	// std::cout << world_near.x << ", " << world_near.y << ", " << world_near.z << std::endl;
+
+	std::vector<glm::vec3> points = m_bCube->GetPoints();
+
+	float d_min = std::numeric_limits<float>::max();
+	int i_min = -1;
+	for (int i = 0; i < points.size(); ++i)
+	{
+		float d = distanceFromPointToLine(points[i], cameraPos, world_far);
+
+		if (d < 0.1f) { // MAKE IT BETTER
+			if (d < d_min) {
+				d_min = d;
+				i_min = i;
+			}
+		}
+	}
+	
+	m_bCube->SetChosenPoint(i_min);
+
+	// for (const auto& it : points)
+	// {
+	// 	float distance = 
+	// }
+}
+
+float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& P1, const glm::vec3& P2)
+{
+	float numerator = glm::abs(
+		(P2.y - P1.y) * P.x - (P2.x - P1.x) * P.y + P2.x * P1.y - P2.y * P1.x
+	);
+	float denominator = glm::sqrt(
+		(P2.y - P1.y) * (P2.y - P1.y) + (P2.x - P1.x) * (P2.x - P1.x)
+	);
+
+	return numerator / denominator;
 }
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()
