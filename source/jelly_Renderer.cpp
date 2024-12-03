@@ -53,6 +53,11 @@ glm::uvec2 jelly_Renderer::GetRenderAreaSize()
 	return m_sceneSize;
 }
 
+const camera& jelly_Renderer::Camera()
+{
+	return m_camera;
+}
+
 void jelly_Renderer::CameraRotate(float deltaX, float deltaY)
 {
 	m_camera.Rotate(deltaX, deltaY);

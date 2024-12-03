@@ -151,11 +151,12 @@ void jelly_Window::GLFW_SetUpCallbacks()
 
 		w->m_app->ChooseObject(viewXpos, viewYpos);
 	}
-		// std::cout << "WYBIERAM" << std::endl;
 		break;
 
 	case viewportState::OBJECT_MOVE:
-		// std::cout << "PRZESUWAM" << std::endl;
+	{
+		w->m_app->MoveChosenObject(static_cast<float>(xpos), static_cast<float>(ypos));	
+	}
 		break;
 	}
 }

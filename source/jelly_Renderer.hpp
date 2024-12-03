@@ -27,6 +27,8 @@ public:
 	glm::uvec2 GetRenderAreaSize();
 
 	// Camera
+	const camera& Camera();
+
 	void CameraRotate(float deltaX, float deltaY);
 	void CameraMove(float deltaX, float deltaY);
 	void CameraZoom(float factor);

@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <memory>
+#include <optional>
 #include "jelly_Renderer.hpp"
 #include "simulationParameters.hpp"
 #include "bezierCube.hpp"
@@ -44,6 +45,7 @@ public:
 
 	// Scene manipulation
 	void ChooseObject(float xpos, float ypos);
+	void MoveChosenObject(float xpos, float ypos);
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
@@ -51,6 +53,11 @@ public:
 private:
 
 	float distanceFromPointToLine(const glm::vec3& P, const glm::vec3& P1, const glm::vec3& P2);
+	std::optional<glm::vec3> planeLineIntersection(
+		const glm::vec3& P0, 
+		const glm::vec3& N, 
+		const glm::vec3& L0, 
+		const glm::vec3& L);
 
 private:
 

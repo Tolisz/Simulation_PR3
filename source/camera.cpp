@@ -25,12 +25,12 @@ camera::camera()
       m_mode(mode::PERSPECTIVE)
 {}
 
-glm::mat4 camera::GetViewMatrix()
+glm::mat4 camera::GetViewMatrix() const
 {
     return glm::lookAtRH(m_worldPos, m_worldPos + m_front, m_up);
 }
 
-glm::mat4 camera::GetProjectionMatrix(float aspect)
+glm::mat4 camera::GetProjectionMatrix(float aspect) const
 {
     switch (m_mode)
     {
@@ -42,9 +42,24 @@ glm::mat4 camera::GetProjectionMatrix(float aspect)
     }
 }
 
-glm::vec3 camera::GetPosition()
+glm::vec3 camera::GetPosition() const
 {
     return m_worldPos;
+}
+
+glm::vec3 camera::GetVecFront() const
+{
+    return m_front;
+}
+
+glm::vec3 camera::GetVecRight() const
+{ 
+    return m_right;
+}
+
+glm::vec3 camera::GetVecUp() const
+{
+    return m_up;
 }
 
 void camera::SetCameraMode(mode newMode)
@@ -52,12 +67,12 @@ void camera::SetCameraMode(mode newMode)
     m_mode = newMode;
 }
 
-glm::mat4 camera::GetPerspectiveMatrix(float aspect)
+glm::mat4 camera::GetPerspectiveMatrix(float aspect) const
 {
     return glm::perspectiveRH<float>(glm::radians(m_fov), aspect, m_nearPlane, m_farPlane);
 }
 
-glm::mat4 camera::GetOrthographicMatrix(float aspect)
+glm::mat4 camera::GetOrthographicMatrix(float aspect) const
 {
     float l = glm::length(m_focusPos - m_worldPos);
     

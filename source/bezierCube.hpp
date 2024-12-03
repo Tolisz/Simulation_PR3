@@ -21,8 +21,10 @@ public:
 	std::vector<glm::vec3> GetPoints();
 	void SimulationStep(float dt);
 
-	int GetChosenPoint();
-	void SetChosenPoint(int i);
+	glm::vec3 GetChoosenPointPos();
+	void SetChoosenPointPos(const glm::vec3& pos);
+	int GetChosenPointIndex();
+	void SetChosenPointIndex(int i);
 
 private:
 

@@ -128,8 +128,42 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 			}
 		}
 	}
-	
-	m_bCube->SetChosenPoint(i_min);
+
+	m_bCube->SetChosenPointIndex(i_min);
+}
+
+void jelly_App::MoveChosenObject(float xpos, float ypos)
+{
+	glm::vec2 renderSize = m_renderer->GetRenderAreaSize();
+	glm::vec4 NDC_far = glm::vec4(	 
+		(glm::vec2(xpos, ypos) / renderSize * 2.0f) - 1.0f,
+		1.0f,
+		1.0f
+	);
+	NDC_far.y = -NDC_far.y;
+
+	glm::mat4 invP = glm::inverse(m_renderer->GetProjectionMatrix());
+	glm::mat4 V = m_renderer->GetViewMatrix();
+	glm::mat4 invV = glm::inverse(V);
+
+	glm::vec4 view_far = invP * NDC_far;
+	view_far /= view_far.w;
+
+	glm::vec3 world_far = glm::vec3(invV * view_far); 
+	glm::vec3 cameraPos = m_renderer->GetCameraPos();
+
+	if (m_bCube->GetChosenPointIndex() != -1)
+	{
+		glm::vec3 P0 = m_bCube->GetChoosenPointPos();
+		glm::vec3 N  = m_renderer->Camera().GetVecFront();
+		glm::vec3 L = glm::normalize(world_far - cameraPos);
+
+		auto newPos = planeLineIntersection(P0, N, cameraPos, L);
+		if (newPos.has_value())
+		{
+			m_bCube->SetChoosenPointPos(newPos.value());
+		}
+	}
 }
 
 float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& A, const glm::vec3& B)
@@ -142,6 +176,22 @@ float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& A,
 
     glm::vec3 closestPoint = A + t * AB;
     return glm::length(P - closestPoint);
+}
+
+std::optional<glm::vec3> jelly_App::planeLineIntersection(
+		const glm::vec3& P0, 
+		const glm::vec3& N, 
+		const glm::vec3& L0, 
+		const glm::vec3& L)
+{
+	float NL = glm::dot(N, L);
+
+	if (glm::abs(NL) < 1e-8f) { 
+        return std::nullopt; 
+    }	
+
+	float t = glm::dot(P0 - L0, N) / NL;
+	return L0 + t * L;
 }
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()

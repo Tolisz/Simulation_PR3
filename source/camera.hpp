@@ -22,9 +22,13 @@ public:
     camera& operator=(const camera&) = delete;
     camera& operator=(camera&&) = delete;
 
-    glm::mat4 GetViewMatrix();
-    glm::mat4 GetProjectionMatrix(float aspect);
-    glm::vec3 GetPosition();
+    glm::mat4 GetViewMatrix() const;
+    glm::mat4 GetProjectionMatrix(float aspect) const;
+    glm::vec3 GetPosition() const;
+
+    glm::vec3 GetVecFront() const;
+    glm::vec3 GetVecRight() const;
+    glm::vec3 GetVecUp() const;
 
     void SetCameraMode(mode newMode);
 
@@ -34,8 +38,8 @@ public:
 
 private:
 
-    glm::mat4 GetPerspectiveMatrix(float aspect);
-    glm::mat4 GetOrthographicMatrix(float aspect);
+    glm::mat4 GetPerspectiveMatrix(float aspect) const;
+    glm::mat4 GetOrthographicMatrix(float aspect) const;
 
 private:
 

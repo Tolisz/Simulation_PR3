@@ -27,12 +27,34 @@ void bezierCube::SimulationStep(float dt)
 
 }
 
-int bezierCube::GetChosenPoint()
+glm::vec3 bezierCube::GetChoosenPointPos()
+{
+	if (m_chosenPoint != -1) 
+	{
+		std::lock_guard<std::mutex> lock(m_accessPoints);
+		return m_points[m_chosenPoint];
+	}
+	else 
+	{
+		return glm::vec3(std::numeric_limits<float>::max());
+	}
+}
+
+void bezierCube::SetChoosenPointPos(const glm::vec3& pos)
+{
+	if (m_chosenPoint != -1) 
+	{
+		std::lock_guard<std::mutex> lock(m_accessPoints);
+		m_points[m_chosenPoint] = pos;
+	}
+}
+
+int bezierCube::GetChosenPointIndex()
 {
 	return m_chosenPoint;
 }
 
-void bezierCube::SetChosenPoint(int i)
+void bezierCube::SetChosenPointIndex(int i)
 {
 	m_chosenPoint = i;
 }

@@ -38,7 +38,7 @@ void bezierCubeDrawer::DrawLongSprings()
 
 int bezierCubeDrawer::GetChosenPoint()
 {
-	return m_cube->GetChosenPoint();
+	return m_cube->GetChosenPointIndex();
 }
 
 void bezierCubeDrawer::UpdatePointsBuffer()
