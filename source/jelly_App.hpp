@@ -45,6 +45,7 @@ public:
 
 	// Scene manipulation
 	void ChooseObject(float xpos, float ypos);
+	void UnchooseObject();
 	void MoveChosenObject(float xpos, float ypos);
 
 	// Parameters
@@ -64,7 +65,7 @@ private:
 	std::unique_ptr<jelly_Renderer> m_renderer;
 	std::unique_ptr<jelly_simThread> m_simThread;
 
-	std::shared_ptr<simulationParameters> m_simulationParams;
+	std::shared_ptr<simulationParameters> m_simParams;
 	std::shared_ptr<bezierCube> m_bCube;
 
 	simulationState m_simState = simulationState::Initial;

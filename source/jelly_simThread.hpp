@@ -3,13 +3,16 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-
+#include "bezierCube.hpp"
+#include "simulationParameters.hpp"
 
 class jelly_simThread
 {
 public:
 
-	jelly_simThread();
+	jelly_simThread(
+		std::shared_ptr<bezierCube> cube,
+		std::shared_ptr<simulationParameters> simParams);
 	~jelly_simThread();
 
 	jelly_simThread(const jelly_simThread&) = delete;
@@ -25,7 +28,12 @@ public:
 
 private:
 
+	void Start();
 	void Main();
+	void SimulationStep();
+
+	glm::vec3 Derivative_V(const glm::vec3& V, const float& m, const float& k, const glm::vec3& f);
+	glm::vec3 Derivative_X(const glm::vec3& V);
 
 private:
 
@@ -38,5 +46,11 @@ private:
 	std::atomic_bool 	b_endSimulation;
 
 	// ===================
+	std::shared_ptr<bezierCube> m_bCube;
+	std::shared_ptr<simulationParameters> m_simParams;
 
+	std::vector<glm::vec3> m_V;
+	std::vector<glm::vec3> m_F;
+	std::vector<glm::vec3> m_newP;
+	float m_dt;
 };

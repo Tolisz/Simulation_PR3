@@ -110,6 +110,8 @@ void jelly_Window::GLFW_SetUpCallbacks()
 			else {
 				w->m_viewportState = viewportState::IDLE;
 			}
+			w->m_app->UnchooseObject();
+
 			break;
 		}
 	}

@@ -4,12 +4,13 @@
 
 jelly_App::jelly_App()
 {
-	m_simulationParams = std::make_shared<simulationParameters>();
-	m_bCube = std::make_shared<bezierCube>(m_simulationParams->a);
+	m_simParams = std::make_shared<simulationParameters>();
+	m_bCube = std::make_shared<bezierCube>(m_simParams->a);
 	
 	auto m_bCubeDrawer = std::make_unique<bezierCubeDrawer>(m_bCube);
 	m_renderer = std::make_unique<jelly_Renderer>(std::move(m_bCubeDrawer));
-	m_simThread = std::make_unique<jelly_simThread>();
+	
+	m_simThread = std::make_unique<jelly_simThread>(m_bCube, m_simParams);
 }
 
 GLuint jelly_App::GetRenderTexture()
@@ -118,7 +119,7 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 	for (int i = 0; i < points.size(); ++i)
 	{
 		glm::vec3 to_point = points[i] - cameraPos;
-		
+
 		// Dont check points behind the camera
 		if (glm::dot(to_world_far, to_point) < 0)
 			continue;
@@ -134,6 +135,11 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 	}
 
 	m_bCube->SetChosenPointIndex(i_min);
+}
+
+void jelly_App::UnchooseObject()
+{
+	m_bCube->SetChosenPointIndex(-1);
 }
 
 void jelly_App::MoveChosenObject(float xpos, float ypos)
@@ -199,5 +205,5 @@ std::optional<glm::vec3> jelly_App::planeLineIntersection(
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()
 {
-	return m_simulationParams;
+	return m_simParams;
 }

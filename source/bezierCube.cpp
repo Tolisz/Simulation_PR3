@@ -21,10 +21,16 @@ std::vector<glm::vec3> bezierCube::GetPoints()
 	return std::move(pointsCopy);
 }
 
-void bezierCube::SimulationStep(float dt)
+void bezierCube::SetPoints(std::vector<glm::vec3>& newPositions)
 {
-	// TUTAJ BEDZIE SYMULACJA, WYLOWYWANE Z WATKU
+	std::lock_guard<std::mutex> lock(m_accessPoints);
+	m_points = newPositions;
+}
 
+std::unordered_map<int, std::unordered_map<int, float>>& 
+	bezierCube::GetRestLengths()
+{
+	return m_springsRestLengths;	
 }
 
 glm::vec3 bezierCube::GetChoosenPointPos()
@@ -146,5 +152,4 @@ void bezierCube::ResetCube(float a)
 		}	
 	}
 
-	m_springsCurrentLengths = m_springsRestLengths;
 }
