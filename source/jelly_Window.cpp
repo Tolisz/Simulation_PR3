@@ -155,7 +155,10 @@ void jelly_Window::GLFW_SetUpCallbacks()
 
 	case viewportState::OBJECT_MOVE:
 	{
-		w->m_app->MoveChosenObject(static_cast<float>(xpos), static_cast<float>(ypos));	
+		float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
+		float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
+
+		w->m_app->MoveChosenObject(viewXpos, viewYpos);	
 	}
 		break;
 	}

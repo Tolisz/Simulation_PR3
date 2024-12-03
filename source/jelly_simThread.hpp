@@ -4,6 +4,7 @@
 #include <mutex>
 #include <atomic>
 
+
 class jelly_simThread
 {
 public:
@@ -35,5 +36,7 @@ private:
 
 	std::mutex 			m_stopSimulation;
 	std::atomic_bool 	b_endSimulation;
+
+	// ===================
 
 };

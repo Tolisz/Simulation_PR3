@@ -121,7 +121,7 @@ void jelly_Renderer::RenderScene()
 
 	m_s_cubeSprings.Use();
 
-	// m_bCube->DrawShortSprings();
+	m_bCube->DrawShortSprings();
 	// m_bCube->DrawLongSprings();
 
 	// =========

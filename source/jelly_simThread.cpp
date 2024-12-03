@@ -66,6 +66,8 @@ void jelly_simThread::Main()
 		}
 		m_stopSimulation.unlock();
 
+		
+
 		std::cout << "TEST" << std::endl;
 	};
 

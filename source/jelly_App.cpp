@@ -108,6 +108,7 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 
 	glm::vec3 world_far = glm::vec3(invView * view_far); 
 	glm::vec3 cameraPos = m_renderer->GetCameraPos();
+	glm::vec3 to_world_far = world_far - cameraPos;
 
 	std::vector<glm::vec3> points = m_bCube->GetPoints();
 
@@ -116,12 +117,15 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 
 	for (int i = 0; i < points.size(); ++i)
 	{
-		if (glm::dot(world_far - cameraPos, points[i] - cameraPos) < 0)
+		glm::vec3 to_point = points[i] - cameraPos;
+		
+		// Dont check points behind the camera
+		if (glm::dot(to_world_far, to_point) < 0)
 			continue;
 
 		float d = distanceFromPointToLine(points[i], cameraPos, world_far);
-		
-		if (d < 0.05f) { // MAKE IT BETTER
+		float l = glm::length(to_point);
+		if (d < 0.005f * l) {
 			if (d < d_min) {
 				d_min = d;
 				i_min = i;
@@ -143,8 +147,7 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 	NDC_far.y = -NDC_far.y;
 
 	glm::mat4 invP = glm::inverse(m_renderer->GetProjectionMatrix());
-	glm::mat4 V = m_renderer->GetViewMatrix();
-	glm::mat4 invV = glm::inverse(V);
+	glm::mat4 invV = glm::inverse(m_renderer->GetViewMatrix());
 
 	glm::vec4 view_far = invP * NDC_far;
 	view_far /= view_far.w;
