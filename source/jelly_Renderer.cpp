@@ -89,6 +89,11 @@ glm::vec3 jelly_Renderer::GetCameraPos()
 	return m_camera.GetPosition();
 }
 
+void jelly_Renderer::SetPointAttribute(int pointIndex, int attributeIndex, bool value)
+{
+	m_bCube->SetPointAttribute(pointIndex, attributeIndex, value);
+}
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -112,7 +117,7 @@ void jelly_Renderer::RenderScene()
 
 	// Bezier Cube
 
-	m_bCube->UpdatePointsBuffer();
+	m_bCube->UpdateBuffers();
 	int chosenPoint = m_bCube->GetChosenPoint();
 
 	m_s_bCubePoints.Use();

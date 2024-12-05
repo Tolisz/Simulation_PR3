@@ -16,13 +16,13 @@ public:
 	bezierCubeDrawer& operator=(const bezierCubeDrawer&) = delete;
 	bezierCubeDrawer& operator=(bezierCubeDrawer&&) = delete;
 
-	void UpdatePointsBuffer();
+	void UpdateBuffers();
 	void DrawPoints();
 	void DrawShortSprings();
 	void DrawLongSprings();
 
 	int GetChosenPoint();
-
+	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 private:
 
 	void InitGL();
@@ -35,6 +35,11 @@ private:
 private:
 
 	std::shared_ptr<bezierCube> m_cube;
+	
+	// 000X - is hilighted
+	// 00X0 - is potentialy choosen
+	// 0X00 - is choosen
+	std::vector<GLint> m_pointsAttributes;
 
 	// Indices buffers
 	int m_shortSpringsNum;
@@ -44,7 +49,10 @@ private:
 	GLuint m_VAO_points;
 	GLuint m_VAO_shortSprings;
 	GLuint m_VAO_longSprings;
-	GLuint m_PointsBuffer;
+	
+	GLuint m_pointsBuffer;
+	GLuint m_pointsAtribBuffer;
+
 	GLuint m_EBO_shortSprings;
 	GLuint m_EBO_longSprings;
 

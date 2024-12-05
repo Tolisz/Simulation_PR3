@@ -44,9 +44,12 @@ public:
 	bool IsStopped();
 
 	// Scene manipulation
-	void ChooseObject(float xpos, float ypos);
-	void UnchooseObject();
+	void ChoseMovableObject(float xpos, float ypos);
+	void ChooseObject();
+	void UnchooseObject(bool resetSeenPoint);
 	void MoveChosenObject(float xpos, float ypos);
+
+	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
@@ -69,4 +72,6 @@ private:
 	std::shared_ptr<bezierCube> m_bCube;
 
 	simulationState m_simState = simulationState::Initial;
+
+	int m_seenPointIndex = -1;
 };

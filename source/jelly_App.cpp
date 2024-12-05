@@ -92,7 +92,7 @@ bool jelly_App::IsStopped()
 	return m_simState == simulationState::Stopped;
 }
 
-void jelly_App::ChooseObject(float xpos, float ypos)
+void jelly_App::ChoseMovableObject(float xpos, float ypos)
 {
 	glm::vec2 renderSize = m_renderer->GetRenderAreaSize();
 	glm::vec4 NDC_far = glm::vec4(	 
@@ -135,12 +135,26 @@ void jelly_App::ChooseObject(float xpos, float ypos)
 		}
 	}
 
-	m_bCube->SetChosenPointIndex(i_min);
+	if (m_seenPointIndex != -1)
+		SetPointAttribute(m_seenPointIndex, 1, false);
+
+	m_seenPointIndex = i_min;
+	if (m_seenPointIndex != -1)
+		SetPointAttribute(m_seenPointIndex, 1, true);
+	
 }
 
-void jelly_App::UnchooseObject()
+void jelly_App::ChooseObject()
+{
+	m_bCube->SetChosenPointIndex(m_seenPointIndex);
+}
+
+void jelly_App::UnchooseObject(bool resetSeenPoint)
 {
 	m_bCube->SetChosenPointIndex(-1);
+
+	if (resetSeenPoint && m_seenPointIndex != -1)
+		SetPointAttribute(m_seenPointIndex, 1, false);
 }
 
 void jelly_App::MoveChosenObject(float xpos, float ypos)
@@ -174,6 +188,11 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 			m_bCube->SetChoosenPointPos(newPos.value());
 		}
 	}
+}
+
+void jelly_App::SetPointAttribute(int pointIndex, int attributeIndex, bool value)
+{
+	m_renderer->SetPointAttribute(pointIndex, attributeIndex, value);
 }
 
 float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& A, const glm::vec3& B)

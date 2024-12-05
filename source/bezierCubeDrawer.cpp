@@ -5,6 +5,8 @@
 bezierCubeDrawer::bezierCubeDrawer(std::shared_ptr<bezierCube> cube): 
 	m_cube{cube}
 {
+	m_pointsAttributes.assign(64, 0);
+
 	InitGL();
 }
 
@@ -41,12 +43,37 @@ int bezierCubeDrawer::GetChosenPoint()
 	return m_cube->GetChosenPointIndex();
 }
 
-void bezierCubeDrawer::UpdatePointsBuffer()
+void bezierCubeDrawer::SetPointAttribute(int pointIndex, int attributeIndex, bool value)
 {
-	std::vector<glm::vec3> points = m_cube->GetPoints();
+	if (pointIndex < 0 || pointIndex >= static_cast<int>(m_pointsAttributes.size()))
+	{
+		throw std::out_of_range("Point index is out of range");
+	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_PointsBuffer);
+	if (attributeIndex < 0 || attributeIndex >= static_cast<int>(sizeof(GLuint) * 8)) 
+	{
+		throw std::out_of_range("Attribute index is out of bounds");
+	}
+
+	GLint& attributes = m_pointsAttributes[pointIndex];
+
+	if (value) {
+		attributes |= (1 << attributeIndex); // Set the bit
+	} else {
+		attributes &= ~(1 << attributeIndex); // Clear the bit
+	}
+}
+
+void bezierCubeDrawer::UpdateBuffers()
+{
+	/* Points buffer update */
+	std::vector<glm::vec3> points = m_cube->GetPoints();
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsBuffer);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * sizeof(glm::vec3), points.data());
+
+	/* Attributes buffer update */
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsAtribBuffer);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * sizeof(GLint), m_pointsAttributes.data());
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -56,17 +83,24 @@ void bezierCubeDrawer::InitGL()
 	glGenVertexArrays(1, &m_VAO_shortSprings);
 	glGenVertexArrays(1, &m_VAO_longSprings);
 	
-	glGenBuffers(1, &m_PointsBuffer);
+	glGenBuffers(1, &m_pointsBuffer);
+	glGenBuffers(1, &m_pointsAtribBuffer);
+
 	glGenBuffers(1, &m_EBO_shortSprings);
 	glGenBuffers(1, &m_EBO_longSprings);
 
 	// Points
 	glBindVertexArray(m_VAO_points);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, m_PointsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsBuffer);
 	glBufferData(GL_ARRAY_BUFFER, 64 * sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsAtribBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 64 * sizeof(GLint), nullptr, GL_DYNAMIC_DRAW);
+	glVertexAttribIPointer(1, 1, GL_INT, 0, (void*)0);
+	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 
@@ -79,7 +113,7 @@ void bezierCubeDrawer::InitGL()
 	// Short springs
 	glBindVertexArray(m_VAO_shortSprings);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, m_PointsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsBuffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
@@ -91,11 +125,11 @@ void bezierCubeDrawer::InitGL()
 	// Long springs
 	glBindVertexArray(m_VAO_longSprings);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, m_PointsBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointsBuffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_VAO_longSprings);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO_longSprings);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, longIndices.size() * sizeof(std::pair<int, int>), longIndices.data(), GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
@@ -104,7 +138,7 @@ void bezierCubeDrawer::InitGL()
 void bezierCubeDrawer::DeInitGL()
 {
 	glDeleteVertexArrays(1, &m_VAO_points);
-	glDeleteBuffers(1, &m_PointsBuffer);
+	glDeleteBuffers(1, &m_pointsBuffer);
 }
 
 void bezierCubeDrawer::GetSpringIndices(

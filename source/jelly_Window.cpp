@@ -56,9 +56,11 @@ void jelly_Window::GLFW_SetUpCallbacks()
     io.AddMouseButtonEvent(button, action == GLFW_PRESS);
 	
 	jelly_Window* w = GLFW_GetWindow(window);
-	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
+	if (!w->b_viewportHovered)
+	{
 		return;
-
+	}
+	
 	switch (button)
 	{
 	case GLFW_MOUSE_BUTTON_MIDDLE:
@@ -98,6 +100,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 				return;
 			
 			w->m_viewportState = viewportState::OBJECT_MOVE;
+			w->m_app->ChooseObject();
 			break;
 		
 		case GLFW_RELEASE:
@@ -106,11 +109,12 @@ void jelly_Window::GLFW_SetUpCallbacks()
 
 			if (mods & GLFW_MOD_CONTROL) {
 				w->m_viewportState = viewportState::OBJECT_CHOOSE;
+				w->m_app->UnchooseObject(false);
 			}
 			else {
 				w->m_viewportState = viewportState::IDLE;
+				w->m_app->UnchooseObject(true);
 			}
-			w->m_app->UnchooseObject();
 
 			break;
 		}
@@ -151,7 +155,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
 		float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
 
-		w->m_app->ChooseObject(viewXpos, viewYpos);
+		w->m_app->ChoseMovableObject(viewXpos, viewYpos);
 	}
 		break;
 
@@ -180,8 +184,17 @@ void jelly_Window::GLFW_SetUpCallbacks()
 /* static */ void jelly_Window::GLFW_Callback_Key(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-
 	jelly_Window* w = GLFW_GetWindow(window);
+
+	/* Key handling for the whole window */
+	switch (key)
+	{
+	case GLFW_KEY_ESCAPE:
+		glfwSetWindowShouldClose(window, true);
+		break;
+	}
+
+	/* Key handling viewport only */
 	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
 		return;
 
@@ -403,26 +416,44 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		float iSpacing = ImGui::GetStyle().ItemSpacing.x;
 
 		float iWidth = (wWidth - 2 * wPadding - 8 * iSpacing) / 8.0f; 
-
+		float groupWidth = (wWidth - 2 * wPadding - 4 * iSpacing) / 2.0f;
 		int n = 0;
 		for (int k = 0; k < 4; ++k)
 		{
 			ImGui::BeginGroup();
 			
 			std::string groupName = "Face ";
-			groupName += std::to_string(k);
+			groupName += std::to_string(k + 1);
+			float textWidth = ImGui::CalcTextSize(groupName.data()).x;
 
+			/* Proper alignment haha */
 			ImGui::Dummy(ImVec2(0.0f, 0.0f));
-			ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), groupName.c_str());
 			
+			bool highlightGroup = false; 
+			ImGui::Dummy(ImVec2((groupWidth - textWidth) / 2, 0.0f));
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), groupName.c_str());
+			if (ImGui::IsItemHovered()) highlightGroup = true;
+
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 8));
 			for (int i = 0; i < 4; ++i)
 			{
 				for (int j = 0; j < 4; ++j)
 				{
+					int Inx = j + 4 * i + 16 * k;
+
 					ImGui::PushID(n);
 					ImGui::SetNextItemWidth(iWidth);
-					ImGui::DragFloat("## Mass Element", &simParam->m[j + 4 * i + 16 * k], 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("## Mass Element", &simParam->m[Inx], 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+					if (ImGui::IsItemHovered())
+					{
+						m_app->SetPointAttribute(Inx, 0, true);
+					}
+					else 
+					{
+						m_app->SetPointAttribute(Inx, 0, false | highlightGroup);
+					}
+					
 					ImGui::PopID();
 					ImGui::SameLine();
 

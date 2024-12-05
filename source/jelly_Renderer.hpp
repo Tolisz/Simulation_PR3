@@ -37,6 +37,9 @@ public:
 	glm::mat4 GetViewMatrix();
 	glm::vec3 GetCameraPos();
 
+	// 
+	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
+
 private:
 
 	void RenderScene();
