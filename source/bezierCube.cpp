@@ -2,6 +2,8 @@
 
 #include <glm/exponential.hpp>
 
+#include <iostream>
+
 bezierCube::bezierCube(float a)
 {
 	m_points.resize(64);
@@ -151,5 +153,4 @@ void bezierCube::ResetCube(float a)
 
 		}	
 	}
-
 }

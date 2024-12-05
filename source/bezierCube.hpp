@@ -21,15 +21,12 @@ public:
 	std::vector<glm::vec3> GetPoints();
 	void SetPoints(std::vector<glm::vec3>& newPositions);
 
-	std::unordered_map<int, std::unordered_map<int, float>>& 
-	GetRestLengths();
+	std::unordered_map<int, std::unordered_map<int, float>>& GetRestLengths();
 
 	glm::vec3 GetChoosenPointPos();
 	void SetChoosenPointPos(const glm::vec3& pos);
 	int GetChosenPointIndex();
 	void SetChosenPointIndex(int i);
-
-private:
 
 	void ResetCube(float a);
 

@@ -168,10 +168,11 @@ void jelly_simThread::SimulationStep()
 		if (i == chosenInd)
 		{
 			m_newP[i] = P[i];
+			m_V[i] = glm::vec3(0.0f);
 			continue;
 		}
 
-		// Runge–Kutta for v
+		// Runge–Kutta for v;
 		const glm::vec3& 	v = m_V[i];
 		const float& 		m = m_simParams->m[i];
 		const glm::vec3& 	f = m_F[i];
@@ -180,15 +181,15 @@ void jelly_simThread::SimulationStep()
 		glm::vec3 k1_V = Derivative_V(v, m, k, f);
 		glm::vec3 k2_V = Derivative_V(v + k1_V * (m_dt / 2.0f), m, k, f);
 		glm::vec3 k3_V = Derivative_V(v + k2_V * (m_dt / 2.0f), m, k, f);
-		glm::vec3 k4_V = Derivative_V(v + k3_V, m, k, f);
+		glm::vec3 k4_V = Derivative_V(v + k3_V * m_dt, m, k, f);
 		glm::vec3 dV = (k1_V + 2.0f * k2_V + 2.0f * k3_V + k4_V) * (m_dt / 6.0f);
 		m_V[i] += dV; 
 
 		// Runge–Kutta for x
-		glm::vec3 k1_X = Derivative_X(m_V[i]);
-		glm::vec3 k2_X = Derivative_X(m_V[i] + k1_X * (m_dt / 2.0f));
-		glm::vec3 k3_X = Derivative_X(m_V[i] + k2_X * (m_dt / 2.0f));
-		glm::vec3 k4_X = Derivative_X(m_V[i] + k3_X);
+		glm::vec3 k1_X = Derivative_X(v);
+		glm::vec3 k2_X = Derivative_X(v + k1_X * (m_dt / 2.0f));
+		glm::vec3 k3_X = Derivative_X(v + k2_X * (m_dt / 2.0f));
+		glm::vec3 k4_X = Derivative_X(v + k3_X * m_dt);
 		glm::vec3 dX = (k1_X + 2.0f * k2_X + 2.0f * k3_X + k4_X) * (m_dt / 6.0f);
 		m_newP[i] = P[i] + dX;
 	}

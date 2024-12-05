@@ -77,6 +77,7 @@ void jelly_App::ResetSimulation()
 	case simulationState::Stopped:
 		m_simState = simulationState::Initial;
 		m_simThread->EndSimulation();
+		m_bCube->ResetCube(m_simParams->a);
 		break;
 	}
 }
