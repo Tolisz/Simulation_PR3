@@ -52,5 +52,7 @@ private:
 	std::vector<glm::vec3> m_V;
 	std::vector<glm::vec3> m_F;
 	std::vector<glm::vec3> m_newP;
+	std::unordered_map<int, std::unordered_map<int, float>> m_prevDL;
+
 	float m_dt;
 };

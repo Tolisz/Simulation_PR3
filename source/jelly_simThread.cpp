@@ -70,6 +70,24 @@ void jelly_simThread::Start()
 	m_F.assign(64, glm::vec3(0.0f));
 	m_newP.assign(64, glm::vec3(0.0f));
 
+	// Compute Initial Values of dl change
+	std::vector<glm::vec3> P = m_bCube->GetPoints();
+	m_prevDL = m_bCube->GetRestLengths();
+	for(const auto& I : m_prevDL)
+	{
+		int i = I.first;
+		for (const auto& J : I.second) 
+		{
+			int j = J.first;
+			
+			float rl = J.second;
+			float cl = glm::length(P[j] - P[i]);
+			float dl = cl - rl;
+
+			m_prevDL[i][j] = dl;
+		}
+	}	
+
 	m_dt = m_simParams->dt;
 }
 
@@ -124,7 +142,7 @@ void jelly_simThread::Main()
 
 glm::vec3 jelly_simThread::Derivative_V(const glm::vec3& V, const float& m, const float& k, const glm::vec3& f)
 {
-	return (1.0f / m) * (- k * V + f);
+	return (1.0f / m) * (f);
 }
 
 glm::vec3 jelly_simThread::Derivative_X(const glm::vec3& V)
@@ -139,40 +157,41 @@ void jelly_simThread::SimulationStep()
 
 	// Compute forces
 	auto restLengths = m_bCube->GetRestLengths();
-	system("cls"); 
 	for(const auto& I : restLengths)
 	{
 		int i = I.first;
 		for (const auto& J : I.second) 
 		{
 			int j = J.first;
+
+			// compute dl
 			float rl = J.second;
 			float cl = glm::length(P[j] - P[i]);
 			float dl = cl - rl;
+			
+			// compute dl derivative
+			float dl_drv = (dl - m_prevDL[i][j]) / m_dt; 
+			m_prevDL[i][j] = dl;
 
-			if (j == 0)
-			{
-				std::cout << "[" << i << "] = " << dl << std::endl;
-			}
-
-			glm::vec3 f = glm::normalize(P[j] - P[i]) * m_simParams->c1 * dl;
+			glm::vec3 f = glm::normalize(P[j] - P[i]) * (
+				- m_simParams->k * dl_drv - m_simParams->c1 *  dl);
 
 			if (dl > 0) 
 			{
-				m_F[i] += f;
-				m_F[j] += -f;
+				m_F[i] += -f;
+				m_F[j] += f;
 			}
 			else // dl <= 0
 			{
-				m_F[i] += -f;
-				m_F[j] += f;
+				m_F[i] += f;
+				m_F[j] += +f;
 			}
 		}
 	}
 
 	// Compute new positions
 	int chosenInd = m_bCube->GetChosenPointIndex();
-	for (int i = 0; i < 1/*P.size()*/; ++i)
+	for (int i = 0; i < P.size(); ++i)
 	{
 		if (i == chosenInd)
 		{
@@ -181,31 +200,29 @@ void jelly_simThread::SimulationStep()
 			continue;
 		}
 
-		// Runge–Kutta for v;
-		const glm::vec3& 	v = m_V[i];
-		const float& 		m = m_simParams->m[i];
-		const glm::vec3& 	f = m_F[i];
-		const float& 		k = m_simParams->k;
+		m_V[i] += (m_F[i] / m_simParams->m[i]) * m_dt; 
+		m_newP[i] = P[i] + m_V[i] * m_dt;
 
-		glm::vec3 k1_V = Derivative_V(v, m, k, f);
-		glm::vec3 k2_V = Derivative_V(v + k1_V * (m_dt / 2.0f), m, k, f);
-		glm::vec3 k3_V = Derivative_V(v + k2_V * (m_dt / 2.0f), m, k, f);
-		glm::vec3 k4_V = Derivative_V(v + k3_V * m_dt, m, k, f);
-		glm::vec3 dV = (k1_V + 2.0f * k2_V + 2.0f * k3_V + k4_V) * (m_dt / 6.0f);
-		m_V[i] += dV; 
+		// // Runge–Kutta for v;
+		// const glm::vec3& 	v = m_V[i];
+		// const float& 		m = m_simParams->m[i];
+		// const glm::vec3& 	f = m_F[i];
+		// const float& 		k = m_simParams->k;
 
-		// Runge–Kutta for x
-		glm::vec3 k1_X = Derivative_X(v);
-		glm::vec3 k2_X = Derivative_X(v + k1_X * (m_dt / 2.0f));
-		glm::vec3 k3_X = Derivative_X(v + k2_X * (m_dt / 2.0f));
-		glm::vec3 k4_X = Derivative_X(v + k3_X * m_dt);
-		glm::vec3 dX = (k1_X + 2.0f * k2_X + 2.0f * k3_X + k4_X) * (m_dt / 6.0f);
-		m_newP[i] = P[i] + dX;
-	}
+		// glm::vec3 k1_V = Derivative_V(v, m, k, f);
+		// glm::vec3 k2_V = Derivative_V(v + k1_V * (m_dt / 2.0f), m, k, f);
+		// glm::vec3 k3_V = Derivative_V(v + k2_V * (m_dt / 2.0f), m, k, f);
+		// glm::vec3 k4_V = Derivative_V(v + k3_V * m_dt, m, k, f);
+		// glm::vec3 dV = (k1_V + 2.0f * k2_V + 2.0f * k3_V + k4_V) * (m_dt / 6.0f);
+		// m_V[i] += dV; 
 
-	for (int i = 1; i < P.size(); ++i)
-	{
-		m_newP[i] = P[i];
+		// // Runge–Kutta for x
+		// glm::vec3 k1_X = Derivative_X(v);
+		// glm::vec3 k2_X = Derivative_X(v + k1_X * (m_dt / 2.0f));
+		// glm::vec3 k3_X = Derivative_X(v + k2_X * (m_dt / 2.0f));
+		// glm::vec3 k4_X = Derivative_X(v + k3_X * m_dt);
+		// glm::vec3 dX = (k1_X + 2.0f * k2_X + 2.0f * k3_X + k4_X) * (m_dt / 6.0f);
+		// m_newP[i] = P[i] + dX;
 	}
 
 	m_bCube->SetPoints(m_newP);
