@@ -3,6 +3,8 @@
 #include <iostream>
 #include <glm/geometric.hpp>
 
+#include <stdlib.h> 
+
 jelly_simThread::jelly_simThread(
 		std::shared_ptr<bezierCube> cube,
 		std::shared_ptr<simulationParameters> simParams) :
@@ -136,16 +138,23 @@ void jelly_simThread::SimulationStep()
 	m_F.assign(64, glm::vec3(0.0f));
 
 	// Compute forces
-	auto restLengths = m_bCube->GetRestLengths();	
-	for(auto I : restLengths)
+	auto restLengths = m_bCube->GetRestLengths();
+	system("cls"); 
+	for(const auto& I : restLengths)
 	{
 		int i = I.first;
-		for (auto J : I.second) 
+		for (const auto& J : I.second) 
 		{
 			int j = J.first;
 			float rl = J.second;
 			float cl = glm::length(P[j] - P[i]);
 			float dl = cl - rl;
+
+			if (j == 0)
+			{
+				std::cout << "[" << i << "] = " << dl << std::endl;
+			}
+
 			glm::vec3 f = glm::normalize(P[j] - P[i]) * m_simParams->c1 * dl;
 
 			if (dl > 0) 
@@ -163,7 +172,7 @@ void jelly_simThread::SimulationStep()
 
 	// Compute new positions
 	int chosenInd = m_bCube->GetChosenPointIndex();
-	for (int i = 0; i < P.size(); ++i)
+	for (int i = 0; i < 1/*P.size()*/; ++i)
 	{
 		if (i == chosenInd)
 		{
@@ -192,6 +201,11 @@ void jelly_simThread::SimulationStep()
 		glm::vec3 k4_X = Derivative_X(v + k3_X * m_dt);
 		glm::vec3 dX = (k1_X + 2.0f * k2_X + 2.0f * k3_X + k4_X) * (m_dt / 6.0f);
 		m_newP[i] = P[i] + dX;
+	}
+
+	for (int i = 1; i < P.size(); ++i)
+	{
+		m_newP[i] = P[i];
 	}
 
 	m_bCube->SetPoints(m_newP);

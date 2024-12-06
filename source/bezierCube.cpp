@@ -29,7 +29,7 @@ void bezierCube::SetPoints(std::vector<glm::vec3>& newPositions)
 	m_points = newPositions;
 }
 
-std::unordered_map<int, std::unordered_map<int, float>>& 
+const std::unordered_map<int, std::unordered_map<int, float>>& 
 	bezierCube::GetRestLengths()
 {
 	return m_springsRestLengths;	
