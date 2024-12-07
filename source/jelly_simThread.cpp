@@ -3,8 +3,6 @@
 #include <iostream>
 #include <glm/geometric.hpp>
 
-#include <stdlib.h> 
-
 jelly_simThread::jelly_simThread(
 		std::shared_ptr<bezierCube> cube,
 		std::shared_ptr<simulationParameters> simParams) :
@@ -71,8 +69,8 @@ void jelly_simThread::Start()
 	m_newP.assign(64, glm::vec3(0.0f));
 
 	// Compute Initial Values of dl change
-	std::vector<glm::vec3> P = m_bCube->GetPoints();
-	m_prevDL = m_bCube->GetRestLengths();
+	std::vector<glm::vec3> P = m_bCube->GetCubePoints();
+	m_prevDL = m_bCube->GetCubeSprings();
 	for(const auto& I : m_prevDL)
 	{
 		int i = I.first;
@@ -142,11 +140,36 @@ void jelly_simThread::Main()
 
 void jelly_simThread::SimulationStep()
 {
-	std::vector<glm::vec3> P = m_bCube->GetPoints();
+	std::vector<glm::vec3> P = m_bCube->GetCubePoints();
 	m_F.assign(64, glm::vec3(0.0f));
 
 	// Compute forces of the cube's springs
-	auto restLengths = m_bCube->GetRestLengths();
+	ComputeCubeForces(P);
+
+	// Compute forces for springs to control frame
+	ComputeControlFrameFoces(P);
+
+	// Compute new positions
+	int chosenInd = m_bCube->GetChosenPointIndex();
+	for (int i = 0; i < P.size(); ++i)
+	{
+		if (i == chosenInd)
+		{
+			m_newP[i] = P[i];
+			m_V[i] = glm::vec3(0.0f);
+			continue;
+		}
+
+		m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
+		m_newP[i] = P[i] + m_V[i] * m_dt;
+	}
+
+	m_bCube->SetCubePoints(m_newP);
+}
+
+void jelly_simThread::ComputeCubeForces(const std::vector<glm::vec3>& P)
+{
+	auto restLengths = m_bCube->GetCubeSprings();
 	for(const auto& I : restLengths)
 	{
 		int i = I.first;
@@ -170,21 +193,11 @@ void jelly_simThread::SimulationStep()
 			m_F[j] += f;
 		}
 	}
+}
 
-	// Compute new positions
-	int chosenInd = m_bCube->GetChosenPointIndex();
-	for (int i = 0; i < P.size(); ++i)
-	{
-		if (i == chosenInd)
-		{
-			m_newP[i] = P[i];
-			m_V[i] = glm::vec3(0.0f);
-			continue;
-		}
+void jelly_simThread::ComputeControlFrameFoces(const std::vector<glm::vec3>& P)
+{
+	if (!m_simParams->bControlFrame) return;
 
-		m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
-		m_newP[i] = P[i] + m_V[i] * m_dt;
-	}
 
-	m_bCube->SetPoints(m_newP);
 }

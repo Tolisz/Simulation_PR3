@@ -31,6 +31,8 @@ private:
 	void Start();
 	void Main();
 	void SimulationStep();
+	void ComputeCubeForces(const std::vector<glm::vec3>& P);
+	void ComputeControlFrameFoces(const std::vector<glm::vec3>& P);
 
 private:
 

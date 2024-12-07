@@ -77,7 +77,7 @@ void jelly_App::ResetSimulation()
 	case simulationState::Stopped:
 		m_simState = simulationState::Initial;
 		m_simThread->EndSimulation();
-		m_bCube->ResetCube(m_simParams->a);
+		m_bCube->Reset(m_simParams->a);
 		break;
 	}
 }
@@ -112,7 +112,7 @@ void jelly_App::ChoseMovableObject(float xpos, float ypos)
 	glm::vec3 cameraPos = m_renderer->GetCameraPos();
 	glm::vec3 to_world_far = world_far - cameraPos;
 
-	std::vector<glm::vec3> points = m_bCube->GetPoints();
+	std::vector<glm::vec3> points = m_bCube->GetCubePoints();
 
 	float d_min = std::numeric_limits<float>::max();
 	int i_min = -1;
@@ -197,7 +197,7 @@ void jelly_App::SetPointAttribute(int pointIndex, int attributeIndex, bool value
 
 void jelly_App::SetCubeEdgeLength(float newLength)
 {
-	m_bCube->ResetCube(newLength);
+	m_bCube->Reset(newLength);
 }
 
 float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& A, const glm::vec3& B)

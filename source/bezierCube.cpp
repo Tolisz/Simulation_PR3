@@ -7,39 +7,62 @@
 bezierCube::bezierCube(float a)
 {
 	m_cubePoints.resize(64);
+	m_framePoints.resize(8);
 
-	ResetCube(a);
+	Reset(a);
 }
 
-std::vector<glm::vec3> bezierCube::GetPoints()
+std::vector<glm::vec3> bezierCube::GetCubePoints()
 {
 	std::vector<glm::vec3> pointsCopy;
 	
 	{
-		std::lock_guard<std::mutex> lock(m_accessPoints);
+		std::lock_guard<std::mutex> lock(m_accessCubePoints);
 		pointsCopy = m_cubePoints;
 	}
 	
 	return std::move(pointsCopy);
 }
 
-void bezierCube::SetPoints(std::vector<glm::vec3>& newPositions)
+void bezierCube::SetCubePoints(std::vector<glm::vec3>& newPositions)
 {
-	std::lock_guard<std::mutex> lock(m_accessPoints);
+	std::lock_guard<std::mutex> lock(m_accessCubePoints);
 	m_cubePoints = newPositions;
 }
 
-const std::unordered_map<int, std::unordered_map<int, float>>& 
-	bezierCube::GetRestLengths()
+std::vector<glm::vec3> bezierCube::GetFramePoints()
+{
+	std::vector<glm::vec3> pointsCopy;
+	
+	{
+		std::lock_guard<std::mutex> lock(m_accessFramePoints);
+		pointsCopy = m_framePoints;
+	}
+	
+	return std::move(pointsCopy);
+}
+
+void bezierCube::SetFramePoints(std::vector<glm::vec3>& newPositions)
+{
+	std::lock_guard<std::mutex> lock(m_accessFramePoints);
+	m_framePoints = newPositions;	
+}
+
+const std::unordered_map<int, std::unordered_map<int, float>>& bezierCube::GetCubeSprings()
 {
 	return m_springsRestLengths;	
+}
+
+const std::unordered_map<int, int>& bezierCube::GetFrameSprings()
+{
+	return m_frameSprings;
 }
 
 glm::vec3 bezierCube::GetChoosenPointPos()
 {
 	if (m_chosenPoint != -1) 
 	{
-		std::lock_guard<std::mutex> lock(m_accessPoints);
+		std::lock_guard<std::mutex> lock(m_accessCubePoints);
 		return m_cubePoints[m_chosenPoint];
 	}
 	else 
@@ -52,7 +75,7 @@ void bezierCube::SetChoosenPointPos(const glm::vec3& pos)
 {
 	if (m_chosenPoint != -1) 
 	{
-		std::lock_guard<std::mutex> lock(m_accessPoints);
+		std::lock_guard<std::mutex> lock(m_accessCubePoints);
 		m_cubePoints[m_chosenPoint] = pos;
 	}
 }
@@ -65,6 +88,12 @@ int bezierCube::GetChosenPointIndex()
 void bezierCube::SetChosenPointIndex(int i)
 {
 	m_chosenPoint = i;
+}
+
+void bezierCube::Reset(float a)
+{
+	ResetCube(a);
+	ResetFrame(a);	
 }
 
 void bezierCube::ResetCube(float a)
@@ -152,5 +181,40 @@ void bezierCube::ResetCube(float a)
 			}
 
 		}	
+	}
+}
+
+void bezierCube::ResetFrame(float a)
+{
+	float a_2 = a / 2.0f;
+
+	int n = 0;
+	for (int i = 0; i < 2; ++i) {
+		// Points for a single layer
+		// -------------------------
+		for (int j = 0; j < 2; ++j) {
+			for (int k = 0; k < 2; ++k) {
+				m_framePoints[n] = glm::vec3(
+					- a_2 + k * a, 
+					+ a_2 - j * a, 
+					+ a_2 - i * a);
+				++n;	
+			}
+		}
+	}
+
+	if (!b_frameSpringsInit)
+	{
+		m_frameSprings[0] = 0;
+		m_frameSprings[1] = 3;
+		m_frameSprings[2] = 12;
+		m_frameSprings[3] = 15;
+
+		m_frameSprings[4] = 48;
+		m_frameSprings[5] = 51;
+		m_frameSprings[6] = 60;
+		m_frameSprings[7] = 63;
+
+		b_frameSpringsInit = true;
 	}
 }

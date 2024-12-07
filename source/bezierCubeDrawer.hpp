@@ -17,20 +17,25 @@ public:
 	bezierCubeDrawer& operator=(bezierCubeDrawer&&) = delete;
 
 	void UpdateBuffers();
-	void DrawPoints();
+	void DrawCubePoints();
 	void DrawShortSprings();
 	void DrawLongSprings();
+	void DrawControlFrame();
 
 	int GetChosenPoint();
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 private:
 
 	void InitGL();
+	void InitGL_MainCube();
+	void InitGL_ControlCube();
 	void DeInitGL();
 
-	void GetSpringIndices(
+	void GetCubeSpringIndices(
 		std::vector<std::pair<unsigned int, unsigned int>>& shortSprings, 
 		std::vector<std::pair<unsigned int, unsigned int>>& longSprings);
+
+	std::vector<std::pair<unsigned int, unsigned int>> GetFrameSpringIndices();
 
 private:
 
@@ -46,15 +51,21 @@ private:
 	int m_longSpringsNum;
 
 	// OpenGL
+
+	/* Main Cube */
 	GLuint m_VAO_points;
 	GLuint m_VAO_shortSprings;
 	GLuint m_VAO_longSprings;
 	
-	GLuint m_pointsBuffer;
-	GLuint m_pointsAtribBuffer;
+	GLuint m_cubePointsBuffer;
+	GLuint m_cubePointsAtribBuffer;
 
 	GLuint m_EBO_shortSprings;
 	GLuint m_EBO_longSprings;
 
+	/* Control Frame */
+	GLuint m_VAO_framePoints;
+	GLuint m_framePointsBuffer;
+	GLuint m_EBO_frameSprings;
 
 };

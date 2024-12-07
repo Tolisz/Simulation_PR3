@@ -204,17 +204,28 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		switch (action)
 		{
 		case GLFW_PRESS:
+		{
 			if (w->m_viewportState != viewportState::IDLE)
 				return;
 
 			w->m_viewportState = viewportState::OBJECT_CHOOSE;
+
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
+			float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
+			w->m_app->ChoseMovableObject(viewXpos, viewYpos);
+		}
 			break;
 		
 		case GLFW_RELEASE:
+		{
 			if (w->m_viewportState != viewportState::OBJECT_CHOOSE)
 				return;
 
 			w->m_viewportState = viewportState::IDLE;
+			w->m_app->UnchooseObject(true);
+		}
 			break;
 		}
 	}

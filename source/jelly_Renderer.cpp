@@ -130,7 +130,7 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bPoints)
 	{
 		m_s_bCubePoints.set4fv("cDefaultColor", m_drawParams->cPoints);
-		m_bCube->DrawPoints();
+		m_bCube->DrawCubePoints();
 	}
 
 	/* Cube's springs */
@@ -144,6 +144,11 @@ void jelly_Renderer::RenderScene()
 	{
 		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
 		m_bCube->DrawLongSprings();
+	}
+	if (m_drawParams->bControlFrame)
+	{
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cControlFrame);
+		m_bCube->DrawControlFrame();
 	}
 
 	// =========
