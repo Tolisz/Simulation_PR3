@@ -485,9 +485,9 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	GUI_ELEM_HelpMarker("Spring constant of springs from the Bezier cube to the control frame");
 
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-	ImGui::DragFloat("k", &simParam->k, 0.1f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::DragFloat("k", &simParam->k, 0.1f, 0.00f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::SameLine();
-	GUI_ELEM_HelpMarker("Damping constant");
+	GUI_ELEM_HelpMarker("Viscous friction");
 
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
 	ImGui::DragFloat("dt", &simParam->dt, 0.001f, 0.0001f, 1.0f, "%.4f", ImGuiSliderFlags_AlwaysClamp);

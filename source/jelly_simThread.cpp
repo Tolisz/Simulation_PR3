@@ -176,16 +176,8 @@ void jelly_simThread::SimulationStep()
 			glm::vec3 f = glm::normalize(P[j] - P[i]) * (
 				- m_simParams->k * dl_drv - m_simParams->c1 *  dl);
 
-			if (dl > 0) 
-			{
-				m_F[i] += -f;
-				m_F[j] += f;
-			}
-			else // dl <= 0
-			{
-				m_F[i] += f;
-				m_F[j] += +f;
-			}
+			m_F[i] += -f;
+			m_F[j] += f;
 		}
 	}
 
@@ -200,7 +192,7 @@ void jelly_simThread::SimulationStep()
 			continue;
 		}
 
-		m_V[i] += (m_F[i] / m_simParams->m[i]) * m_dt; 
+		m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
 		m_newP[i] = P[i] + m_V[i] * m_dt;
 
 		// // Runge–Kutta for v;
