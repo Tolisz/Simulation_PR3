@@ -6,7 +6,7 @@
 
 bezierCube::bezierCube(float a)
 {
-	m_points.resize(64);
+	m_cubePoints.resize(64);
 
 	ResetCube(a);
 }
@@ -17,7 +17,7 @@ std::vector<glm::vec3> bezierCube::GetPoints()
 	
 	{
 		std::lock_guard<std::mutex> lock(m_accessPoints);
-		pointsCopy = m_points;
+		pointsCopy = m_cubePoints;
 	}
 	
 	return std::move(pointsCopy);
@@ -26,7 +26,7 @@ std::vector<glm::vec3> bezierCube::GetPoints()
 void bezierCube::SetPoints(std::vector<glm::vec3>& newPositions)
 {
 	std::lock_guard<std::mutex> lock(m_accessPoints);
-	m_points = newPositions;
+	m_cubePoints = newPositions;
 }
 
 const std::unordered_map<int, std::unordered_map<int, float>>& 
@@ -40,7 +40,7 @@ glm::vec3 bezierCube::GetChoosenPointPos()
 	if (m_chosenPoint != -1) 
 	{
 		std::lock_guard<std::mutex> lock(m_accessPoints);
-		return m_points[m_chosenPoint];
+		return m_cubePoints[m_chosenPoint];
 	}
 	else 
 	{
@@ -53,7 +53,7 @@ void bezierCube::SetChoosenPointPos(const glm::vec3& pos)
 	if (m_chosenPoint != -1) 
 	{
 		std::lock_guard<std::mutex> lock(m_accessPoints);
-		m_points[m_chosenPoint] = pos;
+		m_cubePoints[m_chosenPoint] = pos;
 	}
 }
 
@@ -80,7 +80,7 @@ void bezierCube::ResetCube(float a)
 		// -------------------------
 		for (int j = 0; j < 4; ++j) {
 			for (int k = 0; k < 4; ++k) {
-				m_points[n] = glm::vec3(
+				m_cubePoints[n] = glm::vec3(
 					- a_2 + k * a_3, 
 					+ a_2 - j * a_3, 
 					+ a_2 - i * a_3);

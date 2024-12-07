@@ -145,7 +145,7 @@ void jelly_simThread::SimulationStep()
 	std::vector<glm::vec3> P = m_bCube->GetPoints();
 	m_F.assign(64, glm::vec3(0.0f));
 
-	// Compute forces
+	// Compute forces of the cube's springs
 	auto restLengths = m_bCube->GetRestLengths();
 	for(const auto& I : restLengths)
 	{

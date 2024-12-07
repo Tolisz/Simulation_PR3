@@ -137,12 +137,12 @@ void jelly_Renderer::RenderScene()
 	m_s_cubeSprings.Use();
 	if (m_drawParams->bShortSrpings)
 	{
-		m_s_cubeSprings.set4fv("springColor", m_drawParams->cShortSpringsColor);
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cShortSprings);
 		m_bCube->DrawShortSprings();
 	}
 	if (m_drawParams->bLongSprings)
 	{
-		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSpringsColor);
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
 		m_bCube->DrawLongSprings();
 	}
 

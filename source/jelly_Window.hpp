@@ -44,6 +44,7 @@ private:
     void GUI_SEC_SimulationActions();
     void GUI_SEC_SimulationParameters();
     void GUI_SEC_DrawOptions();
+    void GUI_SEC_MiscellaneousInfo();
     void GUI_WindowRender();
 
     // GUI miscellaneous

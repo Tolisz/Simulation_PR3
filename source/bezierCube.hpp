@@ -33,7 +33,7 @@ public:
 private:
 
 	std::mutex m_accessPoints;
-	std::vector<glm::vec3> m_points;
+	std::vector<glm::vec3> m_cubePoints;
 	int m_chosenPoint = -1;
 
 	// i -> j -> spring rest length, where j < i

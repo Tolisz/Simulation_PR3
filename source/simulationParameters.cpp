@@ -16,4 +16,6 @@ void simulationParameters::ResetToDefault()
 
 	dt = 0.01f;
 
+	bControlFrame = true;
+	bCollisionFrame = true;
 }

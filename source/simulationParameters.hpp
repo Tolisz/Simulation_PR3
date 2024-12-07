@@ -13,6 +13,9 @@ struct simulationParameters
 
 	float dt;		// integration step
 
+	bool bControlFrame;
+	bool bCollisionFrame;
+
 	simulationParameters();
 
 	void ResetToDefault();

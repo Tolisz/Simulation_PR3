@@ -299,6 +299,7 @@ void jelly_Window::GUI_WindowSettings()
 	GUI_SEC_SimulationActions();
 	GUI_SEC_SimulationParameters();
 	GUI_SEC_DrawOptions();
+	GUI_SEC_MiscellaneousInfo();
 
 	ImGui::PopStyleVar(1);
 }
@@ -346,6 +347,7 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	// = - = - = - = - = - = - = - = - = - = - = - = -
 
 	auto simParam = m_app->GetSimulationParameters();
+	auto drawParam = m_app->GetDrawParameters();
 
 	float wWidth = ImGui::GetWindowWidth();
 	float wPadding = ImGui::GetStyle().WindowPadding.x;
@@ -498,10 +500,12 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	ImGui::SameLine();
 	GUI_ELEM_HelpMarker("Spring constant of springs inside the Bezier cube");
 	
-	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-	ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-	ImGui::SameLine();
-	GUI_ELEM_HelpMarker("Spring constant of springs from the Bezier cube to the control frame");
+	ImGui::BeginDisabled(!simParam->bControlFrame);
+		ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+		ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Spring constant of springs from the Bezier cube to the control frame");
+	ImGui::EndDisabled();
 
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
 	ImGui::DragFloat("k", &simParam->k, 0.1f, 0.00f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
@@ -522,10 +526,30 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		{
 			simParam->ResetToDefault();	
 			m_app->SetCubeEdgeLength(simParam->a);
+			drawParam->bCollisionFrame = simParam->bCollisionFrame;
+			drawParam->bControlFrame = simParam->bControlFrame; 
 		}
 	ImGui::EndDisabled();
 
 	ImGui::EndGroup();
+
+	// ========================================================
+
+	ImGui::BeginDisabled(shouldDisable);
+		if (ImGui::Checkbox("Control Frame##SIMULATION" , &simParam->bControlFrame))
+		{
+			drawParam->bControlFrame = simParam->bControlFrame; 
+		}
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Cube's control frame. The cube will follow the control frame and will try to stand inside it");
+
+		if (ImGui::Checkbox("Collision Frame##SIMULATION" , &simParam->bCollisionFrame))
+		{
+			drawParam->bCollisionFrame = simParam->bCollisionFrame;
+		}	
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Cube can be only inside the collision frame ane cube's control points will colide with the collision frame's walls");
+	ImGui::EndDisabled();
 }
 
 void jelly_Window::GUI_SEC_DrawOptions()
@@ -533,12 +557,47 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::SeparatorText("Draw Options");
 	// = - = - = - = - = - = - = - = - = - = - = - = -
 
-	std::shared_ptr<drawParameters> params = m_app->GetDrawParameters();
+	std::shared_ptr<drawParameters> drawParam = m_app->GetDrawParameters();
+	auto simParam = m_app->GetSimulationParameters();
+
+	GUI_ELEM_DrawCheckbox("Cube's points", drawParam->cPoints, drawParam->bPoints);
+	GUI_ELEM_DrawCheckbox("Cube's shorter edges", drawParam->cShortSprings, drawParam->bShortSrpings);
+	GUI_ELEM_DrawCheckbox("Cube's longer edges", drawParam->cLongSprings, drawParam->bLongSprings);
 	
-	GUI_ELEM_DrawCheckbox("Cube's points", params->cPoints, params->bPoints);
-	GUI_ELEM_DrawCheckbox("Cube's shorter edges", params->cShortSpringsColor, params->bShortSrpings);
-	GUI_ELEM_DrawCheckbox("Cube's longer edges", params->cLongSpringsColor, params->bLongSprings);
+	ImGui::BeginDisabled(!simParam->bControlFrame);
+		GUI_ELEM_DrawCheckbox("Control frame##DRAW", drawParam->cControlFrame, drawParam->bControlFrame);
+	ImGui::EndDisabled();
+
+	ImGui::BeginDisabled(!simParam->bCollisionFrame);
+		GUI_ELEM_DrawCheckbox("Collision frame##DRAW", drawParam->cCollisionFrame, drawParam->bCollisionFrame);
+	ImGui::EndDisabled();
+}
+
+void jelly_Window::GUI_SEC_MiscellaneousInfo()
+{
+	ImGui::SeparatorText("Miscellaneous Information");
+	// = - = - = - = - = - = - = - = - = - = - = - = -
+
+	float wWidth = ImGui::GetWindowWidth();
+	ImGui::BeginDisabled(!b_limitFPS);
+
+		int framerate = static_cast<int>(m_framerate);
+		ImGui::SetNextItemWidth(wWidth * 0.5f);
+		if (ImGui::InputInt("##FPS Limit Input", &framerate, 15, 50) )
+		{
+			if (framerate <= 30) 
+				framerate = 30;
+
+			m_framerate = static_cast<double>(framerate);
+		}
+
+	ImGui::EndDisabled();
+
+	ImGui::SameLine();	
+	ImGui::Checkbox("Limit FPS", &b_limitFPS);
+	ImGui::SameLine(wWidth * 0.8f);
 	
+	ImGui::TextColored(b_limitFPS ? ImGui::GetStyle().Colors[ImGuiCol_Text] : ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "FPS: %6.2f", 1.0f / m_deltaTime);
 }
 
 void jelly_Window::GUI_WindowRender()
