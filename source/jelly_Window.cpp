@@ -348,7 +348,7 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	auto simParam = m_app->GetSimulationParameters();
 
 	float wWidth = ImGui::GetWindowWidth();
-	// float wPadding = ImGui::GetStyle().WindowPadding.x;
+	float wPadding = ImGui::GetStyle().WindowPadding.x;
 	float iSpacing = ImGui::GetStyle().ItemSpacing.x;
 	 
 	ImVec4 activeButtonColor = ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
@@ -422,7 +422,7 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		{
 			ImGui::BeginGroup();
 			
-			std::string groupName = "Face ";
+			std::string groupName = "Layer ";
 			groupName += std::to_string(k + 1);
 			float textWidth = ImGui::CalcTextSize(groupName.data()).x;
 
@@ -474,6 +474,25 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 		ImGui::PopStyleVar();
 	}
 
+	bool shouldDisable = m_app->IsRunning() || m_app->IsStopped();
+
+	ImGui::BeginGroup();
+
+	ImGui::BeginDisabled(shouldDisable);
+		ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+		if (ImGui::DragFloat("a", &simParam->a, 0.1f, 0.1f, 10.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		{
+			m_app->SetCubeEdgeLength(simParam->a);	
+		}
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Cube's edge size");
+
+		ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+		ImGui::DragFloat("dt", &simParam->dt, 0.001f, 0.0001f, 1.0f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Integration step");
+	ImGui::EndDisabled();
+
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
 	ImGui::DragFloat("c1", &simParam->c1, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::SameLine();
@@ -489,11 +508,24 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	ImGui::SameLine();
 	GUI_ELEM_HelpMarker("Viscous friction");
 
-	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-	ImGui::DragFloat("dt", &simParam->dt, 0.001f, 0.0001f, 1.0f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::EndGroup();
+	float groupHeight = ImGui::GetItemRectSize().y;
 	ImGui::SameLine();
-	GUI_ELEM_HelpMarker("Integration step");
+	ImGui::BeginGroup();
 
+	ImGui::BeginDisabled(shouldDisable);
+		ImVec2 buttonSize = ImVec2(
+			ImGui::GetContentRegionAvail().x,
+			groupHeight
+		);
+		if ( ImGui::Button("Reset parameters", buttonSize) )
+		{
+			simParam->ResetToDefault();	
+			m_app->SetCubeEdgeLength(simParam->a);
+		}
+	ImGui::EndDisabled();
+
+	ImGui::EndGroup();
 }
 
 void jelly_Window::GUI_SEC_DrawOptions()
@@ -501,6 +533,7 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::SeparatorText("Draw Options");
 	// = - = - = - = - = - = - = - = - = - = - = - = -
 
+	
 }
 
 void jelly_Window::GUI_WindowRender()

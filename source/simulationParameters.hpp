@@ -14,4 +14,6 @@ struct simulationParameters
 	float dt;		// integration step
 
 	simulationParameters();
+
+	void ResetToDefault();
 };

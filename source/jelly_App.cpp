@@ -195,6 +195,11 @@ void jelly_App::SetPointAttribute(int pointIndex, int attributeIndex, bool value
 	m_renderer->SetPointAttribute(pointIndex, attributeIndex, value);
 }
 
+void jelly_App::SetCubeEdgeLength(float newLength)
+{
+	m_bCube->ResetCube(newLength);
+}
+
 float jelly_App::distanceFromPointToLine(const glm::vec3& P, const glm::vec3& A, const glm::vec3& B)
 {
     glm::vec3 AB = B - A;

@@ -49,7 +49,9 @@ public:
 	void UnchooseObject(bool resetSeenPoint);
 	void MoveChosenObject(float xpos, float ypos);
 
+	// Cube
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
+	void SetCubeEdgeLength(float newLength);
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
