@@ -32,9 +32,6 @@ private:
 	void Main();
 	void SimulationStep();
 
-	glm::vec3 Derivative_V(const glm::vec3& V, const float& m, const float& k, const glm::vec3& f);
-	glm::vec3 Derivative_X(const glm::vec3& V);
-
 private:
 
 	// thread menagement 
