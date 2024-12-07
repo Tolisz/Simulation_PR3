@@ -51,6 +51,7 @@ private:
     void GUI_UpdateRenderRegion();
 
     void GUI_ELEM_HelpMarker(const char* desc);
+    void GUI_ELEM_DrawCheckbox(std::string name, glm::vec4& color, bool& draw);
 
 private:
 

@@ -10,7 +10,7 @@ in FS_IN
 layout(location = 0) out vec4 oColor;
 // =========================================
 
-uniform int chosenPoint;
+uniform vec4 cDefaultColor;
 
 const vec4 cHighlightedPoint = vec4(0.0f, 1.0f, 0.0f, 1.0f);
 const vec4 cChosenPoint = vec4(1.0f);
@@ -35,8 +35,7 @@ void main()
 	// default color
 	else 
 	{
-		oColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		oColor = cDefaultColor;
 	}
-
 
 }

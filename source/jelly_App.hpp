@@ -55,6 +55,7 @@ public:
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
+	std::shared_ptr<drawParameters> GetDrawParameters();
 	
 private:
 

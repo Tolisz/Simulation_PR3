@@ -7,6 +7,8 @@ jelly_Renderer::jelly_Renderer(std::unique_ptr<bezierCubeDrawer> cubeDrawer):
 {
 	SetUpFramebuffer();
 	PrepareScene();
+
+	m_drawParams = std::make_shared<drawParameters>();
 }
 
 jelly_Renderer::~jelly_Renderer()
@@ -94,6 +96,11 @@ void jelly_Renderer::SetPointAttribute(int pointIndex, int attributeIndex, bool 
 	m_bCube->SetPointAttribute(pointIndex, attributeIndex, value);
 }
 
+std::shared_ptr<drawParameters> jelly_Renderer::GetDrawParameters()
+{
+	return m_drawParams;
+}
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -118,16 +125,26 @@ void jelly_Renderer::RenderScene()
 	// Bezier Cube
 
 	m_bCube->UpdateBuffers();
-	int chosenPoint = m_bCube->GetChosenPoint();
 
 	m_s_bCubePoints.Use();
-	m_s_bCubePoints.set1i("chosenPoint", chosenPoint);
-	m_bCube->DrawPoints();
+	if (m_drawParams->bPoints)
+	{
+		m_s_bCubePoints.set4fv("cDefaultColor", m_drawParams->cPoints);
+		m_bCube->DrawPoints();
+	}
 
+	/* Cube's springs */
 	m_s_cubeSprings.Use();
-
-	m_bCube->DrawShortSprings();
-	m_bCube->DrawLongSprings();
+	if (m_drawParams->bShortSrpings)
+	{
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cShortSpringsColor);
+		m_bCube->DrawShortSprings();
+	}
+	if (m_drawParams->bLongSprings)
+	{
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSpringsColor);
+		m_bCube->DrawLongSprings();
+	}
 
 	// =========
 	// SCENE END

@@ -533,6 +533,11 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::SeparatorText("Draw Options");
 	// = - = - = - = - = - = - = - = - = - = - = - = -
 
+	std::shared_ptr<drawParameters> params = m_app->GetDrawParameters();
+	
+	GUI_ELEM_DrawCheckbox("Cube's points", params->cPoints, params->bPoints);
+	GUI_ELEM_DrawCheckbox("Cube's shorter edges", params->cShortSpringsColor, params->bShortSrpings);
+	GUI_ELEM_DrawCheckbox("Cube's longer edges", params->cLongSpringsColor, params->bLongSprings);
 	
 }
 
@@ -598,4 +603,15 @@ void jelly_Window::GUI_ELEM_HelpMarker(const char* desc)
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
+}
+
+void jelly_Window::GUI_ELEM_DrawCheckbox(std::string name, glm::vec4& color, bool& draw)
+{
+	ImGui::ColorEdit4(("##" + name).data(), reinterpret_cast<float*>(&color), 
+		ImGuiColorEditFlags_AlphaBar | 
+		ImGuiColorEditFlags_NoInputs | 
+		ImGuiColorEditFlags_NoBorder);
+	
+	ImGui::SameLine();
+	ImGui::Checkbox(name.data(), &draw);
 }

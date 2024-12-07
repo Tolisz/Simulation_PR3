@@ -232,3 +232,8 @@ std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()
 {
 	return m_simParams;
 }
+
+std::shared_ptr<drawParameters> jelly_App::GetDrawParameters()
+{
+	return m_renderer->GetDrawParameters();
+}

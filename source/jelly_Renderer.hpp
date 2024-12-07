@@ -7,6 +7,7 @@
 #include "camera.hpp"
 #include "obj_cube.hpp"
 #include "bezierCubeDrawer.hpp"
+#include "drawParameters.hpp"
 
 class jelly_Renderer
 {
@@ -40,6 +41,9 @@ public:
 	// 
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 
+	// 
+	std::shared_ptr<drawParameters> GetDrawParameters();
+
 private:
 
 	void RenderScene();
@@ -50,6 +54,8 @@ private:
 	void PrepareSceneObjects();
 
 private:
+
+	std::shared_ptr<drawParameters> m_drawParams;
 
 	// Framebuffer related things
 	glm::uvec2 	m_sceneSize;
