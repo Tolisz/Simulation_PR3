@@ -96,11 +96,17 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		switch (action)
 		{
 		case GLFW_PRESS:
-			if (w->m_viewportState != viewportState::OBJECT_CHOOSE)
-				return;
-			
-			w->m_viewportState = viewportState::OBJECT_MOVE;
-			w->m_app->ChooseObject();
+			if (w->m_viewportState == viewportState::OBJECT_CHOOSE)
+			{
+				w->m_viewportState = viewportState::OBJECT_MOVE;
+				w->m_app->ChooseObject();
+			}
+			else if (w->m_viewportState == viewportState::FRAME_ROTATION_FRONT || 
+				w->m_viewportState == viewportState::FRAME_ROTATION_UP_RIGHT)
+			{
+				w->m_viewportState = viewportState::IDLE;
+				w->m_app->EndControlFrameRotation();
+			}
 			break;
 		
 		case GLFW_RELEASE:
@@ -140,6 +146,9 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	w->m_lastMousePos.x = fxpos;
 	w->m_lastMousePos.y = fypos;
 
+	float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
+	float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
+
 	switch (w->m_viewportState)
 	{
 	case viewportState::CAMERA_ROTATE:
@@ -151,22 +160,21 @@ void jelly_Window::GLFW_SetUpCallbacks()
 		break;
 
 	case viewportState::OBJECT_CHOOSE:
-	{
-		float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
-		float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
-
 		w->m_app->ChoseMovableObject(viewXpos, viewYpos);
-	}
 		break;
 
 	case viewportState::OBJECT_MOVE:
-	{
-		float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
-		float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
-
 		w->m_app->MoveChosenObject(viewXpos, viewYpos);	
-	}
 		break;
+
+	case viewportState::FRAME_ROTATION_FRONT:
+		w->m_app->ControlFrameRotation_Front(viewXpos, viewYpos);
+		break;
+
+	case viewportState::FRAME_ROTATION_UP_RIGHT:
+		w->m_app->ControlFrameRotation_RightUp(viewXpos, viewYpos);
+		break;
+		
 	}
 }
 
@@ -198,6 +206,11 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	if (!w->b_viewportHovered && w->m_viewportState == viewportState::IDLE)
 		return;
 
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
+	float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
+
 	switch (key)
 	{
 	case GLFW_KEY_LEFT_CONTROL:
@@ -209,11 +222,6 @@ void jelly_Window::GLFW_SetUpCallbacks()
 				return;
 
 			w->m_viewportState = viewportState::OBJECT_CHOOSE;
-
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
-			float viewXpos = static_cast<float>(xpos) - w->m_viewportWinPos.x;
-			float viewYpos = static_cast<float>(ypos) - w->m_viewportWinPos.y - w->m_viewportWinTitleSize;
 			w->m_app->ChoseMovableObject(viewXpos, viewYpos);
 		}
 			break;
@@ -226,6 +234,28 @@ void jelly_Window::GLFW_SetUpCallbacks()
 			w->m_viewportState = viewportState::IDLE;
 			w->m_app->UnchooseObject(true);
 		}
+			break;
+		}
+
+	case GLFW_KEY_R:
+		switch (action)
+		{
+		case GLFW_PRESS:
+			
+			if (w->m_viewportState == viewportState::IDLE)
+			{
+				w->m_viewportState = viewportState::FRAME_ROTATION_FRONT;
+				w->m_app->StartControlFrameRotation(viewXpos, viewYpos);
+			}
+			else if (w->m_viewportState == viewportState::FRAME_ROTATION_FRONT)
+			{
+				w->m_viewportState = viewportState::FRAME_ROTATION_UP_RIGHT;
+			}
+			else if (w->m_viewportState == viewportState::FRAME_ROTATION_UP_RIGHT)
+			{
+				w->m_viewportState = viewportState::FRAME_ROTATION_FRONT;
+			}
+
 			break;
 		}
 	}

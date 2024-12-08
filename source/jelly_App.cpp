@@ -1,6 +1,10 @@
 #include "jelly_App.hpp"
 
 #include <iostream>
+#include <numeric>
+#include <algorithm>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/compatibility.hpp>
 
 jelly_App::jelly_App()
 {
@@ -157,7 +161,7 @@ void jelly_App::ChoseSeenPoint(const glm::vec3& A, const glm::vec3& B)
 void jelly_App::ChoseControlFrame(const glm::vec3& A, const glm::vec3& B)
 {
 	auto points = m_bCube->GetFramePoints();
-	b_ControlFrameSeen = false;
+	b_CFSeen = false;
 
 	std::array<std::array<int, 4>, 6> faces = {{
         {0, 1, 2, 3}, // FRONT
@@ -176,8 +180,8 @@ void jelly_App::ChoseControlFrame(const glm::vec3& A, const glm::vec3& B)
 			auto T = RayTriangleIntersection(A, B, points[face[0]], points[face[1]], points[face[2]]);
 			if (T.first)
 			{
-				b_ControlFrameSeen = true;
-				m_ControlFrameIntersection = A + T.second * (B - A);
+				b_CFSeen = true;
+				m_CFIntersection = A + T.second * (B - A);
 				break;
 			}
 		}
@@ -186,14 +190,14 @@ void jelly_App::ChoseControlFrame(const glm::vec3& A, const glm::vec3& B)
 			auto T = RayTriangleIntersection(A, B, points[face[1]], points[face[2]], points[face[3]]);
 			if (T.first)
 			{
-				b_ControlFrameSeen = true;
-				m_ControlFrameIntersection = A + T.second * (B - A);
+				b_CFSeen = true;
+				m_CFIntersection = A + T.second * (B - A);
 				break;
 			}
 		}
 	}
 
-	m_renderer->SetControlFrameChoosen(b_ControlFrameSeen);
+	m_renderer->SetControlFrameChoosen(b_CFSeen);
 }
 
 void jelly_App::ChooseObject()
@@ -209,7 +213,7 @@ void jelly_App::UnchooseObject(bool resetSeenPoint)
 	if (m_simParams->bControlFrame)
 	{
 		m_renderer->SetControlFrameChoosen(false);
-		b_ControlFrameSeen = false;	
+		b_CFSeen = false;	
 	}
 	else 
 	{
@@ -244,10 +248,10 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 
 	if (m_simParams->bControlFrame)
 	{
-		if (!b_ControlFrameSeen)
+		if (!b_CFSeen)
 			return;
 
-		glm::vec3 P0 = m_ControlFrameIntersection;
+		glm::vec3 P0 = m_CFIntersection;
 		glm::vec3 N  = m_renderer->Camera().GetVecFront();
 		glm::vec3 L = glm::normalize(world_far - cameraPos);
 		
@@ -266,7 +270,7 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 			{
 				points[i] = nP + to_points[i];
 			}
-			m_ControlFrameIntersection = nP;
+			m_CFIntersection = nP;
 		}
 
 		m_bCube->SetFramePoints(points);
@@ -286,6 +290,56 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 			m_bCube->SetChoosenPointPos(newPos.value());
 		}
 	}
+}
+
+void jelly_App::StartControlFrameRotation(float xpos, float ypos)
+{
+	m_CFRotationStart = {xpos, ypos};
+	m_CFRotationPoints = m_bCube->GetFramePoints();
+	m_CFRotatedPoints = m_CFRotationPoints; 
+	m_CFCenter = std::accumulate(m_CFRotationPoints.begin(), m_CFRotationPoints.end(), glm::vec3(0.0f));
+	m_CFCenter /= m_CFRotationPoints.size();
+
+	glm::mat4 Proj = m_renderer->GetProjectionMatrix();
+	glm::mat4 View = m_renderer->GetViewMatrix();
+
+	glm::vec4 ProjPoint = Proj * View * glm::vec4(m_CFCenter, 1.0f);
+	ProjPoint /= ProjPoint.w;
+
+	glm::uvec2 screenSize = m_renderer->GetRenderAreaSize();
+	m_CFScreenCenter.x = screenSize.x * ((ProjPoint.x + 1.0f) / 2.0f);
+	m_CFScreenCenter.y = screenSize.y * ((-ProjPoint.y + 1.0f) / 2.0f);
+}
+
+void jelly_App::EndControlFrameRotation()
+{
+	m_bCube->SetFramePoints(m_CFRotatedPoints);
+}
+
+void jelly_App::ControlFrameRotation_Front(float xpos, float ypos)
+{
+	// Compute rotation angle
+	float angle1 = glm::atan2(m_CFRotationStart.y - m_CFScreenCenter.y, m_CFRotationStart.x - m_CFScreenCenter.x);
+	float angle2 = glm::atan2(ypos - m_CFScreenCenter.y, xpos - m_CFScreenCenter.x);
+	
+	float angle = angle2 - angle1;
+	if (angle < 0) { angle += 2 * glm::pi<float>(); }
+
+	// std::cout << glm::degrees(angle) << std::endl;
+	
+	// Rotate points
+
+	glm::quat rotation = glm::angleAxis(-angle, m_renderer->Camera().GetVecFront());
+	m_CFRotatedPoints = m_CFRotationPoints;
+	std::for_each(m_CFRotatedPoints.begin(), m_CFRotatedPoints.end(), 
+		[&](auto& elem){ elem = elem * rotation; });
+
+	m_bCube->SetFramePoints(m_CFRotatedPoints);
+}
+
+void jelly_App::ControlFrameRotation_RightUp(float xpos, float ypos)
+{
+	
 }
 
 void jelly_App::SetPointAttribute(int pointIndex, int attributeIndex, bool value)

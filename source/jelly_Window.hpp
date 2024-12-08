@@ -15,7 +15,9 @@ class jelly_Window: public glfwWindowWrap
         CAMERA_ROTATE,
         CAMERA_MOVE,
         OBJECT_CHOOSE,
-        OBJECT_MOVE
+        OBJECT_MOVE,
+        FRAME_ROTATION_FRONT,
+        FRAME_ROTATION_UP_RIGHT
     };
 
 

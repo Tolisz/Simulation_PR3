@@ -49,6 +49,11 @@ public:
 	void UnchooseObject(bool resetSeenPoint);
 	void MoveChosenObject(float xpos, float ypos);
 
+	void StartControlFrameRotation(float xpos, float ypos);
+	void EndControlFrameRotation();
+	void ControlFrameRotation_Front(float xpos, float ypos);
+	void ControlFrameRotation_RightUp(float xpos, float ypos);
+
 	// Cube
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 	void SetCubeEdgeLength(float newLength);
@@ -88,6 +93,14 @@ private:
 
 	int m_seenPointIndex = -1;
 
-	bool b_ControlFrameSeen = false;
-	glm::vec3 m_ControlFrameIntersection;
+	// Control frame movement
+	bool b_CFSeen = false;
+	glm::vec3 m_CFIntersection;
+
+	// Control frame rotation
+	glm::vec2 m_CFRotationStart;
+	std::vector<glm::vec3> m_CFRotationPoints;
+	std::vector<glm::vec3> m_CFRotatedPoints;
+	glm::vec3 m_CFCenter;
+	glm::vec2 m_CFScreenCenter;
 };
