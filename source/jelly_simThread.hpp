@@ -52,6 +52,7 @@ private:
 	std::vector<glm::vec3> m_F;
 	std::vector<glm::vec3> m_newP;
 	std::unordered_map<int, std::unordered_map<int, float>> m_prevDL;
+	std::array<float, 8> m_prevDL_frameSprings;
 
 	float m_dt;
 };

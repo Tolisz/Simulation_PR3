@@ -198,7 +198,10 @@ void jelly_App::ChoseControlFrame(const glm::vec3& A, const glm::vec3& B)
 
 void jelly_App::ChooseObject()
 {
-	m_bCube->SetChosenPointIndex(m_seenPointIndex);
+	if (!m_simParams->bControlFrame)
+	{
+		m_bCube->SetChosenPointIndex(m_seenPointIndex);
+	}
 }
 
 void jelly_App::UnchooseObject(bool resetSeenPoint)
@@ -213,7 +216,10 @@ void jelly_App::UnchooseObject(bool resetSeenPoint)
 		m_bCube->SetChosenPointIndex(-1);
 
 		if (resetSeenPoint && m_seenPointIndex != -1)
+		{
 			SetPointAttribute(m_seenPointIndex, 1, false);
+			m_seenPointIndex = -1;
+		}
 	}
 }
 

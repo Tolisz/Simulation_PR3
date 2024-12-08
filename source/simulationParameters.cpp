@@ -11,8 +11,8 @@ void simulationParameters::ResetToDefault()
 
 	a = 1.0f;
 	c1 = 20.0f;
-	k = 1.0f;
-	c2 = 1.0f;
+	k = 3.0f;
+	c2 = 30.0f;
 
 	dt = 0.01f;
 

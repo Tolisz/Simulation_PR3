@@ -157,6 +157,7 @@ void jelly_Renderer::RenderScene()
 	}
 	if (m_drawParams->bControlFrame)
 	{
+		glDisable(GL_DEPTH_TEST);
 		if (IsControlFrameChoosen())
 		{
 			m_s_cubeSprings.set4fv("springColor", glm::vec4(1.0f));
@@ -166,6 +167,7 @@ void jelly_Renderer::RenderScene()
 			m_s_cubeSprings.set4fv("springColor", m_drawParams->cControlFrame);
 		}
 		m_bCube->DrawControlFrame();
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	// =========

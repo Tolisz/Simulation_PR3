@@ -68,7 +68,7 @@ void jelly_simThread::Start()
 	m_F.assign(64, glm::vec3(0.0f));
 	m_newP.assign(64, glm::vec3(0.0f));
 
-	// Compute Initial Values of dl change
+	// Compute Initial Values of dl change for cube's springs
 	std::vector<glm::vec3> P = m_bCube->GetCubePoints();
 	m_prevDL = m_bCube->GetCubeSprings();
 	for(const auto& I : m_prevDL)
@@ -85,6 +85,19 @@ void jelly_simThread::Start()
 			m_prevDL[i][j] = dl;
 		}
 	}	
+
+	// Compute Initial Values of dl change for springs to control frame
+	auto framePoints = m_bCube->GetFramePoints();
+	auto toFrameSprings = m_bCube->GetFrameSprings();
+	int n = 0;
+	for (const auto& spring : toFrameSprings)
+	{
+		int i = spring.first;
+		int j = spring.second;
+
+		m_prevDL_frameSprings[n] = glm::length(framePoints[i] - P[j]);
+		++n;
+	}
 
 	m_dt = m_simParams->dt;
 }
@@ -186,8 +199,8 @@ void jelly_simThread::ComputeCubeForces(const std::vector<glm::vec3>& P)
 			float dl_drv = (dl - m_prevDL[i][j]) / m_dt; 
 			m_prevDL[i][j] = dl;
 
-			glm::vec3 f = glm::normalize(P[j] - P[i]) * (
-				- m_simParams->k * dl_drv - m_simParams->c1 *  dl);
+			// compute force
+			glm::vec3 f = glm::normalize(P[j] - P[i]) * (- m_simParams->k * dl_drv - m_simParams->c1 *  dl);
 
 			m_F[i] += -f;
 			m_F[j] += f;
@@ -198,6 +211,30 @@ void jelly_simThread::ComputeCubeForces(const std::vector<glm::vec3>& P)
 void jelly_simThread::ComputeControlFrameFoces(const std::vector<glm::vec3>& P)
 {
 	if (!m_simParams->bControlFrame) return;
+	
+	auto framePoints = m_bCube->GetFramePoints();
+	auto toFrameSprings = m_bCube->GetFrameSprings();
 
+	int n = 0;
+	for (const auto& spring : toFrameSprings)
+	{
+		int i = spring.first;
+		int j = spring.second;
+		
+		// compute dl
+		float dl =  glm::length(framePoints[i] - P[j]);
 
+		// compute dl derivative
+		float dl_drv = (dl - m_prevDL_frameSprings[n]) / m_dt; 
+		m_prevDL_frameSprings[n] = dl;
+
+		// compute force
+		glm::vec3 f = glm::length(framePoints[i] - P[j]) < 1e-5f ? 
+			glm::vec3(0.0f) : 
+			glm::normalize(framePoints[i] - P[j]) * (- m_simParams->k * dl_drv - m_simParams->c2 *  dl);
+
+		m_F[j] += -f;
+
+		++n;
+	}
 }
