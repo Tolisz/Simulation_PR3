@@ -172,20 +172,28 @@ void jelly_App::ChoseControlFrame(const glm::vec3& A, const glm::vec3& B)
 
 	for (const auto& face : faces)
 	{
-		if (RayTriangleIntersection(A, B, points[face[0]], points[face[1]], points[face[2]]))
 		{
-			b_ControlFrameSeen = true;
-			break;
+			auto T = RayTriangleIntersection(A, B, points[face[0]], points[face[1]], points[face[2]]);
+			if (T.first)
+			{
+				b_ControlFrameSeen = true;
+				m_ControlFrameIntersection = A + T.second * (B - A);
+				break;
+			}
 		}
 
-		if (RayTriangleIntersection(A, B, points[face[1]], points[face[2]], points[face[3]]))
 		{
-			b_ControlFrameSeen = true;
-			break;
+			auto T = RayTriangleIntersection(A, B, points[face[1]], points[face[2]], points[face[3]]);
+			if (T.first)
+			{
+				b_ControlFrameSeen = true;
+				m_ControlFrameIntersection = A + T.second * (B - A);
+				break;
+			}
 		}
 	}
 
-	m_renderer->SetControlFrameChoosen(b_ControlFrameSeen);		
+	m_renderer->SetControlFrameChoosen(b_ControlFrameSeen);
 }
 
 void jelly_App::ChooseObject()
@@ -228,8 +236,40 @@ void jelly_App::MoveChosenObject(float xpos, float ypos)
 	glm::vec3 world_far = glm::vec3(invV * view_far); 
 	glm::vec3 cameraPos = m_renderer->GetCameraPos();
 
-	if (m_bCube->GetChosenPointIndex() != -1)
+	if (m_simParams->bControlFrame)
 	{
+		if (!b_ControlFrameSeen)
+			return;
+
+		glm::vec3 P0 = m_ControlFrameIntersection;
+		glm::vec3 N  = m_renderer->Camera().GetVecFront();
+		glm::vec3 L = glm::normalize(world_far - cameraPos);
+		
+		auto points = m_bCube->GetFramePoints();
+		auto to_points = points;
+		for (int i = 0; i < points.size(); ++i)
+		{
+			to_points[i] = points[i] - P0;
+		}
+
+		auto newPos = PlaneLineIntersection(P0, N, cameraPos, L);
+		if (newPos.has_value())
+		{
+			glm::vec3 nP = newPos.value();
+			for (int i = 0; i < points.size(); ++i)
+			{
+				points[i] = nP + to_points[i];
+			}
+			m_ControlFrameIntersection = nP;
+		}
+
+		m_bCube->SetFramePoints(points);
+	}
+	else 
+	{
+		if (m_bCube->GetChosenPointIndex() == -1)
+			return;
+
 		glm::vec3 P0 = m_bCube->GetChoosenPointPos();
 		glm::vec3 N  = m_renderer->Camera().GetVecFront();
 		glm::vec3 L = glm::normalize(world_far - cameraPos);
@@ -280,7 +320,7 @@ std::optional<glm::vec3> jelly_App::PlaneLineIntersection(
 	return L0 + t * L;
 }
 
-bool jelly_App::RayTriangleIntersection(
+std::pair<bool, float> jelly_App::RayTriangleIntersection(
 	const glm::vec3& A, 
 	const glm::vec3& B, 
 	const glm::vec3& V0, 
@@ -293,19 +333,19 @@ bool jelly_App::RayTriangleIntersection(
     glm::vec3 h = glm::cross(dir, edge2);
     float a = glm::dot(edge1, h);
 
-    if (glm::abs(a) < 1e-5f) return false;
+    if (glm::abs(a) < 1e-5f) return { false, 0.0f };
 
     float f = 1.0f / a;
     glm::vec3 s = A - V0;
     float u = f * glm::dot(s, h);
-    if (u < 0.0f || u > 1.0f) return false;
+    if (u < 0.0f || u > 1.0f) return { false, 0.0f };
 
     glm::vec3 q = glm::cross(s, edge1);
     float v = f * glm::dot(dir, q);
-    if (v < 0.0f || u + v > 1.0f) return false;
+    if (v < 0.0f || u + v > 1.0f) return { false, 0.0f };
 
     float t = f * glm::dot(edge2, q);
-    return (t >= 0.0f && t <= 1.0f);	
+    return { (t >= 0.0f && t <= 1.0f), t};	
 }
 
 std::shared_ptr<simulationParameters> jelly_App::GetSimulationParameters()

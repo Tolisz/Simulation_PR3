@@ -69,7 +69,7 @@ private:
 		const glm::vec3& L0, 
 		const glm::vec3& L);
 
-	bool RayTriangleIntersection(
+	std::pair<bool, float> RayTriangleIntersection(
 		const glm::vec3& A, 
 		const glm::vec3& B, 
 		const glm::vec3& V0, 
@@ -87,5 +87,7 @@ private:
 	simulationState m_simState = simulationState::Initial;
 
 	int m_seenPointIndex = -1;
+
 	bool b_ControlFrameSeen = false;
+	glm::vec3 m_ControlFrameIntersection;
 };
