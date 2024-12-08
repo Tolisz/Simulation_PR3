@@ -329,7 +329,9 @@ void jelly_App::ControlFrameRotation_Front(float xpos, float ypos)
 	glm::quat rotation = glm::angleAxis(-angle, m_renderer->Camera().GetVecFront());
 	m_CFRotatedPoints = m_CFRotationPoints;
 	std::for_each(m_CFRotatedPoints.begin(), m_CFRotatedPoints.end(), 
-		[&](auto& elem){ elem = elem * rotation; });
+		[&](auto& elem){ 
+			elem = ((elem - m_CFCenter) * rotation) + m_CFCenter; 
+			});
 
 	m_bCube->SetFramePoints(m_CFRotatedPoints);
 }
@@ -344,7 +346,10 @@ void jelly_App::ControlFrameRotation_RightUp(float xpos, float ypos)
 
 	m_CFRotatedPoints = m_CFRotationPoints;
 	std::for_each(m_CFRotatedPoints.begin(), m_CFRotatedPoints.end(), 
-		[&](auto& elem){ elem = elem * rot_UP; elem = elem * rot_RIGHT; });
+		[&](auto& elem){ 
+			elem = ((elem - m_CFCenter) * rot_UP) + m_CFCenter;
+			elem = ((elem - m_CFCenter) * rot_RIGHT) + m_CFCenter;
+			});
 
 	m_bCube->SetFramePoints(m_CFRotatedPoints);
 }
