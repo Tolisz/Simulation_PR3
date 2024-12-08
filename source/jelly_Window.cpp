@@ -174,7 +174,7 @@ void jelly_Window::GLFW_SetUpCallbacks()
 	case viewportState::FRAME_ROTATION_UP_RIGHT:
 		w->m_app->ControlFrameRotation_RightUp(viewXpos, viewYpos);
 		break;
-		
+
 	}
 }
 
@@ -246,14 +246,17 @@ void jelly_Window::GLFW_SetUpCallbacks()
 			{
 				w->m_viewportState = viewportState::FRAME_ROTATION_FRONT;
 				w->m_app->StartControlFrameRotation(viewXpos, viewYpos);
+				w->m_app->ControlFrameRotation_Front(viewXpos, viewYpos);
 			}
 			else if (w->m_viewportState == viewportState::FRAME_ROTATION_FRONT)
 			{
 				w->m_viewportState = viewportState::FRAME_ROTATION_UP_RIGHT;
+				w->m_app->ControlFrameRotation_RightUp(viewXpos, viewYpos);
 			}
 			else if (w->m_viewportState == viewportState::FRAME_ROTATION_UP_RIGHT)
 			{
 				w->m_viewportState = viewportState::FRAME_ROTATION_FRONT;
+				w->m_app->ControlFrameRotation_Front(viewXpos, viewYpos);
 			}
 
 			break;
