@@ -71,6 +71,16 @@ void bezierCubeDrawer::SetPointAttribute(int pointIndex, int attributeIndex, boo
 	}
 }
 
+bool bezierCubeDrawer::IsControlFrameChoosen()
+{
+	return b_ControlFrameChoosen;
+}
+
+void bezierCubeDrawer::SetControlFrameChoosen(bool isChoosen)
+{
+	b_ControlFrameChoosen = isChoosen;
+}
+
 void bezierCubeDrawer::UpdateBuffers()
 {
 	std::vector<glm::vec3> cubePoints = m_cube->GetCubePoints();

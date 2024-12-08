@@ -59,12 +59,22 @@ public:
 	
 private:
 
-	float distanceFromPointToLine(const glm::vec3& P, const glm::vec3& P1, const glm::vec3& P2);
-	std::optional<glm::vec3> planeLineIntersection(
+	void ChoseSeenPoint(const glm::vec3& A, const glm::vec3& B);
+	void ChoseControlFrame(const glm::vec3& A, const glm::vec3& B);
+
+	float DistanceFromPointToLine(const glm::vec3& P, const glm::vec3& P1, const glm::vec3& P2);
+	std::optional<glm::vec3> PlaneLineIntersection(
 		const glm::vec3& P0, 
 		const glm::vec3& N, 
 		const glm::vec3& L0, 
 		const glm::vec3& L);
+
+	bool RayTriangleIntersection(
+		const glm::vec3& A, 
+		const glm::vec3& B, 
+		const glm::vec3& V0, 
+		const glm::vec3& V1, 
+		const glm::vec3& V2);
 
 private:
 
@@ -77,4 +87,5 @@ private:
 	simulationState m_simState = simulationState::Initial;
 
 	int m_seenPointIndex = -1;
+	bool b_ControlFrameSeen = false;
 };

@@ -24,6 +24,9 @@ public:
 
 	int GetChosenPoint();
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
+
+	bool IsControlFrameChoosen();
+	void SetControlFrameChoosen(bool isChoosen);
 private:
 
 	void InitGL();
@@ -49,6 +52,8 @@ private:
 	// Indices buffers
 	int m_shortSpringsNum;
 	int m_longSpringsNum;
+
+	bool b_ControlFrameChoosen = false;
 
 	// OpenGL
 

@@ -41,6 +41,8 @@ public:
 	// 
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 
+	bool IsControlFrameChoosen();
+	void SetControlFrameChoosen(bool isChoosen);
 	// 
 	std::shared_ptr<drawParameters> GetDrawParameters();
 

@@ -96,6 +96,16 @@ void jelly_Renderer::SetPointAttribute(int pointIndex, int attributeIndex, bool 
 	m_bCube->SetPointAttribute(pointIndex, attributeIndex, value);
 }
 
+bool jelly_Renderer::IsControlFrameChoosen()
+{
+	return m_bCube->IsControlFrameChoosen();
+}
+
+void jelly_Renderer::SetControlFrameChoosen(bool isChoosen)
+{
+	m_bCube->SetControlFrameChoosen(isChoosen);
+}
+
 std::shared_ptr<drawParameters> jelly_Renderer::GetDrawParameters()
 {
 	return m_drawParams;
@@ -147,7 +157,14 @@ void jelly_Renderer::RenderScene()
 	}
 	if (m_drawParams->bControlFrame)
 	{
-		m_s_cubeSprings.set4fv("springColor", m_drawParams->cControlFrame);
+		if (IsControlFrameChoosen())
+		{
+			m_s_cubeSprings.set4fv("springColor", glm::vec4(1.0f));
+		}
+		else 
+		{
+			m_s_cubeSprings.set4fv("springColor", m_drawParams->cControlFrame);
+		}
 		m_bCube->DrawControlFrame();
 	}
 
