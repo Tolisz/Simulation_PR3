@@ -6,6 +6,7 @@
 #include "simulationParameters.hpp"
 #include "bezierCube.hpp"
 #include "jelly_simThread.hpp"
+#include "collisionFrame.hpp"
 
 class jelly_App
 {
@@ -88,6 +89,7 @@ private:
 
 	std::shared_ptr<simulationParameters> m_simParams;
 	std::shared_ptr<bezierCube> m_bCube;
+	std::shared_ptr<collisionFrame> m_cFrame;
 
 	simulationState m_simState = simulationState::Initial;
 

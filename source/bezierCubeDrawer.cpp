@@ -200,7 +200,9 @@ void bezierCubeDrawer::DeInitGL()
 	glDeleteBuffers(1, &m_EBO_longSprings);
 
 	/* Control Frame */
-
+	glDeleteVertexArrays(1, &m_VAO_framePoints);
+	glDeleteBuffers(1, &m_framePointsBuffer);
+	glDeleteBuffers(1, &m_EBO_frameSprings);
 }
 
 void bezierCubeDrawer::GetCubeSpringIndices(

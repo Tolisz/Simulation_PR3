@@ -20,5 +20,6 @@ uniform mat4 model;
 void main()
 {
 	o.norm = mat3(transpose(inverse(model))) * iNormal;
+    o.norm = -iNormal;
 	gl_Position = projection * view * model * vec4(iPosition, 1.0f);
 }

@@ -7,13 +7,16 @@
 #include "camera.hpp"
 #include "obj_cube.hpp"
 #include "bezierCubeDrawer.hpp"
+#include "collisionFrameDrawer.hpp"
 #include "drawParameters.hpp"
 
 class jelly_Renderer
 {
 public:
 
-	jelly_Renderer(std::unique_ptr<bezierCubeDrawer> cubeDrawer);
+	jelly_Renderer(
+		std::unique_ptr<bezierCubeDrawer> cubeDrawer,
+		std::unique_ptr<collisionFrameDrawer> colFrameDrawer);
 	~jelly_Renderer();
 
 	jelly_Renderer(const jelly_Renderer&) = delete;
@@ -69,7 +72,7 @@ private:
 	camera m_camera;
 
 	// Shaders
-	GL_shader m_s_test;
+	GL_shader m_s_collitionFrame;
 	GL_shader m_s_bCubePoints;
 	GL_shader m_s_cubeSprings;
 	
@@ -77,7 +80,8 @@ private:
 	GL_UBO m_b_matrices;
 
 	// Scene objects
-	obj_cube m_o_cube;
+	obj_cube m_o_collitionFrame;
 
 	std::unique_ptr<bezierCubeDrawer> m_bCube;
+	std::unique_ptr<collisionFrameDrawer> m_cFrameDrawer;
 }; 

@@ -556,6 +556,13 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	ImGui::SameLine();
 	GUI_ELEM_HelpMarker("Viscous friction");
 
+	ImGui::BeginDisabled(!simParam->bCollisionFrame);
+		ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
+		ImGui::DragFloat("mu", &simParam->mu, 0.002f, 0.0f, 1.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::SameLine();
+		GUI_ELEM_HelpMarker("Coefficient of restitution");
+	ImGui::EndDisabled();
+
 	ImGui::EndGroup();
 	float groupHeight = ImGui::GetItemRectSize().y;
 	ImGui::SameLine();

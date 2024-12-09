@@ -10,7 +10,7 @@ struct simulationParameters
 	float c1;		// spring constant of springs inside Bezier Cube 
 	float k;		// viscous friction
 	float c2;		// spring constant of springs from Cube to Frame
-
+	float mu; 		// coefficient of restitution
 	float dt;		// integration step
 
 	bool bControlFrame;

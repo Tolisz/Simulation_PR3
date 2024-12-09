@@ -2,8 +2,11 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-jelly_Renderer::jelly_Renderer(std::unique_ptr<bezierCubeDrawer> cubeDrawer):
-	m_bCube{std::move(cubeDrawer)}
+jelly_Renderer::jelly_Renderer(
+		std::unique_ptr<bezierCubeDrawer> cubeDrawer,
+		std::unique_ptr<collisionFrameDrawer> colFrameDrawer):
+	m_bCube{std::move(cubeDrawer)},
+	m_cFrameDrawer{std::move(colFrameDrawer)}
 {
 	SetUpFramebuffer();
 	PrepareScene();
@@ -125,14 +128,19 @@ void jelly_Renderer::RenderScene()
 	m_b_matrices.BindUBO();
 	m_b_matrices.SetBufferData(0, viewProj, 2 * sizeof(glm::mat4));
 
-	// test cube
-	// ---------	
-	// m_s_test.Use();
-	// m_s_test.setM4fv("model", GL_FALSE, glm::identity<glm::mat4>());
+	/* Collition Cube (Frame) */
 
-	// m_o_cube.Draw();
+	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
 
-	// Bezier Cube
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	m_s_collitionFrame.Use();
+	m_s_collitionFrame.setM4fv("model", GL_FALSE, model);
+	m_o_collitionFrame.Draw();
+
+	glDisable(GL_CULL_FACE);
+
+	/* Bezier Cube */
 
 	m_bCube->UpdateBuffers();
 
@@ -201,9 +209,9 @@ void jelly_Renderer::PrepareScene()
 void jelly_Renderer::PrepareShaders()
 {
 	// PrepareShaders
-	m_s_test.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
-	m_s_test.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
-	m_s_test.Link();
+	m_s_collitionFrame.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
+	m_s_collitionFrame.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
+	m_s_collitionFrame.Link();
 
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.vert", GL_VERTEX_SHADER);
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.frag", GL_FRAGMENT_SHADER);

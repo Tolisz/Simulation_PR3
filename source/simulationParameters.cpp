@@ -13,7 +13,7 @@ void simulationParameters::ResetToDefault()
 	c1 = 20.0f;
 	k = 3.0f;
 	c2 = 30.0f;
-
+	mu = 1.0f;	// 1.0f - elastic collision
 	dt = 0.01f;
 
 	bControlFrame = true;
