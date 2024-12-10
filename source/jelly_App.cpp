@@ -10,13 +10,13 @@ jelly_App::jelly_App()
 {
 	m_simParams = std::make_shared<simulationParameters>();
 	m_bCube = std::make_shared<bezierCube>(m_simParams->a);
-	m_cFrame = std::make_shared<collisionFrame>(20.0f);
+	m_cFrame = std::make_shared<collisionFrame>(11.0f);
 
 	auto bCubeDrawer = std::make_unique<bezierCubeDrawer>(m_bCube);
 	auto cFrameDrawer = std::make_unique<collisionFrameDrawer>(m_cFrame);	
 	m_renderer = std::make_unique<jelly_Renderer>(std::move(bCubeDrawer), std::move(cFrameDrawer));
 	
-	m_simThread = std::make_unique<jelly_simThread>(m_bCube, m_simParams);
+	m_simThread = std::make_unique<jelly_simThread>(m_bCube, m_cFrame, m_simParams);
 }
 
 GLuint jelly_App::GetRenderTexture()

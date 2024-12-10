@@ -2,6 +2,7 @@
 
 #include <array>
 #include <glm/vec3.hpp>
+#include <optional>
 
 class collisionFrame
 {
@@ -16,9 +17,22 @@ public:
 	collisionFrame& operator=(collisionFrame&&) = delete;
 
 	float GetEdgeLength();
-	glm::vec3 Collide(glm::vec3 P, float mu);
+	std::pair<glm::vec3, glm::vec3> Collide(
+		glm::vec3 P,
+		glm::vec3 prevP,
+		glm::vec3 V, 
+		float mu);
 
 private: 
+
+	std::optional<float> PlaneSegmentIntersection(
+		const glm::vec3& A,
+		const glm::vec3& B,
+		const glm::vec3& P0,
+		const glm::vec3& N
+	);
+
+	bool IsInsideFrame(const glm::vec3& P);
 
 	void Reset(float a);
 
@@ -26,6 +40,5 @@ private:
 
 	float m_a; // edge size;
 	float m_a2; // half of edge size;
-
 
 };

@@ -4,7 +4,9 @@
 #include <mutex>
 #include <atomic>
 #include "bezierCube.hpp"
+#include "collisionFrame.hpp"
 #include "simulationParameters.hpp"
+#include <optional>
 
 class jelly_simThread
 {
@@ -12,6 +14,7 @@ public:
 
 	jelly_simThread(
 		std::shared_ptr<bezierCube> cube,
+		std::shared_ptr<collisionFrame> colFrame,
 		std::shared_ptr<simulationParameters> simParams);
 	~jelly_simThread();
 
@@ -46,6 +49,7 @@ private:
 
 	// ===================
 	std::shared_ptr<bezierCube> m_bCube;
+	std::shared_ptr<collisionFrame> m_cFrame;
 	std::shared_ptr<simulationParameters> m_simParams;
 
 	std::vector<glm::vec3> m_V;

@@ -5,8 +5,10 @@
 
 jelly_simThread::jelly_simThread(
 		std::shared_ptr<bezierCube> cube,
+		std::shared_ptr<collisionFrame> colFrame,
 		std::shared_ptr<simulationParameters> simParams) :
 	m_bCube{cube},
+	m_cFrame{colFrame},
 	m_simParams{simParams}
 {
 
@@ -173,8 +175,23 @@ void jelly_simThread::SimulationStep()
 			continue;
 		}
 
-		m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
-		m_newP[i] = P[i] + m_V[i] * m_dt;
+		if (!m_simParams->bCollisionFrame)
+		{
+			m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
+			m_newP[i] = P[i] + m_V[i] * m_dt;
+		}
+		else 
+		{
+			glm::vec3 prevV = m_V[i];
+			glm::vec3 prevP = P[i];
+			glm::vec3 V = prevV + m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) );
+			glm::vec3 P = prevP + V * m_dt; 
+
+			auto P_V = m_cFrame->Collide(P, prevP, V, m_simParams->mu);
+
+			m_V[i] = P_V.second;
+			m_newP[i] = P_V.first;
+		}
 	}
 
 	m_bCube->SetCubePoints(m_newP);

@@ -129,16 +129,18 @@ void jelly_Renderer::RenderScene()
 	m_b_matrices.SetBufferData(0, viewProj, 2 * sizeof(glm::mat4));
 
 	/* Collition Cube (Frame) */
+	if (m_drawParams->bCollisionFrame)
+	{
+		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
 
-	glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		m_s_collitionFrame.Use();
+		m_s_collitionFrame.setM4fv("model", GL_FALSE, model);
+		m_o_collitionFrame.Draw();
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-	m_s_collitionFrame.Use();
-	m_s_collitionFrame.setM4fv("model", GL_FALSE, model);
-	m_o_collitionFrame.Draw();
-
-	glDisable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
+	}
 
 	/* Bezier Cube */
 
