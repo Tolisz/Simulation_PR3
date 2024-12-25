@@ -3,6 +3,8 @@
 #include <glm/geometric.hpp>
 #include <algorithm>
 
+#include <iostream>
+
 collisionFrame::collisionFrame(float a)
 {
 	Reset(a);
@@ -19,11 +21,21 @@ float collisionFrame::GetEdgeLength()
 	return m_a;
 }
 
-std::pair<glm::vec3, glm::vec3> collisionFrame::Collide(	
-	glm::vec3 P, glm::vec3 prevP, glm::vec3 V, float mu)
+std::pair<glm::vec3, glm::vec3> collisionFrame::Collide(
+	glm::vec3 P, glm::vec3 prevP, glm::vec3 V, float mu, unsigned int maxInter)
+{
+	return 	CollideInternal(P, prevP, V, mu, 0, maxInter);
+}
+
+std::pair<glm::vec3, glm::vec3> collisionFrame::CollideInternal(	
+	glm::vec3 P, glm::vec3 prevP, glm::vec3 V, float mu, unsigned int iter, const unsigned int maxInter)
 {	
-	// DODAĆ SPRAWDZENIE GŁĘBOKOŚCI REKURENCJI
 	if (IsInsideFrame(P)) {
+		return {P, V};
+	}
+
+	if (iter >= maxInter) {
+		P = glm::clamp(P, glm::vec3(-m_a2), glm::vec3(m_a2));
 		return {P, V};
 	}
 
@@ -57,24 +69,24 @@ std::pair<glm::vec3, glm::vec3> collisionFrame::Collide(
 	case 1: /* t_xn */
 	{
 		PX.x = -PX.x;
-		V.x = -V.x;
-		V *= mu;
+		V.x = mu * -V.x;
+		// V *= mu;
 	} break;
 	
 	case 2: /* t_yp */
 	case 3: /* t_yn */
 	{
 		PX.y = -PX.y;
-		V.y = -V.y;
-		V *= mu;
+		V.y = mu * -V.y;
+		// V *= mu;
 	} break;
 
 	case 4: /* t_zp */
 	case 5: /* t_zn */
 	{
 		PX.z = -PX.z;
-		V.z = -V.z;
-		V *= mu;
+		V.z = mu * -V.z;
+		// V *= mu;
 	} break;
 
 	}
@@ -82,7 +94,12 @@ std::pair<glm::vec3, glm::vec3> collisionFrame::Collide(
 	glm::vec3 newP = X + mu * PX;
 	glm::vec3 newPrevP = X; // DO POPRAWY !!!!!!!!!!!!!!!
 
-	return Collide(newP, newPrevP, V, mu);
+	if (glm::length(mu * PX) < 1e-5)
+	{
+		return {P, V};
+	}
+
+	return CollideInternal(newP, newPrevP, V, mu, iter + 1, maxInter);
 }
 
 std::optional<float> collisionFrame::PlaneSegmentIntersection(

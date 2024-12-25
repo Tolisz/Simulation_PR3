@@ -45,6 +45,14 @@ void bezierCubeDrawer::DrawControlFrame()
 	glBindVertexArray(0);
 }
 
+void bezierCubeDrawer::DrawBezierPatches()
+{
+	glPatchParameteri(GL_PATCH_VERTICES, 16);
+	glBindVertexArray(m_VAO_patches);
+	glDrawElements(GL_PATCHES, 16, GL_UNSIGNED_INT, (void*)0);
+	glBindVertexArray(0);
+}
+
 int bezierCubeDrawer::GetChosenPoint()
 {
 	return m_cube->GetChosenPointIndex();
@@ -111,12 +119,14 @@ void bezierCubeDrawer::InitGL_MainCube()
 	glGenVertexArrays(1, &m_VAO_points);
 	glGenVertexArrays(1, &m_VAO_shortSprings);
 	glGenVertexArrays(1, &m_VAO_longSprings);
+	glGenVertexArrays(1, &m_VAO_patches);
 	
 	glGenBuffers(1, &m_cubePointsBuffer);
 	glGenBuffers(1, &m_cubePointsAtribBuffer);
 
 	glGenBuffers(1, &m_EBO_shortSprings);
 	glGenBuffers(1, &m_EBO_longSprings);
+	glGenBuffers(1, &m_EBO_patches);
 
 	// Points
 	glBindVertexArray(m_VAO_points);
@@ -162,6 +172,20 @@ void bezierCubeDrawer::InitGL_MainCube()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, longIndices.size() * sizeof(std::pair<int, int>), longIndices.data(), GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
+
+	// Patches
+	glBindVertexArray(m_VAO_patches);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, m_cubePointsBuffer);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(0);
+
+	auto patchIndices = GetBezierPatchesIndices();
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO_patches);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, patchIndices.size() * sizeof(unsigned int), patchIndices.data(), GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
 }
 
 void bezierCubeDrawer::InitGL_ControlCube()
@@ -192,12 +216,14 @@ void bezierCubeDrawer::DeInitGL()
 	glDeleteVertexArrays(1, &m_VAO_points);
 	glDeleteVertexArrays(1, &m_VAO_shortSprings);
 	glDeleteVertexArrays(1, &m_VAO_longSprings);
+	glDeleteVertexArrays(1, &m_VAO_patches);
 	
 	glDeleteBuffers(1, &m_cubePointsBuffer);
 	glDeleteBuffers(1, &m_cubePointsAtribBuffer);
 
 	glDeleteBuffers(1, &m_EBO_shortSprings);
 	glDeleteBuffers(1, &m_EBO_longSprings);
+	glDeleteBuffers(1, &m_EBO_patches);
 
 	/* Control Frame */
 	glDeleteVertexArrays(1, &m_VAO_framePoints);
@@ -278,5 +304,16 @@ std::vector<std::pair<unsigned int, unsigned int>> bezierCubeDrawer::GetFrameSpr
 		{4, 5}, {4, 6}, {7, 5}, {7, 6},
 		// between
 		{0, 4}, {1, 5}, {2, 6}, {3, 7},
+	};
+}
+
+std::vector<unsigned int> bezierCubeDrawer::GetBezierPatchesIndices()
+{
+	return {
+		// front
+		 0,  1,  2,  3, 
+		 4,  5,  6,  7, 
+		 8,  9, 10, 11,
+		12, 13, 14, 15
 	};
 }

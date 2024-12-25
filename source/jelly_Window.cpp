@@ -608,6 +608,8 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::SeparatorText("Draw Options");
 	// = - = - = - = - = - = - = - = - = - = - = - = -
 
+	float iSpacing = ImGui::GetStyle().ItemSpacing.x;
+
 	std::shared_ptr<drawParameters> drawParam = m_app->GetDrawParameters();
 	auto simParam = m_app->GetSimulationParameters();
 
@@ -622,6 +624,14 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::BeginDisabled(!simParam->bCollisionFrame);
 		GUI_ELEM_DrawCheckbox("Collision frame##DRAW", drawParam->cCollisionFrame, drawParam->bCollisionFrame);
 	ImGui::EndDisabled();
+
+	GUI_ELEM_DrawCheckbox("Jelly ##DRAW", drawParam->cJelly, drawParam->bJelly);
+	ImGui::SameLine();
+	ImGui::BeginDisabled(!drawParam->bJelly);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Tessellation Level").x - iSpacing);
+		ImGui::DragFloat("Tessellation Level ##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::EndDisabled();
+	
 }
 
 void jelly_Window::GUI_SEC_MiscellaneousInfo()

@@ -21,9 +21,18 @@ public:
 		glm::vec3 P,
 		glm::vec3 prevP,
 		glm::vec3 V, 
-		float mu);
+		float mu,
+		unsigned int maxInter);
 
 private: 
+
+	std::pair<glm::vec3, glm::vec3> CollideInternal(
+		glm::vec3 P,
+		glm::vec3 prevP,
+		glm::vec3 V, 
+		float mu,
+		unsigned int iter,
+		const unsigned int maxInter);
 
 	std::optional<float> PlaneSegmentIntersection(
 		const glm::vec3& A,

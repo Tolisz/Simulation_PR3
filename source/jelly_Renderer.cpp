@@ -143,7 +143,6 @@ void jelly_Renderer::RenderScene()
 	}
 
 	/* Bezier Cube */
-
 	m_bCube->UpdateBuffers();
 
 	m_s_bCubePoints.Use();
@@ -178,6 +177,14 @@ void jelly_Renderer::RenderScene()
 		}
 		m_bCube->DrawControlFrame();
 		glEnable(GL_DEPTH_TEST);
+	}
+
+	if (m_drawParams->bJelly)
+	{
+		m_s_bezierPatches.Use();
+		// tessellationLevel
+		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
+		m_bCube->DrawBezierPatches();
 	}
 
 	// =========
@@ -222,6 +229,12 @@ void jelly_Renderer::PrepareShaders()
 	m_s_cubeSprings.AttachShaderFromFile("shaders/springs.vert", GL_VERTEX_SHADER);
 	m_s_cubeSprings.AttachShaderFromFile("shaders/springs.frag", GL_FRAGMENT_SHADER);
 	m_s_cubeSprings.Link();
+
+	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.vert", GL_VERTEX_SHADER);
+	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.tesc", GL_TESS_CONTROL_SHADER);
+	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.tese", GL_TESS_EVALUATION_SHADER);
+	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.frag", GL_FRAGMENT_SHADER);
+	m_s_bezierPatches.Link();
 
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));

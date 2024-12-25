@@ -75,6 +75,7 @@ private:
 	GL_shader m_s_collitionFrame;
 	GL_shader m_s_bCubePoints;
 	GL_shader m_s_cubeSprings;
+	GL_shader m_s_bezierPatches;
 	
 	// Buffers
 	GL_UBO m_b_matrices;

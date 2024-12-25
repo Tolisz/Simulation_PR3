@@ -21,6 +21,7 @@ public:
 	void DrawShortSprings();
 	void DrawLongSprings();
 	void DrawControlFrame();
+	void DrawBezierPatches();
 
 	int GetChosenPoint();
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
@@ -39,7 +40,7 @@ private:
 		std::vector<std::pair<unsigned int, unsigned int>>& longSprings);
 
 	std::vector<std::pair<unsigned int, unsigned int>> GetFrameSpringIndices();
-
+	std::vector<unsigned int> GetBezierPatchesIndices();
 private:
 
 	std::shared_ptr<bezierCube> m_cube;
@@ -61,16 +62,17 @@ private:
 	GLuint m_VAO_points;
 	GLuint m_VAO_shortSprings;
 	GLuint m_VAO_longSprings;
+	GLuint m_VAO_patches;
 	
 	GLuint m_cubePointsBuffer;
 	GLuint m_cubePointsAtribBuffer;
 
 	GLuint m_EBO_shortSprings;
 	GLuint m_EBO_longSprings;
+	GLuint m_EBO_patches;
 
 	/* Control Frame */
 	GLuint m_VAO_framePoints;
 	GLuint m_framePointsBuffer;
 	GLuint m_EBO_frameSprings;
-
 };
