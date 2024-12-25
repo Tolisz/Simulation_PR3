@@ -49,7 +49,7 @@ void bezierCubeDrawer::DrawBezierPatches()
 {
 	glPatchParameteri(GL_PATCH_VERTICES, 16);
 	glBindVertexArray(m_VAO_patches);
-	glDrawElements(GL_PATCHES, 16, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_PATCHES, 96, GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
@@ -314,6 +314,36 @@ std::vector<unsigned int> bezierCubeDrawer::GetBezierPatchesIndices()
 		 0,  1,  2,  3, 
 		 4,  5,  6,  7, 
 		 8,  9, 10, 11,
-		12, 13, 14, 15
+		12, 13, 14, 15,
+
+		// back
+		48, 49, 50, 51,
+		52, 53, 54, 55,
+		56, 57, 58, 59,
+		60, 61, 62, 63,		
+
+		// right 
+		 3, 19, 35, 51, 
+		 7, 23, 39, 55,
+		11, 27, 43, 59,
+		15, 31, 47, 63,
+
+		// left 
+		 0, 16, 32, 48,
+		 4, 20, 36, 52,
+		 8, 24, 40, 56, 
+		12, 28, 44, 60,
+
+		// top 
+		 0,  1,  2,  3,
+		16, 17, 18, 19,
+		32, 33, 34, 35,
+		48, 49, 50, 51,
+
+		// bottom 
+		12, 13, 14, 15,
+		28, 29, 30, 31,
+		44, 45, 46, 47,
+		60, 61, 62, 63
 	};
 }

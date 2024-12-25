@@ -182,7 +182,7 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bJelly)
 	{
 		m_s_bezierPatches.Use();
-		// tessellationLevel
+		m_s_bezierPatches.set4fv("patchColor", m_drawParams->cJelly);
 		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
 		m_bCube->DrawBezierPatches();
 	}

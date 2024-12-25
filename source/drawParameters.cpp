@@ -12,7 +12,7 @@ void drawParameters::ResetToDefault()
 	cLongSprings = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	cControlFrame = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 	cCollisionFrame = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	cJelly = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	cJelly = glm::vec4(0.607f, 0.39f, 0.768f, 1.0f);
 
 	bPoints = true;
 	bShortSrpings = true;
