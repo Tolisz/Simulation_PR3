@@ -9,6 +9,9 @@
 #include "bezierCubeDrawer.hpp"
 #include "collisionFrameDrawer.hpp"
 #include "drawParameters.hpp"
+#include "light.hpp"
+#include "material.hpp"
+#include <map>
 
 class jelly_Renderer
 {
@@ -85,4 +88,5 @@ private:
 
 	std::unique_ptr<bezierCubeDrawer> m_bCube;
 	std::unique_ptr<collisionFrameDrawer> m_cFrameDrawer;
+
 }; 

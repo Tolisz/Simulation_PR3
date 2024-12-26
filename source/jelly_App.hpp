@@ -90,7 +90,7 @@ private:
 	std::shared_ptr<simulationParameters> m_simParams;
 	std::shared_ptr<bezierCube> m_bCube;
 	std::shared_ptr<collisionFrame> m_cFrame;
-
+	
 	simulationState m_simState = simulationState::Initial;
 
 	int m_seenPointIndex = -1;
