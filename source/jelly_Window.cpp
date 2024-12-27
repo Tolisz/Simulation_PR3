@@ -5,6 +5,7 @@
 #include <imgui_internal.h>
 
 #include <iostream>
+#include <filesystem>
 
 /* virtual */ void jelly_Window::RunInit() /* override */
 {
@@ -282,7 +283,7 @@ void jelly_Window::GUI_Main()
 	GUI_WindowLayout();
 
 	// DEBUG ONLY !!!!!!!!!!!!
-	static bool show_demo_window = false;
+	static bool show_demo_window = true;
 	if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 }
@@ -631,7 +632,12 @@ void jelly_Window::GUI_SEC_DrawOptions()
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Tessellation Level").x - iSpacing);
 		ImGui::DragFloat("Tessellation Level ##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::EndDisabled();
-	
+
+	if (ImGui::Button("##OpenFile", ImVec2(20, 20)))
+	{
+		ImGui::OpenPopup(m_fileSelector.GetPopupName());
+	}
+	m_fileSelector.Render(ImVec2(m_width * 0.60f, m_height * 0.75f));
 }
 
 void jelly_Window::GUI_SEC_MiscellaneousInfo()
@@ -659,6 +665,10 @@ void jelly_Window::GUI_SEC_MiscellaneousInfo()
 	ImGui::SameLine(wWidth * 0.8f);
 	
 	ImGui::TextColored(b_limitFPS ? ImGui::GetStyle().Colors[ImGuiCol_Text] : ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "FPS: %6.2f", 1.0f / m_deltaTime);
+
+	// std::filesystem::path CurrentPath = std::filesystem::canonical(".");
+	// std::string test = CurrentPath.string();
+	// ImGui::Text(test.c_str());
 }
 
 void jelly_Window::GUI_WindowRender()

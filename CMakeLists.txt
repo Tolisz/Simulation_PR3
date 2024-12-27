@@ -10,7 +10,8 @@ add_subdirectory(externals)
 set(PR3_LINK_LIBS 	PUBLIC glm
               		PUBLIC glfw
               		PUBLIC glad
-					PUBLIC imgui)
+					PUBLIC imgui
+					PUBLIC assimp)
 
 set(PR3_EXECUTABLE_NAME SimulationPr3)
 file(GLOB RP3_SOURCE_FILES source/*.cpp)

@@ -10,3 +10,6 @@ add_subdirectory(glad)
 
 # ===== imgui =====
 add_subdirectory(imgui)
+
+# ===== assimp =====
+add_subdirectory(assimp)

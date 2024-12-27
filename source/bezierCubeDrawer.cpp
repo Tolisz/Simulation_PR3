@@ -17,7 +17,7 @@ bezierCubeDrawer::~bezierCubeDrawer()
 
 void bezierCubeDrawer::DrawCubePoints()
 {
-	glPointSize(4.0f);
+	glPointSize(3.0f);
 	glBindVertexArray(m_VAO_points);
 	glDrawArrays(GL_POINTS, 0, 64);
 	glBindVertexArray(0);

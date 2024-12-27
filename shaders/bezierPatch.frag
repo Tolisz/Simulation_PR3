@@ -67,5 +67,5 @@ void main()
 
 	vec3 col = Phong(i.worldPos, N, V, patchColor.rgb);
 
-	oColor = vec4(col, 1.0f);
+	oColor = vec4(col, patchColor.a);
 }

@@ -2,6 +2,7 @@
 
 #include "glfwWindowWrap.hpp"
 #include "jelly_App.hpp"
+#include "GUI_FileSelector.hpp"
 #include <imgui.h>
 #include <string_view>
 #include <memory>
@@ -81,6 +82,8 @@ private:
     // UI specific values
     bool b_openPointsMassesWindow = false;
     bool b_massesUniformChange = true;
+
+    GUI_FileSelector m_fileSelector;
 
 private:
 

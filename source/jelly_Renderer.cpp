@@ -121,6 +121,9 @@ void jelly_Renderer::RenderScene()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// SCENE BEGIN
 	// ===========
 	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
@@ -155,27 +158,6 @@ void jelly_Renderer::RenderScene()
 	{
 		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
 		m_bCube->DrawLongSprings();
-	}
-
-	/* Jelly */
-	if (m_drawParams->bJelly)
-	{
-		m_s_bezierPatches.Use();
-
-		m_s_bezierPatches.set1i("numberOfLights", m_lights.size());
-
-		const material& mat = m_materials["jelly"]; 
-    	m_s_bezierPatches.set3fv("material.ka", mat.ka);
-    	m_s_bezierPatches.set3fv("material.kd", mat.kd);
-    	m_s_bezierPatches.set3fv("material.ks", mat.ks);
-    	m_s_bezierPatches.set1f("material.shininess", mat.shininess);
-
-		m_s_bezierPatches.set3fv("cameraPos", m_camera.GetPosition());
-		
-		m_s_bezierPatches.set4fv("patchColor", m_drawParams->cJelly);
-		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
-		
-		m_bCube->DrawBezierPatches();
 	}
 
 	/* Collition Cube (Frame) */
@@ -216,6 +198,27 @@ void jelly_Renderer::RenderScene()
 		}
 		m_bCube->DrawControlFrame();
 		glEnable(GL_DEPTH_TEST);
+	}
+
+	/* Jelly */
+	if (m_drawParams->bJelly)
+	{
+		m_s_bezierPatches.Use();
+
+		m_s_bezierPatches.set1i("numberOfLights", m_lights.size());
+
+		const material& mat = m_materials["jelly"]; 
+    	m_s_bezierPatches.set3fv("material.ka", mat.ka);
+    	m_s_bezierPatches.set3fv("material.kd", mat.kd);
+    	m_s_bezierPatches.set3fv("material.ks", mat.ks);
+    	m_s_bezierPatches.set1f("material.shininess", mat.shininess);
+
+		m_s_bezierPatches.set3fv("cameraPos", m_camera.GetPosition());
+		
+		m_s_bezierPatches.set4fv("patchColor", m_drawParams->cJelly);
+		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
+		
+		m_bCube->DrawBezierPatches();
 	}
 
 	// =========
