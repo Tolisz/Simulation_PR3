@@ -20,33 +20,44 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 		ImGuiWindowFlags_AlwaysAutoResize | 
 		ImGuiWindowFlags_NoMove))
 	{
+		float availableRegion = ImGui::GetContentRegionAvail().x;
+		float iSpacing = ImGui::GetStyle().ItemSpacing.x;
+		float wPadding = ImGui::GetStyle().WindowPadding.x;
+		
 		std::string hint = "Search " + m_currentPath.filename().string();
 		
 		ImGui::GetStyle().FrameBorderSize = 1.0f;
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.15f);
+		ImGui::SetNextItemWidth(availableRegion * 0.15f);
 		if (ImGui::InputTextWithHint("##Filter", hint.c_str(), m_filter.InputBuf, IM_ARRAYSIZE(m_filter.InputBuf), ImGuiInputTextFlags_EscapeClearsAll))
         {
 			m_filter.Build();
 		}
 		ImGui::GetStyle().FrameBorderSize = 0.0f;
+		
+		ImGui::SetNextItemWidth(availableRegion * 0.55f);
 		ImGui::SameLine();
 		ImGui::Text(m_currentPath.string().c_str());
+		ImGui::SameLine(availableRegion * 0.70f);
+		
+		ImGui::BeginDisabled(m_selectedIndex == -1);
+			if (ImGui::Button("Open", ImVec2(availableRegion * 0.15f, 0.0f))) 
+			{ 
+				result = true;
+				m_selectedIndex = -1;
+				m_currentPath = fs::canonical(".");
+				ImGui::CloseCurrentPopup();
+			}
+		ImGui::EndDisabled();
 
-		if (ImGui::Button("Open", ImVec2(100, 0))) 
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(availableRegion * 0.15f);
+		if (ImGui::Button("Cancel", ImVec2(availableRegion * 0.15f, 0.0f))) 
 		{ 
-			result = true;
-			goto CLOSE_POPUP; 
+			m_selectedIndex = -1;
+			m_currentPath = fs::canonical(".");
+			ImGui::CloseCurrentPopup();
 		}
-		if (ImGui::Button("Cancel", ImVec2(100, 0))) 
-		{ 
-			goto CLOSE_POPUP; 
-		}
-		goto GO_NEXT;
 
-CLOSE_POPUP:
-		m_currentPath = fs::canonical(".");
-		ImGui::CloseCurrentPopup();
-GO_NEXT:
 		if (ImGui::BeginTable("##File table", 2,  
 			ImGuiTableFlags_Borders | 
 			ImGuiTableFlags_NoSavedSettings | 
@@ -71,9 +82,12 @@ GO_NEXT:
 				ImGuiSelectableFlags_DontClosePopups))
 			{
 				m_currentPath = m_currentPath.parent_path();
+				m_selectedIndex = -1;
+				m_selectedFile = fs::path();
 			}
 			ImGui::PopStyleColor();
 
+			int i = 0;
 			for(const auto& entry : fs::directory_iterator(m_currentPath))
 			{
 				bool isDirectory = entry.is_directory();
@@ -89,17 +103,20 @@ GO_NEXT:
 						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 255.0f, 255.0f));
 					}
 
-					if (ImGui::Selectable(fileName.c_str(), false, 
+					if (ImGui::Selectable(fileName.c_str(), m_selectedIndex == i, 
 						ImGuiSelectableFlags_SpanAllColumns | 
 						ImGuiSelectableFlags_DontClosePopups))
 					{
 						if (isDirectory)
 						{
 							m_currentPath = entry;
+							m_selectedIndex = -1;
+							m_selectedFile = fs::path();
 						}
 						else 
 						{
-							// SHOW SELECTED FILE NAME
+							m_selectedIndex = i;
+							m_selectedFile = entry;
 						}
 					}
 					
@@ -107,6 +124,8 @@ GO_NEXT:
 					{
 						ImGui::PopStyleColor();
 					}
+
+					++i;
 				}
 			}
 
@@ -117,4 +136,9 @@ GO_NEXT:
 	}
 
 	return result;
+}
+
+fs::path GUI_FileSelector::GetSelectedFile()
+{
+	return m_selectedFile;
 }

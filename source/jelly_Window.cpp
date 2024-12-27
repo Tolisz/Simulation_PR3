@@ -639,13 +639,13 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::DragFloat("Tessellation Level ##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 
 	if (ImGui::ImageButton("##OpenFile", m_icons["folder"], ImVec2(11, 14)))
-	// if (ImGui::Button("##OpenFile", ImVec2(20, 20)))
 	{
 		ImGui::OpenPopup(m_fileSelector.GetPopupName());
 	}
 	if (m_fileSelector.Render(ImVec2(m_width * 0.60f, m_height * 0.75f)) )
 	{
-		std::cout << "OPEN FILE" << std::endl;
+		auto path = m_fileSelector.GetSelectedFile();
+		std::cout << path.string() << std::endl;
 	}
 	ImGui::SameLine();
 	ImGui::Checkbox("Model", &drawParam->bModel);
