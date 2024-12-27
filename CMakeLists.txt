@@ -11,7 +11,8 @@ set(PR3_LINK_LIBS 	PUBLIC glm
               		PUBLIC glfw
               		PUBLIC glad
 					PUBLIC imgui
-					PUBLIC assimp)
+					PUBLIC assimp
+					PUBLIC stb)
 
 set(PR3_EXECUTABLE_NAME SimulationPr3)
 file(GLOB RP3_SOURCE_FILES source/*.cpp)

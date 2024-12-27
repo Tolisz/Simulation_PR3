@@ -7,10 +7,13 @@
 #include <iostream>
 #include <filesystem>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 /* virtual */ void jelly_Window::RunInit() /* override */
 {
 	GLFW_SetUpCallbacks();
-
+	GUI_PrepareIcons();
 	m_app = std::make_unique<jelly_App>();
 }
 
@@ -635,7 +638,8 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Tessellation Level").x - iSpacing);
 	ImGui::DragFloat("Tessellation Level ##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 
-	if (ImGui::Button("##OpenFile", ImVec2(20, 20)))
+	if (ImGui::ImageButton("##OpenFile", m_icons["folder"], ImVec2(11, 14)))
+	// if (ImGui::Button("##OpenFile", ImVec2(20, 20)))
 	{
 		ImGui::OpenPopup(m_fileSelector.GetPopupName());
 	}
@@ -751,4 +755,36 @@ void jelly_Window::GUI_ELEM_DrawCheckbox(std::string name, glm::vec4& color, boo
 	
 	ImGui::SameLine();
 	ImGui::Checkbox(name.data(), &draw);
+}
+
+void jelly_Window::GUI_PrepareIcons()
+{
+	GLuint texture;
+	texture = CreateIconTexture("./resources/icons/folder.png");
+	m_icons.insert(std::make_pair("folder", texture));
+}
+
+GLuint jelly_Window::CreateIconTexture(const char* filePath)
+{
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(filePath, &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture from file [" << filePath << "]" << std::endl;
+	}
+	return texture;
 }

@@ -57,6 +57,9 @@ private:
     void GUI_ELEM_HelpMarker(const char* desc);
     void GUI_ELEM_DrawCheckbox(std::string name, glm::vec4& color, bool& draw);
 
+    // GUI prepare 
+    void GUI_PrepareIcons();
+    GLuint CreateIconTexture(const char* filePath);
 private:
 
     // windows' names
@@ -84,6 +87,9 @@ private:
     bool b_massesUniformChange = true;
 
     GUI_FileSelector m_fileSelector;
+
+    // Icon Textures
+    std::map<std::string_view, GLuint> m_icons;
 
 private:
 

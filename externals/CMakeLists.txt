@@ -13,3 +13,6 @@ add_subdirectory(imgui)
 
 # ===== assimp =====
 add_subdirectory(assimp)
+
+# ===== stb =====
+add_subdirectory(stb)

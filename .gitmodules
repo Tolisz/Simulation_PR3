@@ -10,3 +10,6 @@
 [submodule "externals/assimp"]
 	path = externals/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "externals/stb/stb"]
+	path = externals/stb/stb
+	url = https://github.com/nothings/stb.git
