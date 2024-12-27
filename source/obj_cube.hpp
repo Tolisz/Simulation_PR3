@@ -13,8 +13,8 @@ public:
 
 	obj_cube(const obj_cube&) = delete;
 	obj_cube(obj_cube&&) = delete;
-	obj_cube& operator=(const obj_cube&) = delete; 
-	obj_cube& operator=(obj_cube&&) = delete;
+	obj_cube& operator=(const obj_cube&) = default; 
+	obj_cube& operator=(obj_cube&&) = default;
 
 	void Draw();
 

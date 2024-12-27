@@ -119,28 +119,20 @@ void jelly_Renderer::RenderScene()
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	
 	// SCENE BEGIN
 	// ===========
 	float aspect = static_cast<float>(m_sceneSize.x)/m_sceneSize.y;
     glm::mat4 viewProj[2] = {m_camera.GetViewMatrix(), m_camera.GetProjectionMatrix(aspect)};
 	
+    /* Update UBOs */
 	m_b_matrices.BindUBO();
 	m_b_matrices.SetBufferData(0, viewProj, 2 * sizeof(glm::mat4));
 
-	/* Collition Cube (Frame) */
-	if (m_drawParams->bCollisionFrame)
-	{
-		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
-
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		m_s_collitionFrame.Use();
-		m_s_collitionFrame.setM4fv("model", GL_FALSE, model);
-		m_o_collitionFrame.Draw();
-
-		glDisable(GL_CULL_FACE);
-	}
+	m_b_lights.BindUBO();
+	m_b_lights.SetBufferData(0, &m_ambientColor, sizeof(glm::vec4));
+    m_b_lights.SetBufferData(sizeof(glm::vec4), m_lights.data(), 3 * sizeof(glm::vec4) * m_lights.size());
 
 	/* Bezier Cube */
 	m_bCube->UpdateBuffers();
@@ -164,8 +156,55 @@ void jelly_Renderer::RenderScene()
 		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
 		m_bCube->DrawLongSprings();
 	}
+
+	/* Jelly */
+	if (m_drawParams->bJelly)
+	{
+		m_s_bezierPatches.Use();
+
+		m_s_bezierPatches.set1i("numberOfLights", m_lights.size());
+
+		const material& mat = m_materials["jelly"]; 
+    	m_s_bezierPatches.set3fv("material.ka", mat.ka);
+    	m_s_bezierPatches.set3fv("material.kd", mat.kd);
+    	m_s_bezierPatches.set3fv("material.ks", mat.ks);
+    	m_s_bezierPatches.set1f("material.shininess", mat.shininess);
+
+		m_s_bezierPatches.set3fv("cameraPos", m_camera.GetPosition());
+		
+		m_s_bezierPatches.set4fv("patchColor", m_drawParams->cJelly);
+		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
+		
+		m_bCube->DrawBezierPatches();
+	}
+
+	/* Collition Cube (Frame) */
+	m_s_simpleCube.Use();
+	if (m_drawParams->bCollisionFrame)
+	{
+		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
+
+		glCullFace(GL_FRONT);
+		m_s_simpleCube.set1b("bOverrideColor", false);
+		m_s_simpleCube.setM4fv("model", GL_FALSE, model);
+		m_o_collitionFrame.Draw();	
+		glCullFace(GL_BACK);
+	}
+
+	/* Lights */
+	glm::mat4 LightBoxModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
+	for (int i = 0; i < m_o_lights.size(); ++i)
+	{
+		m_s_simpleCube.setM4fv("model", GL_FALSE, glm::translate(glm::mat4(1.0f), glm::vec3(m_lights[i].m_position)) * LightBoxModelMat);
+		m_s_simpleCube.set1b("bOverrideColor", true);
+		m_s_simpleCube.set4fv("overrideColor", m_lights[i].m_diffuseColor);
+		
+		m_o_collitionFrame.Draw();
+	}
+
 	if (m_drawParams->bControlFrame)
 	{
+		m_s_cubeSprings.Use();
 		glDisable(GL_DEPTH_TEST);
 		if (IsControlFrameChoosen())
 		{
@@ -177,14 +216,6 @@ void jelly_Renderer::RenderScene()
 		}
 		m_bCube->DrawControlFrame();
 		glEnable(GL_DEPTH_TEST);
-	}
-
-	if (m_drawParams->bJelly)
-	{
-		m_s_bezierPatches.Use();
-		m_s_bezierPatches.set4fv("patchColor", m_drawParams->cJelly);
-		m_s_bezierPatches.set1f("tessellationLevel", m_drawParams->mJellyTessellationLevel);
-		m_bCube->DrawBezierPatches();
 	}
 
 	// =========
@@ -218,9 +249,9 @@ void jelly_Renderer::PrepareScene()
 void jelly_Renderer::PrepareShaders()
 {
 	// PrepareShaders
-	m_s_collitionFrame.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
-	m_s_collitionFrame.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
-	m_s_collitionFrame.Link();
+	m_s_simpleCube.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
+	m_s_simpleCube.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
+	m_s_simpleCube.Link();
 
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.vert", GL_VERTEX_SHADER);
 	m_s_bCubePoints.AttachShaderFromFile("shaders/bezierPoints.frag", GL_FRAGMENT_SHADER);
@@ -239,9 +270,16 @@ void jelly_Renderer::PrepareShaders()
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));
     m_b_matrices.BindBufferBaseToBindingPoint(0);
+
+    m_b_lights.CreateUBO((1 + 3 * m_maxLightsNum) * sizeof(glm::vec4));
+    m_b_lights.BindBufferBaseToBindingPoint(1);
 }
 
 void jelly_Renderer::PrepareSceneObjects()
 {
-	
+	material m;
+	m_materials.insert(std::make_pair("jelly", m));
+
+	m_lights[0].m_position = glm::vec4(-3.0f,  3.0f,  3.0f, 0.0f);
+	m_lights[1].m_position = glm::vec4( 3.0f, -3.0f, -3.0f, 0.0f);
 }

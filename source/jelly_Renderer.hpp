@@ -75,18 +75,24 @@ private:
 	camera m_camera;
 
 	// Shaders
-	GL_shader m_s_collitionFrame;
+	GL_shader m_s_simpleCube;
 	GL_shader m_s_bCubePoints;
 	GL_shader m_s_cubeSprings;
 	GL_shader m_s_bezierPatches;
 	
 	// Buffers
+	const int m_maxLightsNum = 5;
+	const glm::vec4 m_ambientColor = {1.0f, 1.0f, 1.0f, 1.0f};
 	GL_UBO m_b_matrices;
+	GL_UBO m_b_lights;
 
 	// Scene objects
 	obj_cube m_o_collitionFrame;
+	std::array<obj_cube, 2> m_o_lights;
+	std::array<light, 2> m_lights;
 
 	std::unique_ptr<bezierCubeDrawer> m_bCube;
 	std::unique_ptr<collisionFrameDrawer> m_cFrameDrawer;
 
+	std::map<std::string_view, material> m_materials;
 }; 
