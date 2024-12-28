@@ -44,6 +44,7 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 			{ 
 				result = true;
 				m_selectedIndex = -1;
+				m_filter.Clear();
 				m_currentPath = fs::canonical(".");
 				ImGui::CloseCurrentPopup();
 			}
@@ -54,6 +55,7 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 		if (ImGui::Button("Cancel", ImVec2(availableRegion * 0.15f, 0.0f))) 
 		{ 
 			m_selectedIndex = -1;
+			m_filter.Clear();
 			m_currentPath = fs::canonical(".");
 			ImGui::CloseCurrentPopup();
 		}
@@ -83,6 +85,7 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 			{
 				m_currentPath = m_currentPath.parent_path();
 				m_selectedIndex = -1;
+				m_filter.Clear();
 				m_selectedFile = fs::path();
 			}
 			ImGui::PopStyleColor();
@@ -111,6 +114,7 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 						{
 							m_currentPath = entry;
 							m_selectedIndex = -1;
+							m_filter.Clear();
 							m_selectedFile = fs::path();
 						}
 						else 

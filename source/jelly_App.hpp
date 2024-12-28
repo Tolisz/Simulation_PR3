@@ -59,6 +59,9 @@ public:
 	void SetPointAttribute(int pointIndex, int attributeIndex, bool value);
 	void SetCubeEdgeLength(float newLength);
 
+	// Model loading 
+	void LoadModelFromFile(std::string path);
+
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();
 	std::shared_ptr<drawParameters> GetDrawParameters();

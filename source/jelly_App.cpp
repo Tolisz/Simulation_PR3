@@ -431,3 +431,8 @@ std::shared_ptr<drawParameters> jelly_App::GetDrawParameters()
 {
 	return m_renderer->GetDrawParameters();
 }
+
+void jelly_App::LoadModelFromFile(std::string path)
+{
+	
+}
