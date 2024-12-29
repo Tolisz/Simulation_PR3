@@ -43,11 +43,10 @@ void model::LoadModel(fs::path path)
 		std::cout << importer.GetErrorString() << std::endl;
         return;
     }
+
 	ProcessScene(scene->mRootNode, scene, scene->mRootNode->mTransformation);
 	CalculateAABB();
 	CalculateZeroOneBoxMatrix();
-	// std::cout << "Min = " << m_AABB.first.x << ", " << m_AABB.first.y << ", "<< m_AABB.first.z << std::endl;
-	// std::cout << "Max = " << m_AABB.second.x << ", " << m_AABB.second.y << ", "<< m_AABB.second.z << std::endl;
 
 	m_loadedFromPath = path;
 	m_isValid = true;

@@ -35,7 +35,7 @@ vec3 BezierCube(vec3 C)
         {
             for (int k = 0; k < 4; ++k)
             {
-                int idx = 3 * (16 * i + 4 * j + k);
+                int idx = 3 * (16 * (3 - k) + 4 * (3 - j) + i);
                 vec3 Point = vec3(P[idx], P[idx + 1], P[idx + 2]); 
                 cubePoint += Point * B3(i, C.x) * B3(j, C.y) * B3(k, C.z);
             }
