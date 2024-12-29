@@ -28,6 +28,9 @@ public:
 
 	bool IsControlFrameChoosen();
 	void SetControlFrameChoosen(bool isChoosen);
+
+	GLuint GetPointsBuffer();
+	
 private:
 
 	void InitGL();

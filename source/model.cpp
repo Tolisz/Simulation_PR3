@@ -15,6 +15,7 @@ bool model::IsValid()
 void model::Draw(GL_shader& shader)
 {
 	shader.setM4fv("toZeroOneBox", false, m_toZeroOneBox);
+	
 	for(auto& _mesh : m_meshes)
 	{
 		_mesh.Draw(shader);

@@ -242,6 +242,10 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bModel && m_loadedModel.IsValid())
 	{
 		m_s_deformedModel.Use();
+		
+		GLuint pointsBuffer = m_bCube->GetPointsBuffer();
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, pointsBuffer);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, pointsBuffer);
 		m_loadedModel.Draw(m_s_deformedModel);
 	}
 

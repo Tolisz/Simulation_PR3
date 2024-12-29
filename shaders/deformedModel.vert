@@ -9,6 +9,11 @@ layout(std140, binding = 0) uniform MatricesBlock {
     mat4 projection;
 };
 
+layout(shared, binding = 0) buffer Points
+{
+    float P[192];
+};
+
 uniform mat4 toZeroOneBox;
 uniform mat4 transformation;
 
@@ -21,11 +26,29 @@ float B3( int i, float t)
     return bc[i] * pow1 * pow2;
 }
 
+vec3 BezierCube(vec3 C)
+{
+    vec3 cubePoint = vec3(0.0f);
+    for(int i = 0; i < 4; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int k = 0; k < 4; ++k)
+            {
+                int idx = 3 * (16 * i + 4 * j + k);
+                vec3 Point = vec3(P[idx], P[idx + 1], P[idx + 2]); 
+                cubePoint += Point * B3(i, C.x) * B3(j, C.y) * B3(k, C.z);
+            }
+        }
+    }
 
+    return cubePoint;
+}
 
 void main()
 {
     vec3 BoxPoint = vec3(toZeroOneBox * transformation * vec4(iPosition, 1.0f));
-
-	gl_Position = projection * view * vec4(BoxPoint, 1.0f);
+    vec3 CubePoint = BezierCube(BoxPoint);
+    
+	gl_Position = projection * view * vec4(CubePoint, 1.0f);
 }
