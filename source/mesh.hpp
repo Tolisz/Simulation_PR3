@@ -22,17 +22,20 @@ public:
 	~mesh();
 
 	void Draw(GL_shader& shader);
+	std::pair<glm::vec3, glm::vec3> GetAABB();
 
 private:
 
 	void InitGL();
 	void DeInitGL();
+	void CalculateAABB();
 
 private:
 
 	std::vector<Vertex> m_vertices;
     std::vector<unsigned int> m_indices;
 	glm::mat4 m_transformation;
+	std::pair<glm::vec3, glm::vec3> m_AABB;
 
 private:
 

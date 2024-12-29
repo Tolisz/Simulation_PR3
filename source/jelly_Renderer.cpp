@@ -121,6 +121,16 @@ void jelly_Renderer::SetNewModel(model&& newModel)
 	m_loadedModel = newModel;
 }
 
+bool jelly_Renderer::IsModelLoaded()
+{
+	return m_loadedModel.IsValid();
+}
+
+std::string jelly_Renderer::GetModelName()
+{
+	return m_loadedModel.GetName();
+}	
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);

@@ -447,3 +447,13 @@ bool jelly_App::LoadModelFromFile(std::filesystem::path path)
 
 	return isValid;
 }
+
+bool jelly_App::IsModelLoaded()
+{
+	return m_renderer->IsModelLoaded();
+}
+
+std::string jelly_App::GetModelName()
+{
+	return m_renderer->GetModelName();
+}

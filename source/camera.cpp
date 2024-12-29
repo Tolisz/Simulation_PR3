@@ -19,7 +19,7 @@ camera::camera()
       m_worldUp(0.0f, 1.0f, 0.0f),
 
       m_nearPlane(0.01f),
-      m_farPlane(10000.0f),
+      m_farPlane(1000.0f),
       m_fov(45.0f),
 
       m_mode(mode::PERSPECTIVE)

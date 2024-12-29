@@ -62,6 +62,8 @@ public:
 
 	// Model loading 
 	bool LoadModelFromFile(std::filesystem::path path);
+	bool IsModelLoaded();
+	std::string GetModelName();
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();

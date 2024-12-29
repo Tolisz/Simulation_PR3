@@ -655,6 +655,12 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	{
 		drawParam->bJelly = false;
 	}
+
+	if (m_app->IsModelLoaded()) 
+	{
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), "%s", m_app->GetModelName().c_str());
+	}
 }
 
 void jelly_Window::GUI_SEC_MiscellaneousInfo()

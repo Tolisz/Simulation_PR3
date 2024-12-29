@@ -54,7 +54,9 @@ public:
 	std::shared_ptr<drawParameters> GetDrawParameters();
 
 	void SetNewModel(model&& newModel);
-
+	bool IsModelLoaded();
+	std::string GetModelName();
+	
 private:
 
 	void RenderScene();

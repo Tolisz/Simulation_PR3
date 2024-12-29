@@ -20,15 +20,20 @@ public:
 	void LoadModel(fs::path path);
 
 	void Draw(GL_shader& shader);
+	std::string GetName();
 
 private:
 
 	void ProcessScene(aiNode* node, const aiScene* scene, aiMatrix4x4 parentTransformation);
 	void ProcessMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
+	void CalculateAABB();
+	void CalculateZeroOneBoxMatrix();
 
 private:
 
 	bool m_isValid = false;
 	std::vector<mesh> m_meshes;
 	fs::path m_loadedFromPath;
+	std::pair<glm::vec3, glm::vec3> m_AABB;
+	glm::mat4 m_toZeroOneBox;
 };
