@@ -1,6 +1,8 @@
 #pragma once 
 
 #include <filesystem>
+#include <assimp/matrix4x4.h>
+#include "GL_shader.hpp"
 #include "mesh.hpp"
 namespace fs = std::filesystem;
 
@@ -17,12 +19,12 @@ public:
 	bool IsValid();
 	void LoadModel(fs::path path);
 
-	void Draw();
+	void Draw(GL_shader& shader);
 
 private:
 
-	void ProcessScene(aiNode* node, const aiScene* scene);
-	void ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	void ProcessScene(aiNode* node, const aiScene* scene, aiMatrix4x4 parentTransformation);
+	void ProcessMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
 
 private:
 

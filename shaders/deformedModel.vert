@@ -9,7 +9,9 @@ layout(std140, binding = 0) uniform MatricesBlock {
     mat4 projection;
 };
 
+uniform mat4 transformation;
+
 void main()
 {
-	gl_Position = projection * view * vec4(0.01f * iPosition, 1.0f);
+	gl_Position = projection * view * transformation * vec4(iPosition, 1.0f);
 }

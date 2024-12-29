@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 #include <glm/vec3.hpp>
+#include <assimp/matrix4x4.h>
+#include "GL_shader.hpp"
+
 
 struct Vertex 
 {
@@ -12,10 +15,13 @@ class mesh
 {
 public:
 
-	mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices);
+	mesh(
+		std::vector<Vertex>&& vertices, 
+		std::vector<unsigned int>&& indices,
+		aiMatrix4x4 transformation);
 	~mesh();
 
-	void Draw();
+	void Draw(GL_shader& shader);
 
 private:
 
@@ -26,6 +32,7 @@ private:
 
 	std::vector<Vertex> m_vertices;
     std::vector<unsigned int> m_indices;
+	glm::mat4 m_transformation;
 
 private:
 

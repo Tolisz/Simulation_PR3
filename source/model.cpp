@@ -11,11 +11,11 @@ bool model::IsValid()
 	return m_isValid;
 }
 
-void model::Draw()
+void model::Draw(GL_shader& shader)
 {
 	for(auto& _mesh : m_meshes)
 	{
-		_mesh.Draw();
+		_mesh.Draw(shader);
 	}
 }
 
@@ -30,27 +30,28 @@ void model::LoadModel(fs::path path)
 		std::cout << importer.GetErrorString() << std::endl;
         return;
     }
-
-	ProcessScene(scene->mRootNode, scene);
+	
+	ProcessScene(scene->mRootNode, scene, scene->mRootNode->mTransformation);
 
 	m_isValid = true;
 }
 
-void model::ProcessScene(aiNode* node, const aiScene* scene)
+void model::ProcessScene(aiNode* node, const aiScene* scene, aiMatrix4x4 parentTransformation)
 {
 	for(unsigned int i = 0; i < node->mNumMeshes; ++i)
 	{
 		aiMesh* _mesh = scene->mMeshes[node->mMeshes[i]];
-		ProcessMesh(_mesh, scene);
+		ProcessMesh(_mesh, scene, parentTransformation);
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; ++i)
 	{
-		ProcessScene(node->mChildren[i], scene);
+		aiMatrix4x4 nextTransformation = parentTransformation * node->mChildren[i]->mTransformation;
+		ProcessScene(node->mChildren[i], scene, nextTransformation);
 	}
 }
 
-void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene)
+void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene, aiMatrix4x4 transformation)
 {
 	std::vector<Vertex> vertices(_mesh->mNumVertices);
 	std::vector<unsigned int> indices;
@@ -75,5 +76,5 @@ void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene)
 		}
 	}
 
-	m_meshes.push_back(mesh(std::move(vertices), std::move(indices)));
+	m_meshes.push_back(mesh(std::move(vertices), std::move(indices), transformation));
 }

@@ -232,7 +232,7 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bModel && m_loadedModel.IsValid())
 	{
 		m_s_deformedModel.Use();
-		m_loadedModel.Draw();
+		m_loadedModel.Draw(m_s_deformedModel);
 	}
 
 	// =========

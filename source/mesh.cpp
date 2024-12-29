@@ -2,9 +2,21 @@
 
 #include <iostream>
 
-mesh::mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices):
+mesh::mesh(
+	std::vector<Vertex>&& vertices, 
+	std::vector<unsigned int>&& indices,
+	aiMatrix4x4 transformation):
 	m_vertices{std::move(vertices)}, m_indices{std::move(indices)}
 {
+	// convert matrix from Assimp to GLM
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j) 
+		{
+			m_transformation[i][j] = transformation[j][i];
+		}
+	}
+
 	InitGL();
 }
 
@@ -13,11 +25,15 @@ mesh::~mesh()
 	// DeInitGL();
 }
 
-void mesh::Draw()
+void mesh::Draw(GL_shader& shader)
 {
+	shader.setM4fv("transformation", GL_FALSE, m_transformation);
+	
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_indices.size()), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void mesh::InitGL()
