@@ -2,6 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 jelly_Renderer::jelly_Renderer(
 		std::unique_ptr<bezierCubeDrawer> cubeDrawer,
 		std::unique_ptr<collisionFrameDrawer> colFrameDrawer):
@@ -114,6 +116,11 @@ std::shared_ptr<drawParameters> jelly_Renderer::GetDrawParameters()
 	return m_drawParams;
 }
 
+void jelly_Renderer::SetNewModel(model&& newModel)
+{
+	m_loadedModel = newModel;
+}
+
 void jelly_Renderer::RenderScene()
 {
 	glClearColor(0.5f, 0.5f, 1.0f, 1.0f);
@@ -221,6 +228,13 @@ void jelly_Renderer::RenderScene()
 		m_bCube->DrawBezierPatches();
 	}
 
+	/* Model */
+	if (m_drawParams->bModel && m_loadedModel.IsValid())
+	{
+		m_s_deformedModel.Use();
+		m_loadedModel.Draw();
+	}
+
 	// =========
 	// SCENE END
 }
@@ -269,6 +283,10 @@ void jelly_Renderer::PrepareShaders()
 	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.tese", GL_TESS_EVALUATION_SHADER);
 	m_s_bezierPatches.AttachShaderFromFile("shaders/bezierPatch.frag", GL_FRAGMENT_SHADER);
 	m_s_bezierPatches.Link();
+
+	m_s_deformedModel.AttachShaderFromFile("shaders/deformedModel.vert", GL_VERTEX_SHADER);
+	m_s_deformedModel.AttachShaderFromFile("shaders/deformedModel.frag", GL_FRAGMENT_SHADER);
+	m_s_deformedModel.Link();
 
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));

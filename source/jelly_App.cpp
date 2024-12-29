@@ -6,6 +6,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 
+#include "model.hpp"
+
 jelly_App::jelly_App()
 {
 	m_simParams = std::make_shared<simulationParameters>();
@@ -432,7 +434,16 @@ std::shared_ptr<drawParameters> jelly_App::GetDrawParameters()
 	return m_renderer->GetDrawParameters();
 }
 
-void jelly_App::LoadModelFromFile(std::string path)
+bool jelly_App::LoadModelFromFile(std::filesystem::path path)
 {
-	
+	model newModel;
+	newModel.LoadModel(path);
+
+	bool isValid = newModel.IsValid(); 
+	if (isValid)
+	{
+		m_renderer->SetNewModel(std::move(newModel));
+	}
+
+	return isValid;
 }

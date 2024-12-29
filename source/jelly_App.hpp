@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <optional>
+#include <filesystem>
 #include "jelly_Renderer.hpp"
 #include "simulationParameters.hpp"
 #include "bezierCube.hpp"
@@ -60,7 +61,7 @@ public:
 	void SetCubeEdgeLength(float newLength);
 
 	// Model loading 
-	void LoadModelFromFile(std::string path);
+	bool LoadModelFromFile(std::filesystem::path path);
 
 	// Parameters
 	std::shared_ptr<simulationParameters> GetSimulationParameters();

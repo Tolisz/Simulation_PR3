@@ -11,6 +11,7 @@
 #include "drawParameters.hpp"
 #include "light.hpp"
 #include "material.hpp"
+#include "model.hpp"
 #include <map>
 
 class jelly_Renderer
@@ -52,6 +53,8 @@ public:
 	// 
 	std::shared_ptr<drawParameters> GetDrawParameters();
 
+	void SetNewModel(model&& newModel);
+
 private:
 
 	void RenderScene();
@@ -79,6 +82,7 @@ private:
 	GL_shader m_s_bCubePoints;
 	GL_shader m_s_cubeSprings;
 	GL_shader m_s_bezierPatches;
+	GL_shader m_s_deformedModel;
 	
 	// Buffers
 	const int m_maxLightsNum = 5;
@@ -93,6 +97,8 @@ private:
 
 	std::unique_ptr<bezierCubeDrawer> m_bCube;
 	std::unique_ptr<collisionFrameDrawer> m_cFrameDrawer;
+
+	model m_loadedModel;
 
 	std::map<std::string_view, material> m_materials;
 }; 

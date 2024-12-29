@@ -644,8 +644,10 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	}
 	if (m_fileSelector.Render(ImVec2(m_width * 0.60f, m_height * 0.75f)) )
 	{
-		auto path = m_fileSelector.GetSelectedFile();
-		std::cout << path.string() << std::endl;
+		if (!m_app->LoadModelFromFile(m_fileSelector.GetSelectedFile()))
+		{
+			std::cout << "ERROR WHILE LOADING" << std::endl;
+		}
 	}
 	ImGui::SameLine();
 	ImGui::Checkbox("Model", &drawParam->bModel);
