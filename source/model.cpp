@@ -44,8 +44,21 @@ void model::LoadModel(fs::path path)
         return;
     }
 
+	if(scene->HasTextures())
+	{
+		for (unsigned int i = 0; i < scene->mNumTextures; ++i)
+		{
+			std::cout << scene->mTextures[i]->mFilename.C_Str() << std::endl;
+		}
+	}
+	else 
+	{
+		std::cout << "No Textures" << std::endl;
+	}
+
 	ProcessScene(scene->mRootNode, scene, scene->mRootNode->mTransformation);
 	CalculateAABB();
+	CalculateMassCenter();
 	CalculateZeroOneBoxMatrix();
 
 	m_loadedFromPath = path;
@@ -113,16 +126,37 @@ void model::CalculateAABB()
 	}
 }
 
+void model::CalculateMassCenter()
+{
+	glm::dvec3 massCenter = glm::dvec3(0.0, 0.0, 0.0);
+	size_t vertexNum = 0;
+
+	for (int i = 0; i < m_meshes.size(); ++i)
+	{
+		std::pair<glm::dvec3, size_t> center = m_meshes[i].GetMassCenter();
+		
+		massCenter += center.first;
+		vertexNum += center.second;
+	}
+
+	massCenter /= static_cast<double>(vertexNum);
+	m_massCenter = massCenter;
+}
+
 void model::CalculateZeroOneBoxMatrix()
 {
-	glm::vec3 lengths = glm::abs(m_AABB.second - m_AABB.first);
-	float maxLength = glm::max(lengths.x, glm::max(lengths.y, lengths.z));
-	
-	float scaleFactor = 1.0f / maxLength;
-	glm::vec3 translation = -m_AABB.first;
+	glm::vec3 LengthP = glm::abs(m_AABB.second - m_massCenter);
+	glm::vec3 LengthN = glm::abs(m_massCenter - m_AABB.first);
 
-	glm::mat4 scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor));
-    glm::mat4 translation_matrix = glm::translate(glm::mat4(1.0f), translation);
+	float maxLength = glm::max(
+		glm::max(LengthP.x, glm::max(LengthP.y, LengthP.z)),
+		glm::max(LengthN.x, glm::max(LengthN.y, LengthN.z))
+	);
+	float scaleFactor = 0.5f / maxLength;
 
-	m_toZeroOneBox = scale_matrix * translation_matrix;
+	glm::mat4 translateToOrigine = glm::translate(glm::mat4(1.0f), -m_massCenter);
+	glm::mat4 scaleToCube = glm::scale(glm::mat4(1.0f), glm::vec3(scaleFactor));
+	glm::mat4 translateToZeroOneCube = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+
+	m_toZeroOneBox = translateToZeroOneCube * scaleToCube * translateToOrigine;
 }

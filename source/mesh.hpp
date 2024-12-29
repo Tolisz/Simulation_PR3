@@ -23,7 +23,8 @@ public:
 
 	void Draw(GL_shader& shader);
 	std::pair<glm::vec3, glm::vec3> GetAABB();
-
+	std::pair<glm::dvec3, size_t> GetMassCenter();
+	
 private:
 
 	void InitGL();
@@ -36,6 +37,7 @@ private:
     std::vector<unsigned int> m_indices;
 	glm::mat4 m_transformation;
 	std::pair<glm::vec3, glm::vec3> m_AABB;
+	glm::dvec3 m_massCenter;
 
 private:
 

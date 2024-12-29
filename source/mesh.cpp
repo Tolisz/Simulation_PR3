@@ -66,8 +66,14 @@ std::pair<glm::vec3, glm::vec3> mesh::GetAABB()
 	return m_AABB;
 }
 
+std::pair<glm::dvec3, size_t> mesh::GetMassCenter()
+{
+	return {m_massCenter, m_vertices.size()};
+}
+
 void mesh::CalculateAABB()
 {    
+	m_massCenter = glm::dvec3(0.0f);
 	if (m_vertices.empty())
     {
         m_AABB = {glm::vec3(0.0f), glm::vec3(0.0f)};
@@ -80,7 +86,9 @@ void mesh::CalculateAABB()
 
     for (const auto& vertex : m_vertices)
     {
-		glm::vec3 tVertex = m_transformation * glm::vec4(vertex.position, 1.0f); 
+		glm::vec3 tVertex = m_transformation * glm::vec4(vertex.position, 1.0f);
+		m_massCenter += glm::dvec3(tVertex);
+
         min = glm::min(min, tVertex);
         max = glm::max(max, tVertex);
     }
