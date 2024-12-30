@@ -61,7 +61,7 @@ public:
 	void SetCubeEdgeLength(float newLength);
 
 	// Model loading 
-	bool LoadModelFromFile(std::filesystem::path path);
+	bool LoadModelFromFile(std::filesystem::path path, modelLoadParams params);
 	bool IsModelLoaded();
 	std::string GetModelName();
 

@@ -15,24 +15,29 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 {
 	bool result = false;
 	
+	auto& style = ImGui::GetStyle();
+	
+	ImVec4 prevPopupBgCol = style.Colors[ImGuiCol_PopupBg];
+	style.Colors[ImGuiCol_PopupBg] = style.Colors[ImGuiCol_WindowBg];
+
 	ImGui::SetNextWindowSize(windowSize);
  	if (ImGui::BeginPopupModal(GetPopupName(), NULL, 
 		ImGuiWindowFlags_AlwaysAutoResize | 
 		ImGuiWindowFlags_NoMove))
 	{
 		float availableRegion = ImGui::GetContentRegionAvail().x;
-		float iSpacing = ImGui::GetStyle().ItemSpacing.x;
-		float wPadding = ImGui::GetStyle().WindowPadding.x;
+		float iSpacing = style.ItemSpacing.x;
+		float wPadding = style.WindowPadding.x;
 		
 		std::string hint = "Search " + m_currentPath.filename().string();
 		
-		ImGui::GetStyle().FrameBorderSize = 1.0f;
+		style.FrameBorderSize = 1.0f;
 		ImGui::SetNextItemWidth(availableRegion * 0.15f);
 		if (ImGui::InputTextWithHint("##Filter", hint.c_str(), m_filter.InputBuf, IM_ARRAYSIZE(m_filter.InputBuf), ImGuiInputTextFlags_EscapeClearsAll))
         {
 			m_filter.Build();
 		}
-		ImGui::GetStyle().FrameBorderSize = 0.0f;
+		style.FrameBorderSize = 0.0f;
 		
 		ImGui::SetNextItemWidth(availableRegion * 0.55f);
 		ImGui::SameLine();
@@ -59,6 +64,8 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 			m_currentPath = fs::canonical(".");
 			ImGui::CloseCurrentPopup();
 		}
+
+		ImGui::Checkbox("FlipUV", &m_loadParams.bFlipUVs);
 
 		if (ImGui::BeginTable("##File table", 2,  
 			ImGuiTableFlags_Borders | 
@@ -139,10 +146,17 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 		ImGui::EndPopup();
 	}
 
+	style.Colors[ImGuiCol_PopupBg] = prevPopupBgCol;
+
 	return result;
 }
 
 fs::path GUI_FileSelector::GetSelectedFile()
 {
 	return m_selectedFile;
+}
+
+modelLoadParams GUI_FileSelector::GetLoadParams()
+{
+	return m_loadParams;
 }

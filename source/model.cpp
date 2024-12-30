@@ -29,15 +29,16 @@ std::string model::GetName()
 	return m_loadedFromPath.filename().string();
 }
 
-void model::LoadModel(fs::path path)
+void model::LoadModel(fs::path path, modelLoadParams params)
 {
+	unsigned int flags = 0;
+	flags |= aiProcess_Triangulate;  
+	flags |= aiProcess_GenSmoothNormals; 
+	flags |= aiProcess_CalcTangentSpace;
+	if (params.bFlipUVs) flags |= aiProcess_FlipUVs; 
+
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path.string(), 
-		aiProcess_Triangulate | 
-		aiProcess_GenSmoothNormals | 
-		aiProcess_FlipUVs | 
-		aiProcess_CalcTangentSpace | 
-		aiProcess_GenBoundingBoxes);
+	const aiScene* scene = importer.ReadFile(path.string(), flags);
 	
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
     {
@@ -46,24 +47,13 @@ void model::LoadModel(fs::path path)
         return;
     }
 
-	if(scene->HasTextures())
-	{
-		for (unsigned int i = 0; i < scene->mNumTextures; ++i)
-		{
-			std::cout << scene->mTextures[i]->mFilename.C_Str() << std::endl;
-		}
-	}
-	else 
-	{
-		std::cout << "No Textures" << std::endl;
-	}
-
+	m_loadedFromPath = path;
+	
 	ProcessScene(scene->mRootNode, scene, scene->mRootNode->mTransformation);
 	CalculateAABB();
 	CalculateMassCenter();
 	CalculateZeroOneBoxMatrix();
 
-	m_loadedFromPath = path;
 	m_isValid = true;
 }
 
@@ -140,22 +130,23 @@ std::vector<Texture> model::LoadTextures(aiMaterial* mat, aiTextureType type, co
 		}
 		else 
 		{
+			Texture newTexture;
+			newTexture.type = type;
+			newTexture.path = path.C_Str();
+			std::cout << newTexture.path << std::endl;
+
 			const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(path.C_Str());
 			if (embeddedTexture)
 			{
-				Texture newTexture;
 				newTexture.id = LoadEmbeddedTexture(embeddedTexture, path);
-				newTexture.type = type;
-				newTexture.path = path.C_Str();
-
-				textures.push_back(newTexture);
-				m_loadedTextures.push_back(newTexture);
 			}
 			else 
 			{
-				std::cout << "FILE PATH = " << path.C_Str() << std::endl;
-				// !!! DOPISAĆ
+				newTexture.id = LoadFromFileTexture(path);
 			}
+
+			textures.push_back(newTexture);
+			m_loadedTextures.push_back(newTexture);
 		}
 	}
 
@@ -192,12 +183,35 @@ GLuint model::LoadEmbeddedTexture(const aiTexture* embeddedTexture, aiString pat
 		}
 		else 
 		{
-			std::cout << "Can not load texture from path [" << path.C_Str() << std::endl; 
+			std::cout << "Can not load embedded texture from path [" << path.C_Str() << "]" << std::endl; 
 		}
 	}
 	else 
 	{
-		// !!! DOPISAĆ
+		std::cout << "NOT IMPLEMENTED [" << path.C_Str() << "]" << std::endl;
+	}
+
+	return textureID;
+}
+
+GLuint model::LoadFromFileTexture(aiString path)
+{
+	GLuint textureID = 0;
+
+	fs::path fullPath = m_loadedFromPath.parent_path();
+	fullPath.append(path.C_Str());
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(fullPath.string().c_str(), &width, &height, &nrComponents, 0);
+
+	if (data)
+	{
+		textureID = GenerateTexture2D(width, height, nrComponents, data);
+		stbi_image_free(data);
+	}
+	else 
+	{
+		std::cout << "Can not load file texture from path [" << path.C_Str() << "]" << std::endl; 
 	}
 
 	return textureID;

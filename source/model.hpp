@@ -5,6 +5,7 @@
 #include <optional>
 #include "GL_shader.hpp"
 #include "mesh.hpp"
+#include "modelLoadParams.hpp"
 namespace fs = std::filesystem;
 
 struct aiNode;
@@ -19,7 +20,7 @@ public:
 	~model() = default;
 
 	bool IsValid();
-	void LoadModel(fs::path path);
+	void LoadModel(fs::path path, modelLoadParams params);
 
 	void Draw(GL_shader& shader);
 	std::string GetName();
@@ -32,7 +33,7 @@ private:
 	std::vector<Texture> LoadTextures(aiMaterial* mat, aiTextureType type, const aiScene* scene);
 	std::optional<Texture> IsTextureAlreadyLoaded(aiString path);
 	GLuint LoadEmbeddedTexture(const aiTexture* embeddedTexture, aiString path);
-	// Texture LoadFromFileTexture();
+	GLuint LoadFromFileTexture(aiString path);
 	GLuint GenerateTexture2D(int width, int height, int nrComponents, unsigned char* data);
 
 	void CalculateAABB();

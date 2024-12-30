@@ -434,10 +434,10 @@ std::shared_ptr<drawParameters> jelly_App::GetDrawParameters()
 	return m_renderer->GetDrawParameters();
 }
 
-bool jelly_App::LoadModelFromFile(std::filesystem::path path)
+bool jelly_App::LoadModelFromFile(std::filesystem::path path, modelLoadParams params)
 {
 	model newModel;
-	newModel.LoadModel(path);
+	newModel.LoadModel(path, params);
 
 	bool isValid = newModel.IsValid(); 
 	if (isValid)

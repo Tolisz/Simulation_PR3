@@ -286,7 +286,7 @@ void jelly_Window::GUI_Main()
 	GUI_WindowLayout();
 
 	// DEBUG ONLY !!!!!!!!!!!!
-	static bool show_demo_window = false;
+	static bool show_demo_window = true;
 	if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 }
@@ -644,7 +644,7 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	}
 	if (m_fileSelector.Render(ImVec2(m_width * 0.60f, m_height * 0.75f)) )
 	{
-		if (!m_app->LoadModelFromFile(m_fileSelector.GetSelectedFile()))
+		if (!m_app->LoadModelFromFile(m_fileSelector.GetSelectedFile(), m_fileSelector.GetLoadParams()))
 		{
 			std::cout << "ERROR WHILE LOADING" << std::endl;
 		}
