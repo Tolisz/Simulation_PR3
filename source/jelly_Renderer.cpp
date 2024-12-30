@@ -161,7 +161,7 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bPoints)
 	{
 		m_s_bCubePoints.set4fv("cDefaultColor", m_drawParams->cPoints);
-		m_bCube->DrawCubePoints();
+		m_bCube->DrawCubePoints(m_drawParams->mPointSize);
 	}
 
 	/* Cube's springs */
@@ -202,14 +202,17 @@ void jelly_Renderer::RenderScene()
 	}
 
 	/* Lights */
-	m_s_simpleCube.Use();
-	glm::mat4 LightBoxModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
-	for (int i = 0; i < m_o_lights.size(); ++i)
+	if (m_drawParams->bLights)
 	{
-		m_s_simpleCube.setM4fv("model", GL_FALSE, glm::translate(glm::mat4(1.0f), glm::vec3(m_lights[i].m_position)) * LightBoxModelMat);
-		m_s_simpleCube.set4fv("cubeColor", m_lights[i].m_diffuseColor);
-		
-		m_o_collitionFrame.Draw();
+		m_s_simpleCube.Use();
+		glm::mat4 LightBoxModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
+		for (int i = 0; i < m_o_lights.size(); ++i)
+		{
+			m_s_simpleCube.setM4fv("model", GL_FALSE, glm::translate(glm::mat4(1.0f), glm::vec3(m_lights[i].m_position)) * LightBoxModelMat);
+			m_s_simpleCube.set4fv("cubeColor", m_lights[i].m_diffuseColor);
+			
+			m_o_collitionFrame.Draw();
+		}
 	}
 
 	if (m_drawParams->bControlFrame)

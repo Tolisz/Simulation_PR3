@@ -16,11 +16,13 @@ struct drawParameters
 	bool bLongSprings;
 	bool bControlFrame;
 	bool bCollisionFrame;
+	bool bLights;
 	bool bJelly;
 	bool bModel;
 
 	float mJellyTessellationLevel;
-
+	float mPointSize;
+	
 	drawParameters();
 
 	void ResetToDefault();

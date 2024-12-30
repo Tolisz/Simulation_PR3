@@ -14,12 +14,13 @@ void drawParameters::ResetToDefault()
 	cCollisionFrame = glm::vec4(0.467f, 0.467f, 0.467f, 0.788f);
 	cJelly = glm::vec4(0.607f, 0.39f, 0.768f, 1.0f);
 
-	bPoints = true;
-	bShortSrpings = true;
+	bPoints = false;
+	bShortSrpings = false;
 	bLongSprings = false;
 	bControlFrame = true;
 	bCollisionFrame = true;
 	bJelly = true;
 
 	mJellyTessellationLevel = 10;
+	mPointSize = 4;
 }

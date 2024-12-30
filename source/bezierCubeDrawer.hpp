@@ -17,7 +17,7 @@ public:
 	bezierCubeDrawer& operator=(bezierCubeDrawer&&) = delete;
 
 	void UpdateBuffers();
-	void DrawCubePoints();
+	void DrawCubePoints(float pointSize);
 	void DrawShortSprings();
 	void DrawLongSprings();
 	void DrawControlFrame();

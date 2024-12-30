@@ -618,6 +618,7 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	auto simParam = m_app->GetSimulationParameters();
 
 	GUI_ELEM_DrawCheckbox("Cube's points", drawParam->cPoints, drawParam->bPoints);
+	
 	GUI_ELEM_DrawCheckbox("Cube's shorter edges", drawParam->cShortSprings, drawParam->bShortSrpings);
 	GUI_ELEM_DrawCheckbox("Cube's longer edges", drawParam->cLongSprings, drawParam->bLongSprings);
 	
@@ -629,15 +630,17 @@ void jelly_Window::GUI_SEC_DrawOptions()
 		GUI_ELEM_DrawCheckbox("Collision frame##DRAW", drawParam->cCollisionFrame, drawParam->bCollisionFrame);
 	ImGui::EndDisabled();
 
+	if (ImGui::ImageButton("##LightsConfiguration", m_icons["light"], ImVec2(11, 14)))
+	{
+	}
+	ImGui::SameLine();
+	ImGui::Checkbox("Lights", &drawParam->bLights);
+
 	GUI_ELEM_DrawCheckbox("Jelly ##DRAW", drawParam->cJelly, drawParam->bJelly);
 	if (drawParam->bJelly && drawParam->bModel)
 	{
 		drawParam->bModel = false;
 	}
-	ImGui::SameLine();
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::CalcTextSize("Tessellation Level").x - iSpacing);
-	ImGui::DragFloat("Tessellation Level ##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
-
 	if (ImGui::ImageButton("##OpenFile", m_icons["folder"], ImVec2(11, 14)))
 	{
 		ImGui::OpenPopup(m_fileSelector.GetPopupName());
@@ -647,6 +650,11 @@ void jelly_Window::GUI_SEC_DrawOptions()
 		if (!m_app->LoadModelFromFile(m_fileSelector.GetSelectedFile(), m_fileSelector.GetLoadParams()))
 		{
 			std::cout << "ERROR WHILE LOADING" << std::endl;
+		}
+		else 
+		{
+			drawParam->bModel = true;
+			drawParam->bJelly = false;
 		}
 	}
 	ImGui::SameLine();
@@ -661,6 +669,11 @@ void jelly_Window::GUI_SEC_DrawOptions()
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), "%s", m_app->GetModelName().c_str());
 	}
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+	ImGui::DragFloat("Cube's points size##DRAW", &drawParam->mPointSize, 1.0f, 1.0f, 15.0f, "%.0f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * 0.6f);
+	ImGui::DragFloat("Tessellation level##DRAW", &drawParam->mJellyTessellationLevel, 0.1f, 1.0f, 300.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
 }
 
 void jelly_Window::GUI_SEC_MiscellaneousInfo()
@@ -759,7 +772,8 @@ void jelly_Window::GUI_ELEM_DrawCheckbox(std::string name, glm::vec4& color, boo
 	ImGui::ColorEdit4(("##" + name).data(), reinterpret_cast<float*>(&color), 
 		ImGuiColorEditFlags_AlphaBar | 
 		ImGuiColorEditFlags_NoInputs | 
-		ImGuiColorEditFlags_NoBorder);
+		ImGuiColorEditFlags_NoBorder | 
+		ImGuiColorEditFlags_AlphaPreview);
 	
 	ImGui::SameLine();
 	ImGui::Checkbox(name.data(), &draw);
@@ -770,6 +784,8 @@ void jelly_Window::GUI_PrepareIcons()
 	GLuint texture;
 	texture = CreateIconTexture("./resources/icons/folder.png");
 	m_icons.insert(std::make_pair("folder", texture));
+	texture = CreateIconTexture("./resources/icons/light.png");
+	m_icons.insert(std::make_pair("light", texture));
 }
 
 GLuint jelly_Window::CreateIconTexture(const char* filePath)
