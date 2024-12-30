@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <assimp/matrix4x4.h>
+#include <optional>
 #include "GL_shader.hpp"
 #include "mesh.hpp"
 namespace fs = std::filesystem;
@@ -9,6 +10,7 @@ namespace fs = std::filesystem;
 struct aiNode;
 struct aiScene;
 struct aiMesh;
+struct aiTexture;
 
 class model 
 {
@@ -26,6 +28,13 @@ private:
 
 	void ProcessScene(aiNode* node, const aiScene* scene, aiMatrix4x4 parentTransformation);
 	void ProcessMesh(aiMesh* mesh, const aiScene* scene, aiMatrix4x4 transformation);
+
+	std::vector<Texture> LoadTextures(aiMaterial* mat, aiTextureType type, const aiScene* scene);
+	std::optional<Texture> IsTextureAlreadyLoaded(aiString path);
+	GLuint LoadEmbeddedTexture(const aiTexture* embeddedTexture, aiString path);
+	// Texture LoadFromFileTexture();
+	GLuint GenerateTexture2D(int width, int height, int nrComponents, unsigned char* data);
+
 	void CalculateAABB();
 	void CalculateMassCenter();
 	void CalculateZeroOneBoxMatrix();
@@ -33,8 +42,10 @@ private:
 private:
 
 	bool m_isValid = false;
-	std::vector<mesh> m_meshes;
 	fs::path m_loadedFromPath;
+	
+	std::vector<mesh> m_meshes;
+	std::vector<Texture> m_loadedTextures;
 
 	std::pair<glm::vec3, glm::vec3> m_AABB;
 	glm::vec3 m_massCenter;

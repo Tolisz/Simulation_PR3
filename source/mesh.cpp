@@ -5,8 +5,12 @@
 mesh::mesh(
 	std::vector<Vertex>&& vertices, 
 	std::vector<unsigned int>&& indices,
-	aiMatrix4x4 transformation):
-	m_vertices{std::move(vertices)}, m_indices{std::move(indices)}
+	std::vector<Texture>& textures,
+	aiMatrix4x4 transformation)
+	:
+	m_vertices{std::move(vertices)}, 
+	m_indices{std::move(indices)},
+	m_textures{textures}
 {
 	// convert matrix from Assimp to GLM
 	for (int i = 0; i < 4; ++i)
@@ -30,6 +34,26 @@ void mesh::Draw(GL_shader& shader)
 {
 	shader.setM4fv("transformation", GL_FALSE, m_transformation);
 
+	unsigned int nDiffuse = 0;
+
+	for (int i = 0; i < m_textures.size(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		
+		std::string number;
+        std::string name;
+		switch (m_textures[i].type)
+		{
+		case aiTextureType_DIFFUSE:
+			name = "texture_diffuse";
+			number = std::to_string(nDiffuse++);
+			break;
+		}
+
+		shader.set1i((name + number).c_str(), i);
+		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
+	}
+
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_indices.size()), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
@@ -46,7 +70,10 @@ void mesh::InitGL()
 	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(0);	
+	glEnableVertexAttribArray(0);
+	
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
+	glEnableVertexAttribArray(1);		
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), m_indices.data(), GL_STATIC_DRAW);

@@ -2,6 +2,12 @@
 
 // =========================================
 layout(location = 0) in vec3 iPosition;
+layout(location = 1) in vec2 iTexCoords;
+
+out FS_IN
+{
+    vec2 texCoords;
+} o;
 // =========================================
 
 layout(std140, binding = 0) uniform MatricesBlock {
@@ -49,6 +55,8 @@ void main()
 {
     vec3 BoxPoint = vec3(toZeroOneBox * transformation * vec4(iPosition, 1.0f));
     vec3 CubePoint = BezierCube(BoxPoint);
-    
+
 	gl_Position = projection * view * vec4(CubePoint, 1.0f);
+
+    o.texCoords = iTexCoords;
 }

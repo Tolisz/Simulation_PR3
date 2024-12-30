@@ -2,9 +2,17 @@
 
 // =========================================
 layout(location = 0) out vec4 oColor;
+
+in FS_IN
+{
+    vec2 texCoords;
+} i;
 // =========================================
+
+uniform sampler2D texture_diffuse0;
 
 void main()
 {
-	oColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	vec3 texColor = texture(texture_diffuse0, i.texCoords).xyz;
+	oColor = vec4(texColor, 1.0f);
 }

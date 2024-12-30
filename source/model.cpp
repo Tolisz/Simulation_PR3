@@ -7,6 +7,8 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 
+#include <stb_image.h>
+
 bool model::IsValid()
 {
 	return m_isValid;
@@ -84,6 +86,7 @@ void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene, aiMatrix4x4 transfo
 {
 	std::vector<Vertex> vertices(_mesh->mNumVertices);
 	std::vector<unsigned int> indices;
+	std::vector<Texture> textures;
 
 	for(unsigned int i = 0; i < _mesh->mNumVertices; ++i)
     {
@@ -93,6 +96,15 @@ void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene, aiMatrix4x4 transfo
 			_mesh->mVertices[i].y, 
 			_mesh->mVertices[i].z);
 		
+		
+		if(_mesh->HasTextureCoords(0))
+		{
+			v.texCoords = glm::vec2(
+				_mesh->mTextureCoords[0][i].x,
+				_mesh->mTextureCoords[0][i].y
+			);
+		}
+
 		vertices[i] = v;
 	}
 
@@ -105,7 +117,115 @@ void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene, aiMatrix4x4 transfo
 		}
 	}
 
-	m_meshes.push_back(mesh(std::move(vertices), std::move(indices), transformation));
+	aiMaterial* mat = scene->mMaterials[_mesh->mMaterialIndex];
+
+	std::vector<Texture> texDiffuse = LoadTextures(mat, aiTextureType_DIFFUSE, scene);
+	textures.insert(textures.end(), texDiffuse.begin(), texDiffuse.end());
+
+	m_meshes.push_back(mesh(std::move(vertices), std::move(indices), textures, transformation));
+}
+
+std::vector<Texture> model::LoadTextures(aiMaterial* mat, aiTextureType type, const aiScene* scene)
+{
+	std::vector<Texture> textures;
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); ++i)
+	{
+		aiString path;
+		mat->GetTexture(type, i, &path);
+		
+		std::optional<Texture> isLoaded = IsTextureAlreadyLoaded(path);
+		if (isLoaded.has_value())
+		{
+			textures.push_back(isLoaded.value());
+		}
+		else 
+		{
+			const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(path.C_Str());
+			if (embeddedTexture)
+			{
+				Texture newTexture;
+				newTexture.id = LoadEmbeddedTexture(embeddedTexture, path);
+				newTexture.type = type;
+				newTexture.path = path.C_Str();
+
+				textures.push_back(newTexture);
+				m_loadedTextures.push_back(newTexture);
+			}
+			else 
+			{
+				std::cout << "FILE PATH = " << path.C_Str() << std::endl;
+				// !!! DOPISAĆ
+			}
+		}
+	}
+
+	return textures;
+}
+
+std::optional<Texture> model::IsTextureAlreadyLoaded(aiString path)
+{
+	for(Texture& loadedTexture : m_loadedTextures)
+	{
+		if(std::strcmp(loadedTexture.path.c_str(), path.C_Str()) == 0)
+		{
+			return loadedTexture;
+		}
+	}
+
+	return std::nullopt;
+}
+
+GLuint model::LoadEmbeddedTexture(const aiTexture* embeddedTexture, aiString path)
+{
+	GLuint textureID = 0;
+
+	// texture is compressed
+	if (embeddedTexture->mHeight == 0)
+	{
+		int width, height, nrComponents;
+		unsigned char* data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(embeddedTexture->pcData), embeddedTexture->mWidth, &width, &height, &nrComponents, 0);
+
+		if (data)
+		{
+			textureID = GenerateTexture2D(width, height, nrComponents, data);
+			stbi_image_free(data);
+		}
+		else 
+		{
+			std::cout << "Can not load texture from path [" << path.C_Str() << std::endl; 
+		}
+	}
+	else 
+	{
+		// !!! DOPISAĆ
+	}
+
+	return textureID;
+}
+
+GLuint model::GenerateTexture2D(int width, int height, int nrComponents, unsigned char* data)
+{
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	GLenum format;
+	if (nrComponents == 1)
+		format = GL_RED;
+	else if (nrComponents == 3)
+		format = GL_RGB;
+	else if (nrComponents == 4)
+		format = GL_RGBA;
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	return textureID;
 }
 
 void model::CalculateAABB()
