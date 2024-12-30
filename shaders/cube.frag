@@ -9,10 +9,9 @@ in FS_IN
 layout(location = 0) out vec4 oColor;
 // =========================================
 
-uniform bool bOverrideColor;
-uniform vec4 overrideColor;
+uniform vec4 cubeColor;
 
 void main()
 {
-	oColor = bOverrideColor ? overrideColor : vec4(i.norm, 1.0f);
+	oColor = cubeColor;
 }

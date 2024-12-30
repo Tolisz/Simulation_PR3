@@ -133,7 +133,6 @@ std::vector<Texture> model::LoadTextures(aiMaterial* mat, aiTextureType type, co
 			Texture newTexture;
 			newTexture.type = type;
 			newTexture.path = path.C_Str();
-			std::cout << newTexture.path << std::endl;
 
 			const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(path.C_Str());
 			if (embeddedTexture)

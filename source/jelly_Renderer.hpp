@@ -85,6 +85,7 @@ private:
 	GL_shader m_s_cubeSprings;
 	GL_shader m_s_bezierPatches;
 	GL_shader m_s_deformedModel;
+	GL_shader m_s_collisionFrame;
 	
 	// Buffers
 	const int m_maxLightsNum = 5;

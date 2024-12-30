@@ -178,25 +178,36 @@ void jelly_Renderer::RenderScene()
 	}
 
 	/* Collition Cube (Frame) */
-	m_s_simpleCube.Use();
+	m_s_collisionFrame.Use();
 	if (m_drawParams->bCollisionFrame)
 	{
 		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
 
 		glCullFace(GL_FRONT);
-		m_s_simpleCube.set1b("bOverrideColor", false);
-		m_s_simpleCube.setM4fv("model", GL_FALSE, model);
+		m_s_collisionFrame.setM4fv("model", GL_FALSE, model);
+
+		m_s_collisionFrame.set1i("numberOfLights", m_lights.size());
+
+		const material& mat = m_materials["collisionFrame"]; 
+    	m_s_collisionFrame.set3fv("material.ka", mat.ka);
+    	m_s_collisionFrame.set3fv("material.kd", mat.kd);
+    	m_s_collisionFrame.set3fv("material.ks", mat.ks);
+    	m_s_collisionFrame.set1f("material.shininess", mat.shininess);
+
+		m_s_collisionFrame.set3fv("cameraPos", m_camera.GetPosition());		
+		m_s_collisionFrame.set4fv("frameColor", m_drawParams->cCollisionFrame);
+
 		m_o_collitionFrame.Draw();	
 		glCullFace(GL_BACK);
 	}
 
 	/* Lights */
+	m_s_simpleCube.Use();
 	glm::mat4 LightBoxModelMat = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f));
 	for (int i = 0; i < m_o_lights.size(); ++i)
 	{
 		m_s_simpleCube.setM4fv("model", GL_FALSE, glm::translate(glm::mat4(1.0f), glm::vec3(m_lights[i].m_position)) * LightBoxModelMat);
-		m_s_simpleCube.set1b("bOverrideColor", true);
-		m_s_simpleCube.set4fv("overrideColor", m_lights[i].m_diffuseColor);
+		m_s_simpleCube.set4fv("cubeColor", m_lights[i].m_diffuseColor);
 		
 		m_o_collitionFrame.Draw();
 	}
@@ -302,6 +313,10 @@ void jelly_Renderer::PrepareShaders()
 	m_s_deformedModel.AttachShaderFromFile("shaders/deformedModel.frag", GL_FRAGMENT_SHADER);
 	m_s_deformedModel.Link();
 
+	m_s_collisionFrame.AttachShaderFromFile("shaders/collisionFrame.vert", GL_VERTEX_SHADER);
+	m_s_collisionFrame.AttachShaderFromFile("shaders/collisionFrame.frag", GL_FRAGMENT_SHADER);
+	m_s_collisionFrame.Link();
+
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));
     m_b_matrices.BindBufferBaseToBindingPoint(0);
@@ -314,6 +329,11 @@ void jelly_Renderer::PrepareSceneObjects()
 {
 	material m;
 	m_materials.insert(std::make_pair("jelly", m));
+
+	m.kd = glm::vec3(0.8f);
+	m.ks = glm::vec3(0.2f);
+	m.shininess = 256.0f;
+	m_materials.insert(std::make_pair("collisionFrame", m));
 
 	m_lights[0].m_position = glm::vec4(-3.0f,  3.0f,  3.0f, 0.0f);
 	m_lights[1].m_position = glm::vec4( 3.0f, -3.0f, -3.0f, 0.0f);

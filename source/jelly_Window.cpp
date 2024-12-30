@@ -286,7 +286,7 @@ void jelly_Window::GUI_Main()
 	GUI_WindowLayout();
 
 	// DEBUG ONLY !!!!!!!!!!!!
-	static bool show_demo_window = true;
+	static bool show_demo_window = false;
 	if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 }
