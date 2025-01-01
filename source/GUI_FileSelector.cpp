@@ -108,6 +108,8 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 					ImGui::TableNextRow();
 					ImGui::TableNextColumn();
 
+					/* File/Directory name */
+
 					if (isDirectory)
 					{
 						ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 255.0f, 255.0f));
@@ -136,6 +138,16 @@ bool GUI_FileSelector::Render(ImVec2 windowSize)
 						ImGui::PopStyleColor();
 					}
 
+					/* File size */
+					
+					ImGui::TableNextColumn();
+
+					if (!isDirectory)
+					{
+						uintmax_t fileSize = entry.file_size();
+						ImGui::Text("%s", FormatFileSize(fileSize).c_str());
+					}
+					
 					++i;
 				}
 			}
@@ -159,4 +171,22 @@ fs::path GUI_FileSelector::GetSelectedFile()
 modelLoadParams GUI_FileSelector::GetLoadParams()
 {
 	return m_loadParams;
+}
+
+std::string GUI_FileSelector::FormatFileSize(uintmax_t fileSize)
+{
+    const char* prefixes[] = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+    size_t prefixIndex = 0;
+    double size = static_cast<double>(fileSize);
+
+    while (size >= 1024 && prefixIndex < std::size(prefixes) - 1) 
+	{
+        size /= 1024;
+        ++prefixIndex;
+    }
+
+    // Format to 2 decimal places
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "%.2f %s", size, prefixes[prefixIndex]);
+    return std::string(buffer);
 }

@@ -20,6 +20,10 @@ public:
 	modelLoadParams GetLoadParams();
 
 private:
+	
+	std::string FormatFileSize(uintmax_t fileSize);
+
+private:
 
 	fs::path m_currentPath = fs::canonical(".");
 	fs::path m_selectedFile; 

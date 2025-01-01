@@ -94,6 +94,15 @@ void model::ProcessMesh(aiMesh* _mesh, const aiScene* scene, aiMatrix4x4 transfo
 				_mesh->mTextureCoords[0][i].y
 			);
 		}
+		
+		if (_mesh->HasNormals())
+        {
+			v.normal = glm::vec3(
+				_mesh->mNormals[i].x,
+				_mesh->mNormals[i].y,
+				_mesh->mNormals[i].z
+			);
+		}
 
 		vertices[i] = v;
 	}
