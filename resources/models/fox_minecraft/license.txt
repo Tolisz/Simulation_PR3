@@ -1,0 +1,11 @@
+Model Information:
+* title:	Fox Minecraft
+* source:	https://sketchfab.com/3d-models/fox-minecraft-3c7b1e0e9a5f4897805b7ec3c4eeb5a5
+* author:	kuzneciv (https://sketchfab.com/kuznecivBlender)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Fox Minecraft" (https://sketchfab.com/3d-models/fox-minecraft-3c7b1e0e9a5f4897805b7ec3c4eeb5a5) by kuzneciv (https://sketchfab.com/kuznecivBlender) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
