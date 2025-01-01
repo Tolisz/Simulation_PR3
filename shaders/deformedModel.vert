@@ -8,6 +8,7 @@ layout(location = 2) in vec3 iNormal;
 
 out FS_IN
 {
+    vec3 worldPos;
     vec2 texCoords;
     vec3 normal;
 } o;
@@ -114,8 +115,8 @@ vec3 ComputeNormal(vec3 C, vec3 N, mat3 modelMatrix)
     
     // F_w
     for(int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            for (int k = 0; k < 4; ++k) {
+        for (int j = 0; j < 4; ++j) {
+            for (int k = 0; k < 3; ++k) {
                 vec3 PP = GetPoint(i, j, k + 1);
                 vec3 PN = GetPoint(i, j, k);
                 F_w += (PP - PN) * B3(i, C.x) * B3(j, C.y) * B2(k, C.z);
@@ -133,11 +134,11 @@ void main()
     mat4 Model = toZeroOneBox * transformation;
     
     vec3 BoxPoint = vec3(Model * vec4(iPosition, 1.0f));
-    vec3 BoxNormal = mat3(transpose(inverse(Model))) * iNormal; 
     vec3 DefformedPoint = BezierCube(BoxPoint);
-    vec3 DefformedNormal = vec3(0.0f);
 
-	gl_Position = projection * view * vec4(DefformedPoint, 1.0f);
-    o.texCoords = iTexCoords;
+    o.worldPos = DefformedPoint;
     o.normal = ComputeNormal(BoxPoint, iNormal, mat3(Model));  
+    o.texCoords = iTexCoords;
+    
+	gl_Position = projection * view * vec4(DefformedPoint, 1.0f);
 }

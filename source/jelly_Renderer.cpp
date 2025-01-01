@@ -256,7 +256,17 @@ void jelly_Renderer::RenderScene()
 	if (m_drawParams->bModel && m_loadedModel.IsValid())
 	{
 		m_s_deformedModel.Use();
-		
+
+		m_s_deformedModel.set1i("numberOfLights", m_lights.size());
+
+		const material& mat = m_materials["model"]; 
+    	m_s_deformedModel.set3fv("material.ka", mat.ka);
+    	m_s_deformedModel.set3fv("material.kd", mat.kd);
+    	m_s_deformedModel.set3fv("material.ks", mat.ks);
+    	m_s_deformedModel.set1f("material.shininess", mat.shininess);
+
+		m_s_deformedModel.set3fv("cameraPos", m_camera.GetPosition());
+
 		GLuint pointsBuffer = m_bCube->GetPointsBuffer();
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, pointsBuffer);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, pointsBuffer);
@@ -337,6 +347,11 @@ void jelly_Renderer::PrepareSceneObjects()
 	m.ks = glm::vec3(0.2f);
 	m.shininess = 256.0f;
 	m_materials.insert(std::make_pair("collisionFrame", m));
+
+	m.kd = glm::vec3(0.7f);
+	m.ks = glm::vec3(0.3f);
+	m.shininess = 128.0f;
+	m_materials.insert(std::make_pair("model", m));	
 
 	m_lights[0].m_position = glm::vec4(-3.0f,  3.0f,  3.0f, 0.0f);
 	m_lights[1].m_position = glm::vec4( 3.0f, -3.0f, -3.0f, 0.0f);
