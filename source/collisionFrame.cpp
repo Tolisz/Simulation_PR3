@@ -69,34 +69,31 @@ std::pair<glm::vec3, glm::vec3> collisionFrame::CollideInternal(
 	case 1: /* t_xn */
 	{
 		PX.x = -PX.x;
-		V.x = mu * -V.x;
-		// V *= mu;
+		V = mu * glm::vec3(-V.x, V.y, V.z);
 	} break;
 	
 	case 2: /* t_yp */
 	case 3: /* t_yn */
 	{
 		PX.y = -PX.y;
-		V.y = mu * -V.y;
-		// V *= mu;
+		V = mu * glm::vec3(V.x, -V.y, V.z);
 	} break;
 
 	case 4: /* t_zp */
 	case 5: /* t_zn */
 	{
 		PX.z = -PX.z;
-		V.z = mu * -V.z;
-		// V *= mu;
+		V = mu * glm::vec3(V.x, V.y, -V.z);
 	} break;
 
 	}
 	
 	glm::vec3 newP = X + mu * PX;
-	glm::vec3 newPrevP = X; // DO POPRAWY !!!!!!!!!!!!!!!
+	glm::vec3 newPrevP = X;
 
 	if (glm::length(mu * PX) < 1e-5)
 	{
-		return {P, V};
+		return {X, V};
 	}
 
 	return CollideInternal(newP, newPrevP, V, mu, iter + 1, maxInter);

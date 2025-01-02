@@ -177,17 +177,17 @@ void jelly_simThread::SimulationStep()
 
 		if (!m_simParams->bCollisionFrame)
 		{
-			m_V[i] += m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) ); 
+			m_V[i] += m_dt * (m_F[i] / m_simParams->m[i]); 
 			m_newP[i] = P[i] + m_V[i] * m_dt;
 		}
 		else 
 		{
 			glm::vec3 prevV = m_V[i];
 			glm::vec3 prevP = P[i];
-			glm::vec3 V = prevV + m_dt * ( (1.0f / m_simParams->m[i]) * (m_F[i]) );
-			glm::vec3 P = prevP + V * m_dt; 
+			glm::vec3 V = prevV + m_dt * (m_F[i] / m_simParams->m[i]);
+			glm::vec3 newP = prevP + V * m_dt; 
 
-			auto P_V = m_cFrame->Collide(P, prevP, V, m_simParams->mu, 5);
+			auto P_V = m_cFrame->Collide(newP, prevP, V, m_simParams->mu, 5);
 
 			m_V[i] = P_V.second;
 			m_newP[i] = P_V.first;
@@ -213,11 +213,14 @@ void jelly_simThread::ComputeCubeForces(const std::vector<glm::vec3>& P)
 			float dl = cl - rl;
 			
 			// compute dl derivative
-			float dl_drv = (dl - m_prevDL[i][j]) / m_dt; 
+			float prevDL = m_prevDL[i][j];
+			float dl_drv = (dl - prevDL) / m_dt; 
 			m_prevDL[i][j] = dl;
 
 			// compute force
-			glm::vec3 f = glm::normalize(P[j] - P[i]) * (- m_simParams->k * dl_drv - m_simParams->c1 *  dl);
+			glm::vec3 f = glm::length(P[j] - P[i]) < 1e-5f ? 
+				glm::vec3(0.0f) : 
+				glm::normalize(P[j] - P[i]) * (- m_simParams->k * dl_drv - m_simParams->c1 * dl);
 
 			m_F[i] += -f;
 			m_F[j] += f;
@@ -239,7 +242,7 @@ void jelly_simThread::ComputeControlFrameFoces(const std::vector<glm::vec3>& P)
 		int j = spring.second;
 		
 		// compute dl
-		float dl =  glm::length(framePoints[i] - P[j]);
+		float dl = glm::length(framePoints[i] - P[j]);
 
 		// compute dl derivative
 		float dl_drv = (dl - m_prevDL_frameSprings[n]) / m_dt; 
@@ -248,7 +251,7 @@ void jelly_simThread::ComputeControlFrameFoces(const std::vector<glm::vec3>& P)
 		// compute force
 		glm::vec3 f = glm::length(framePoints[i] - P[j]) < 1e-5f ? 
 			glm::vec3(0.0f) : 
-			glm::normalize(framePoints[i] - P[j]) * (- m_simParams->k * dl_drv - m_simParams->c2 *  dl);
+			glm::normalize(framePoints[i] - P[j]) * (- m_simParams->k * dl_drv - m_simParams->c2 * dl);
 
 		m_F[j] += -f;
 

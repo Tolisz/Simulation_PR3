@@ -544,13 +544,13 @@ void jelly_Window::GUI_SEC_SimulationParameters()
 	ImGui::EndDisabled();
 
 	ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-	ImGui::DragFloat("c1", &simParam->c1, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::DragFloat("c1", &simParam->c1, 0.01f, 0.00f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 	ImGui::SameLine();
 	GUI_ELEM_HelpMarker("Spring constant of springs inside the Bezier cube");
 	
 	ImGui::BeginDisabled(!simParam->bControlFrame);
 		ImGui::SetNextItemWidth(wWidth * 0.5f + iSpacing);
-		ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.01f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat("c2", &simParam->c2, 0.01f, 0.00f, 100.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 		ImGui::SameLine();
 		GUI_ELEM_HelpMarker("Spring constant of springs from the Bezier cube to the control frame");
 	ImGui::EndDisabled();

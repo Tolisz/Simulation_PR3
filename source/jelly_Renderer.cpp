@@ -159,11 +159,11 @@ void jelly_Renderer::RenderScene()
 
 	DrawCollitionFrame();
 	DrawLightCubes();
+	DrawCubeSprings();
+	DrawCubePoints();
 	DrawControlFrame();
 	DrawJelly();
 	DrawModel();
-	DrawCubeSprings();
-	DrawCubePoints();
 
 	// =========
 	// SCENE END
