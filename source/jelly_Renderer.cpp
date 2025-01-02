@@ -2,6 +2,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#ifdef EMBEDDED_SHADERS
+	#include "shaders/all_shaders.hpp"
+#endif
+
 #include <iostream>
 
 jelly_Renderer::jelly_Renderer(
@@ -332,6 +336,8 @@ void jelly_Renderer::PrepareScene()
 void jelly_Renderer::PrepareShaders()
 {
 	// PrepareShaders
+
+#ifndef EMBEDDED_SHADERS
 	m_s_simpleCube.AttachShaderFromFile("shaders/cube.vert", GL_VERTEX_SHADER);
 	m_s_simpleCube.AttachShaderFromFile("shaders/cube.frag", GL_FRAGMENT_SHADER);
 	m_s_simpleCube.Link();
@@ -357,6 +363,35 @@ void jelly_Renderer::PrepareShaders()
 	m_s_collisionFrame.AttachShaderFromFile("shaders/collisionFrame.vert", GL_VERTEX_SHADER);
 	m_s_collisionFrame.AttachShaderFromFile("shaders/collisionFrame.frag", GL_FRAGMENT_SHADER);
 	m_s_collisionFrame.Link();
+#else
+
+	m_s_simpleCube.AttachShaderCode(shader_cube_vert, GL_VERTEX_SHADER);
+	m_s_simpleCube.AttachShaderCode(shader_cube_frag, GL_FRAGMENT_SHADER);
+	m_s_simpleCube.Link();
+
+	m_s_bCubePoints.AttachShaderCode(shader_bezierPoints_vert, GL_VERTEX_SHADER);
+	m_s_bCubePoints.AttachShaderCode(shader_bezierPoints_frag, GL_FRAGMENT_SHADER);
+	m_s_bCubePoints.Link();
+
+	m_s_cubeSprings.AttachShaderCode(shader_springs_vert, GL_VERTEX_SHADER);
+	m_s_cubeSprings.AttachShaderCode(shader_springs_frag, GL_FRAGMENT_SHADER);
+	m_s_cubeSprings.Link();
+
+	m_s_bezierPatches.AttachShaderCode(shader_bezierPatch_vert, GL_VERTEX_SHADER);
+	m_s_bezierPatches.AttachShaderCode(shader_bezierPatch_tesc, GL_TESS_CONTROL_SHADER);
+	m_s_bezierPatches.AttachShaderCode(shader_bezierPatch_tese, GL_TESS_EVALUATION_SHADER);
+	m_s_bezierPatches.AttachShaderCode(shader_bezierPatch_frag, GL_FRAGMENT_SHADER);
+	m_s_bezierPatches.Link();
+
+	m_s_deformedModel.AttachShaderCode(shader_deformedModel_vert, GL_VERTEX_SHADER);
+	m_s_deformedModel.AttachShaderCode(shader_deformedModel_frag, GL_FRAGMENT_SHADER);
+	m_s_deformedModel.Link();
+
+	m_s_collisionFrame.AttachShaderCode(shader_collisionFrame_vert, GL_VERTEX_SHADER);
+	m_s_collisionFrame.AttachShaderCode(shader_collisionFrame_frag, GL_FRAGMENT_SHADER);
+	m_s_collisionFrame.Link();
+
+#endif
 
 	// Prepare UBO
 	m_b_matrices.CreateUBO(2 * sizeof(glm::mat4));
@@ -379,7 +414,7 @@ void jelly_Renderer::PrepareSceneObjects()
 	m.kd = glm::vec3(0.7f);
 	m.ks = glm::vec3(0.3f);
 	m.shininess = 128.0f;
-	m_materials.insert(std::make_pair("model", m));	
+	m_materials.insert(std::make_pair("model", m));
 
 	m_lights[0].m_position = glm::vec4(-3.0f,  3.0f,  3.0f, 0.0f);
 	m_lights[1].m_position = glm::vec4( 3.0f, -3.0f, -3.0f, 0.0f);

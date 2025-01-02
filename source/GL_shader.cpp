@@ -112,7 +112,28 @@ void GL_shader::AttachShaderFromFile(const std::string& path, GLenum type)
 
 void GL_shader::AttachShaderCode(const std::string& code, GLenum type)
 {
-    // TO WRITE
+    GLuint sh = glCreateShader(type);
+    const char* source_c = code.c_str();
+    glShaderSource(sh, 1, &source_c, NULL);
+    glCompileShader(sh);
+
+    GLint success;
+    glGetShaderiv(sh, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        GLint log_length;
+        glGetShaderiv(sh, GL_INFO_LOG_LENGTH, &log_length);
+        std::vector<GLchar> message(log_length);
+        glGetShaderInfoLog(sh, log_length, nullptr, message.data());
+        
+        std::cout 
+            << "AttachShader error! \n\t" 
+            << "\n\t[type]: " << type 
+            << "\n\t[error message]: \n" << message.data() << std::endl;
+        return;
+    }
+
+    glAttachShader(m_ID, sh);
+    glDeleteShader(sh);
 }
 
 void GL_shader::Link()

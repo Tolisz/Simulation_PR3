@@ -1,0 +1,47 @@
+
+function(shaders_to_embedded_hpp TARGET_NAME SHADER_FOLDER)
+
+	set(SHADER_TARGET_NAME "${TARGET_NAME}_shaders")
+	file(GLOB SHADER_FILES ${SHADER_FOLDER}/*)
+	set(COMPILED_SHADER_FILES)
+	set(SHADER_HPP_FILES_LIST)
+	set(FILE_CODE_START ${CMAKE_CURRENT_SOURCE_DIR}/utils/shaderCode_start.txt)
+	set(FILE_CODE_END ${CMAKE_CURRENT_SOURCE_DIR}/utils/shaderCode_end.txt)
+
+	foreach(FILE IN LISTS SHADER_FILES)
+
+		cmake_path(GET FILE FILENAME FILE_NAME)
+		string(REPLACE "." "_" OUTPUT_FILE_NAME ${FILE_NAME})
+		set(OUTPUT_FILE_NAME_EX "${OUTPUT_FILE_NAME}.hpp")
+		set(OUTPUT_FILE_PATH "${CMAKE_CURRENT_BINARY_DIR}/GENERATED/shaders/${OUTPUT_FILE_NAME_EX}")
+
+		add_custom_command(
+			OUTPUT ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E echo "// AUTO-GENERATED FILE CONTAINING SHADER SOURCE" > ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E echo "#pragma once" >> ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E echo "#include <string>" >> ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E echo_append "const std::string shader_${OUTPUT_FILE_NAME} = " >> ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E cat ${FILE_CODE_START} >> ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E cat ${FILE} >> ${OUTPUT_FILE_PATH}
+			COMMAND ${CMAKE_COMMAND} -E cat ${FILE_CODE_END} >> ${OUTPUT_FILE_PATH}
+			DEPENDS ${FILE}
+			COMMENT "[shader file generation]: ${OUTPUT_FILE_NAME_EX}"
+		)
+
+		list(APPEND COMPILED_SHADER_FILES ${OUTPUT_FILE_PATH})
+		list(APPEND SHADER_HPP_FILES_LIST ${OUTPUT_FILE_NAME_EX})
+	endforeach()
+
+	set(ALL_SHADERS_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/GENERATED/shaders/all_shaders.hpp")
+	file(WRITE ${ALL_SHADERS_FILE_NAME} "#pragma once\n\n")
+
+	foreach(FILE IN LISTS SHADER_HPP_FILES_LIST)
+		file(APPEND ${ALL_SHADERS_FILE_NAME} "#include \"${FILE}\"\n")
+	endforeach()
+
+	add_custom_target(${SHADER_TARGET_NAME} DEPENDS ${COMPILED_SHADER_FILES})
+	add_dependencies(${TARGET_NAME} ${SHADER_TARGET_NAME})
+
+	target_include_directories(${TARGET_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/GENERATED")
+
+endfunction()
