@@ -187,7 +187,7 @@ void jelly_simThread::SimulationStep()
 			glm::vec3 V = prevV + m_dt * (m_F[i] / m_simParams->m[i]);
 			glm::vec3 newP = prevP + V * m_dt; 
 
-			auto P_V = m_cFrame->Collide(newP, prevP, V, m_simParams->mu, 5);
+			auto P_V = m_cFrame->Collide(newP, prevP, V, m_simParams->mu, 3);
 
 			m_V[i] = P_V.second;
 			m_newP[i] = P_V.first;

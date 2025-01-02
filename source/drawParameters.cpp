@@ -20,7 +20,8 @@ void drawParameters::ResetToDefault()
 	bControlFrame = true;
 	bCollisionFrame = true;
 	bJelly = true;
-
+	bLights = true;
+	
 	mJellyTessellationLevel = 10;
 	mPointSize = 4;
 }

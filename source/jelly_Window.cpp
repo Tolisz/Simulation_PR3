@@ -286,7 +286,7 @@ void jelly_Window::GUI_Main()
 	GUI_WindowLayout();
 
 	// DEBUG ONLY !!!!!!!!!!!!
-	static bool show_demo_window = false;
+	static bool show_demo_window = true;
 	if (show_demo_window)
         ImGui::ShowDemoWindow(&show_demo_window);
 }
@@ -630,9 +630,18 @@ void jelly_Window::GUI_SEC_DrawOptions()
 		GUI_ELEM_DrawCheckbox("Collision frame##DRAW", drawParam->cCollisionFrame, drawParam->bCollisionFrame);
 	ImGui::EndDisabled();
 
-	if (ImGui::ImageButton("##LightsConfiguration", m_icons["light"], ImVec2(11, 14)))
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+	if (ImGui::ImageButton("##LightsConfiguration", m_icons["light"], ImVec2(15, 15)))
 	{
+		
 	}
+	ImGui::PopStyleVar();
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::Text("Change lights parameters");
+		ImGui::EndTooltip();
+	}
+
 	ImGui::SameLine();
 	ImGui::Checkbox("Lights", &drawParam->bLights);
 
@@ -641,10 +650,18 @@ void jelly_Window::GUI_SEC_DrawOptions()
 	{
 		drawParam->bModel = false;
 	}
-	if (ImGui::ImageButton("##OpenFile", m_icons["folder"], ImVec2(11, 14)))
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+	if (ImGui::ImageButton("##OpenFile", m_icons["folder"], ImVec2(15, 15)))
 	{
 		ImGui::OpenPopup(m_fileSelector.GetPopupName());
 	}
+	ImGui::PopStyleVar();
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::Text("Open a file with a model");
+		ImGui::EndTooltip();
+	}
+
 	if (m_fileSelector.Render(ImVec2(m_width * 0.60f, m_height * 0.75f)) )
 	{
 		if (!m_app->LoadModelFromFile(m_fileSelector.GetSelectedFile(), m_fileSelector.GetLoadParams()))
