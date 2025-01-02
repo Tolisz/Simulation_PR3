@@ -55,12 +55,20 @@ public:
 
 	void SetNewModel(model&& newModel);
 	bool IsModelLoaded();
-	std::string GetModelName();
-	
+	std::string GetModelName(); 
+
 private:
 
 	void RenderScene();
 	void SetUpFramebuffer();
+
+	void DrawCollitionFrame();
+	void DrawCubePoints();
+	void DrawCubeSprings();
+	void DrawLightCubes();
+	void DrawControlFrame();
+	void DrawJelly();
+	void DrawModel();
 
 	void PrepareScene();
 	void PrepareShaders();

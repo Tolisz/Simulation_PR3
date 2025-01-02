@@ -157,30 +157,23 @@ void jelly_Renderer::RenderScene()
 	/* Bezier Cube */
 	m_bCube->UpdateBuffers();
 
-	m_s_bCubePoints.Use();
-	if (m_drawParams->bPoints)
-	{
-		m_s_bCubePoints.set4fv("cDefaultColor", m_drawParams->cPoints);
-		m_bCube->DrawCubePoints(m_drawParams->mPointSize);
-	}
+	DrawCollitionFrame();
+	DrawLightCubes();
+	DrawControlFrame();
+	DrawJelly();
+	DrawModel();
+	DrawCubeSprings();
+	DrawCubePoints();
 
-	/* Cube's springs */
-	m_s_cubeSprings.Use();
-	if (m_drawParams->bShortSrpings)
-	{
-		m_s_cubeSprings.set4fv("springColor", m_drawParams->cShortSprings);
-		m_bCube->DrawShortSprings();
-	}
-	if (m_drawParams->bLongSprings)
-	{
-		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
-		m_bCube->DrawLongSprings();
-	}
+	// =========
+	// SCENE END
+}
 
-	/* Collition Cube (Frame) */
-	m_s_collisionFrame.Use();
+void jelly_Renderer::DrawCollitionFrame()
+{
 	if (m_drawParams->bCollisionFrame)
 	{
+		m_s_collisionFrame.Use();
 		glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(m_cFrameDrawer->GetEdgeLength() / 2));
 
 		glCullFace(GL_FRONT);
@@ -200,8 +193,39 @@ void jelly_Renderer::RenderScene()
 		m_o_collitionFrame.Draw();	
 		glCullFace(GL_BACK);
 	}
+}
 
-	/* Lights */
+void jelly_Renderer::DrawCubePoints()
+{
+	if (m_drawParams->bPoints)
+	{
+		m_s_bCubePoints.Use();
+		m_s_bCubePoints.set4fv("cDefaultColor", m_drawParams->cPoints);
+		m_bCube->DrawCubePoints(m_drawParams->mPointSize);
+	}
+}
+
+void jelly_Renderer::DrawCubeSprings()
+{
+	if (m_drawParams->bShortSrpings || m_drawParams->bLongSprings)
+	{
+		m_s_cubeSprings.Use();
+	}
+	
+	if (m_drawParams->bShortSrpings)
+	{
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cShortSprings);
+		m_bCube->DrawShortSprings();
+	}
+	if (m_drawParams->bLongSprings)
+	{
+		m_s_cubeSprings.set4fv("springColor", m_drawParams->cLongSprings);
+		m_bCube->DrawLongSprings();
+	}
+}
+
+void jelly_Renderer::DrawLightCubes()
+{
 	if (m_drawParams->bLights)
 	{
 		m_s_simpleCube.Use();
@@ -214,7 +238,10 @@ void jelly_Renderer::RenderScene()
 			m_o_collitionFrame.Draw();
 		}
 	}
+}
 
+void jelly_Renderer::DrawControlFrame()
+{
 	if (m_drawParams->bControlFrame)
 	{
 		m_s_cubeSprings.Use();
@@ -230,8 +257,10 @@ void jelly_Renderer::RenderScene()
 		m_bCube->DrawControlFrame();
 		glEnable(GL_DEPTH_TEST);
 	}
+}
 
-	/* Jelly */
+void jelly_Renderer::DrawJelly()
+{
 	if (m_drawParams->bJelly)
 	{
 		m_s_bezierPatches.Use();
@@ -251,13 +280,15 @@ void jelly_Renderer::RenderScene()
 		
 		m_bCube->DrawBezierPatches();
 	}
+}
 
-	/* Model */
+void jelly_Renderer::DrawModel()
+{
 	if (m_drawParams->bModel && m_loadedModel.IsValid())
 	{
 		m_s_deformedModel.Use();
 
-		m_s_deformedModel.set1i("numberOfLights", m_lights.size());
+		m_s_bezierPatches.set1i("numberOfLights", m_lights.size());
 
 		const material& mat = m_materials["model"]; 
     	m_s_deformedModel.set3fv("material.ka", mat.ka);
@@ -272,9 +303,6 @@ void jelly_Renderer::RenderScene()
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, pointsBuffer);
 		m_loadedModel.Draw(m_s_deformedModel);
 	}
-
-	// =========
-	// SCENE END
 }
 
 void jelly_Renderer::SetUpFramebuffer()
