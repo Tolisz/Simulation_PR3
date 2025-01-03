@@ -94,6 +94,10 @@ cmake --build build --config Release
 
 
 
+```
+
+```
+
 ## Used Libraries
 
 Libraries `GLFW`, `GLM`, `Assimp`, `STB` and `ImGui` are used as submodules located in `externals` directory. `GLAD` is used as a generated file from [glad](https://glad.dav1d.de/) web page. 
