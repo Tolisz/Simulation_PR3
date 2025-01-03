@@ -16,7 +16,7 @@ Normaly the jelly is rendered as **6 Bézier patches** based on control points w
 
 $$F(u, v, w) = \sum_{i}^3\sum_{j}^3\sum_{k}^3 P^{ijk} B_i^3(u)B_j^3(v)B_j^3(w),$$
 
-where  $`(u, v, w) \in [0, 1]^3`$, $`P^{ijk}`$ - jelly points, $`B_i(t)`$ - bernstein polynomial.
+where  $`(u, v, w) \in [0, 1]^3`$, $`P^{ijk}`$ - jelly points, $`B^3_i(t)`$ - bernstein polynomial.
 
 User model shading is computed based on this definition of FFD transofrmation.
 
