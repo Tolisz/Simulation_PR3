@@ -36,7 +36,7 @@ endif()
 if (MSVC)
 	target_compile_options(${PR3_EXECUTABLE_NAME} PRIVATE /W4)
 
-	if (NOT PR2_SHOW_DEBUG_CONSOLE)
+	if (NOT PR3_SHOW_DEBUG_CONSOLE)
 
 		message("-- RP3: PR3_SHOW_DEBUG_CONSOLE option is OFF")
 		set_target_properties(${PR3_EXECUTABLE_NAME} PROPERTIES 

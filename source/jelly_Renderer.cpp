@@ -292,7 +292,7 @@ void jelly_Renderer::DrawModel()
 	{
 		m_s_deformedModel.Use();
 
-		m_s_bezierPatches.set1i("numberOfLights", m_lights.size());
+		m_s_deformedModel.set1i("numberOfLights", m_lights.size());
 
 		const material& mat = m_materials["model"]; 
     	m_s_deformedModel.set3fv("material.ka", mat.ka);
