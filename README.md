@@ -1,6 +1,6 @@
 ﻿# Jelly Simulator
 
-[![Example Monkey](https://github.com/Tolisz/Simulation_PR3/blob/master/docs/example_monkey.png)](https://github.com/Tolisz/Simulation_PR3/blob/master/docs/example_monkey.mp4)
+https://github.com/user-attachments/assets/6be7c8a8-e1dc-4ff9-931d-c66ebc43b431
 
 ## About project
 
