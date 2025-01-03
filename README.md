@@ -8,6 +8,18 @@ https://github.com/user-attachments/assets/769b8ef9-d1eb-44ff-addd-8cf4ba0aeb8e
 
 This is the third project created during *"Physical simulations in a virtual environment"* course, specialty **CAD/CAM systems design** of degree in *Computer Science and Information Systems* at *Warsaw University of Technology*. 
 
+The project is a simulation of 64 mass points arranged in a 4x4x4 cube (**jelly**) and connected to each other by springs. Jelly's corner points are connected to the corners of **the control frame** with special springs of zero rest length. User can freely move and rotate the control frame that the jelly will follow.
+
+The jelly is inside **the collision frame** that he can't get out of. The control frame can be freely moved outside the collision frame. 
+
+Normaly the jelly is rendered as **6 Bézier patches** based on control points which are outer jelly's points. Additionally, any user's model can be inserted inside the jelly. A model will be deformed using **free-form deformation (FFD)**: 
+
+$$F(u, v, w) = \sum_{i}^3\sum_{j}^3\sum_{k}^3 P^{ijk} B_i^3(u)B_j^3(v)B_j^3(w),$$
+
+where  $`(u, v, w) \in [0, 1]^3`$, $`P^{ijk}`$ - jelly points, $`B_i(t)`$ - bernstein polynomial.
+
+User model shading is computed based on this definition of FFD transofrmation.
+
 ## Navigation
 
 <table>
@@ -43,7 +55,7 @@ This is the third project created during *"Physical simulations in a virtual env
             <td>rotate collision frame around camera's <code>right</code> and <code>up</code> vectors. To accept rotation click <kbd>LMB</kbd></td>
         </tr>
 		<tr>
-            <th colspan=2> Bezier Cube Points (if collision frame is disabled)</th>
+            <th colspan=2> Jelly's points (if collision frame is disabled)</th>
         </tr>
 		<tr>
             <td><kbd>Ctrl</kbd> + <kbd>LMB</kbd></td>
@@ -74,9 +86,13 @@ cmake -S . -B build -DPR3_EMBEDDED_SHADERS=ON -DPR3_SHOW_DEBUG_CONSOLE=OFF
 cmake --build build --config Release
 ```
 
+```
+.\build\Release\SimulationPr3.exe
+```
+
 ### Linux
 
-### macOS
+
 
 ## Used Libraries
 
