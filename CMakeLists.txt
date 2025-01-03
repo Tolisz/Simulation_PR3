@@ -47,4 +47,11 @@ if (MSVC)
 
 else()
 	target_compile_options(${PR3_EXECUTABLE_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+
+	# Is is not that simple ....
+	if (NOT PR3_SHOW_DEBUG_CONSOLE)
+		message("-- RP3: PR3_SHOW_DEBUG_CONSOLE option is OFF")
+	else() 
+		message("-- RP3: PR3_SHOW_DEBUG_CONSOLE option is ON")
+	endif()
 endif()

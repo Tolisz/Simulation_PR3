@@ -3,6 +3,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <memory>
 #include "bezierCube.hpp"
 #include "collisionFrame.hpp"
 #include "simulationParameters.hpp"

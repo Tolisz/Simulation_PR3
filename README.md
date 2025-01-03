@@ -18,6 +18,8 @@ $$F(u, v, w) = \sum_{i}^3\sum_{j}^3\sum_{k}^3 P^{ijk} B_i^3(u)B_j^3(v)B_j^3(w),$
 
 where  $`(u, v, w) \in [0, 1]^3`$, $`P^{ijk}`$ - jelly points, $`B^3_i(t)`$ - bernstein polynomial.
 
+The project has **4 example models** which can be found in `./resources/models` folder.
+
 User model shading is computed based on this definition of FFD transofrmation.
 
 ## Navigation
@@ -92,7 +94,18 @@ cmake --build build --config Release
 
 ### Linux
 
+All subsequent commands should be called from terminal. Compilation was checked using **g++** (version 11.4.0) and **clang++** (version 14.0.0) compilers.
 
+```
+$ git clone --recurse-submodules -j8 https://github.com/Tolisz/Simulation_PR3.git
+$ cd Simulation_PR3
+$ cmake -S . -B build -DPR3_EMBEDDED_SHADERS=ON -DPR3_SHOW_DEBUG_CONSOLE=OFF
+$ cmake --build build --config Release -j 26
+```
+
+```
+./build/SimulationPr3
+```
 
 ## Used Libraries
 
