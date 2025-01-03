@@ -2,6 +2,8 @@
 
 https://github.com/user-attachments/assets/6be7c8a8-e1dc-4ff9-931d-c66ebc43b431
 
+https://github.com/user-attachments/assets/769b8ef9-d1eb-44ff-addd-8cf4ba0aeb8e
+
 ## About project
 
 This is the third project created during *"Physical simulations in a virtual environment"* course, specialty **CAD/CAM systems design** of degree in *Computer Science and Information Systems* at *Warsaw University of Technology*. 
